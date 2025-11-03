@@ -29,18 +29,42 @@
     <div class="col-md-5">
         <div class="card p-4">
             <h3 class="text-center text-success fw-bold mb-3">Daftar Akun Baru</h3>
-            <form>
+            <form method="POST" action="/register">
+                @csrf
+
+                {{-- show validation errors --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Lengkap</label>
-                    <input type="text" class="form-control" id="name" placeholder="Masukkan nama lengkap">
+                    <input type="text" name="full_name" class="form-control" id="name" placeholder="Masukkan nama lengkap" value="{{ old('full_name') }}">
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Masukkan email">
+                    <input type="email" name="email" class="form-control" id="email" placeholder="Masukkan email" value="{{ old('email') }}">
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Kata Sandi</label>
-                    <input type="password" class="form-control" id="password" placeholder="Masukkan kata sandi">
+                    <input type="password" name="password" class="form-control" id="password" placeholder="Masukkan kata sandi">
+                </div>
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
+                    <input type="password" name="password_confirmation" class="form-control" id="password_confirmation" placeholder="Konfirmasi kata sandi">
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Telepon (opsional)</label>
+                    <input type="text" name="phone" class="form-control" id="phone" placeholder="Nomor telepon" value="{{ old('phone') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Alamat (opsional)</label>
+                    <textarea name="address" class="form-control" id="address" placeholder="Alamat">{{ old('address') }}</textarea>
                 </div>
                 <button type="submit" class="btn btn-green w-100 mt-2">Daftar</button>
             </form>

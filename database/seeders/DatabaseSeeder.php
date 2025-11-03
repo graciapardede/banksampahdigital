@@ -1,22 +1,8 @@
-<?php
-
-namespace Database\Seeders;
-
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-
-class DatabaseSeeder extends Seeder
+public function run(): void
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
-    {
-        // call specific seeders
-        $this->call([
-            AdminUserSeeder::class,
-        ]);
-    }
+    $this->call([
+        BranchSeeder::class,
+        WasteTypeSeeder::class,
+        AdminSeeder::class,
+    ]);
 }

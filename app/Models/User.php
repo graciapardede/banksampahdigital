@@ -2,60 +2,37 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
 
-    public const ROLE_WARGA = 'warga';
-    public const ROLE_ADMIN = 'admin';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int,string>
-     */
     protected $fillable = [
-        'full_name',
-        'email',
-        'phone',
-        'password',
-        'address',
-        'role',
-        'balance_points',
+        'name', 'email', 'phone', 'password', 'role', 'branch_id',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array<int,string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password'];
 
-    /**
-     * The attribute type casting.
-     *
-     * @var array<string,string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'balance_points' => 'integer',
-        'password' => 'hashed',
-    ];
-
-    /**
-     * Quick helper to check role.
-     */
-    public function isWarga(): bool
+    public function branch()
     {
-        return $this->role === self::ROLE_WARGA;
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function deposits(): HasMany
+    {
+        return $this->hasMany(Deposit::class);
+    }
+
+    public function redemptions(): HasMany
+    {
+        return $this->hasMany(Redemption::class);
+    }
+
+    public function ledger(): HasMany
+    {
+        return $this->hasMany(PointLedger::class);
     }
 }

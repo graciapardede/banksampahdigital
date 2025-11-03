@@ -107,15 +107,32 @@
             </div>
 
             <!-- Form -->
-            <form>
+            <form method="POST" action="/login">
+                @csrf
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="mb-3 text-start">
                     <label for="email" class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="Masukkan Email">
+                    <input type="email" name="email" class="form-control" id="email" placeholder="Masukkan Email" value="{{ old('email') }}">
                 </div>
 
                 <div class="mb-3 text-start">
                     <label for="password" class="form-label fw-semibold">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Masukkan Password">
+                    <input type="password" name="password" class="form-control" id="password" placeholder="Masukkan Password">
+                </div>
+
+                <div class="form-check text-start mb-3">
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="remember">Ingat saya</label>
                 </div>
 
                 <button type="submit" class="btn btn-green mt-3">Masuk Sekarang</button>
