@@ -57,3 +57,42 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Local PostgreSQL setup (example)
+
+If you want to use PostgreSQL locally, set these environment variables in your `.env` file:
+
+```
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=your_database
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+```
+
+Then run migrations and seed the default admin user:
+
+```bash
+# install composer dependencies if needed
+composer install
+
+# generate app key
+php artisan key:generate
+
+# run migrations
+php artisan migrate
+
+# seed admin user
+php artisan db:seed
+```
+
+By default the seeder will create an admin user using the following environment variables (you can set them in `.env`):
+
+- ADMIN_EMAIL (default: admin@example.com)
+- ADMIN_PASSWORD (default: password123)
+- ADMIN_NAME
+- ADMIN_PHONE
+- ADMIN_ADDRESS
+
+Adjust them before running `php artisan db:seed`.
