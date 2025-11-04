@@ -9,126 +9,218 @@
 
     <style>
         body {
-            background-color: #e8f5e9;
+            margin: 0;
             font-family: 'Poppins', sans-serif;
+            background-color: #f9fdf9;
+            overflow-x: hidden;
         }
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            background-color: #b8e6c2;
+        .hero-section {
+            position: relative;
+            background: linear-gradient(rgba(0, 100, 0, 0.55), rgba(0, 100, 0, 0.55)),
+                        url('{{ asset('images/background.png') }}') center/cover no-repeat;
+            height: 55vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            color: #2e7d32;
-            margin: 0 auto;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 0;
+            border-bottom: none;
         }
 
-        .brand-title {
-            font-size: 2rem;
+        .hero-section img {
+            width: 90px;
+            margin-bottom: 15px;
+        }
+
+        .hero-section h2 {
             font-weight: 700;
-            color: #2e7d32;
-            text-align: center;
+            font-size: 2rem;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #388e3c;
+        .hero-section p {
             font-weight: 500;
+            color: #d8ffd8;
+        }
+
+        /* ===== Main White Container ===== */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            background: #fff;
+            width: 100%;
+            border-radius: 0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            padding: 80px 120px;
+            margin-top: 0;
         }
 
         .feature-card {
-            background: white;
+            background: #ffffff;
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            padding: 15px;
-            margin: 10px 0;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            padding: 18px 20px;
             display: flex;
             align-items: center;
             gap: 15px;
+            height: 90px;
         }
 
-        .feature-icon {
-            font-size: 28px;
+        .feature-card img {
+            width: 35px;
         }
 
+        .feature-card h5 {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .feature-card small {
+            font-size: 0.9rem;
+        }
+
+        /* ===== Buttons ===== */
         .btn-green {
             background-color: #43a047;
             color: white;
             font-weight: 600;
-            border-radius: 10px;
-            width: 100%;
+            border-radius: 8px;
+            padding: 10px 0;
+            width: 130px;
+            transition: 0.3s;
+        }
+
+        .btn-outline-green {
+            border: 2px solid #43a047;
+            color: #43a047;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 10px 0;
+            width: 130px;
+            transition: 0.3s;
         }
 
         .btn-green:hover {
             background-color: #388e3c;
         }
 
-        .section-title {
-            font-weight: 600;
+        .btn-outline-green:hover {
+            background-color: #43a047;
+            color: white;
+        }
+
+        /* ===== Footer Note ===== */
+        .footer-note {
+            background-color: #e8f5e9;
             color: #2e7d32;
+            font-weight: 500;
+            border-radius: 10px;
             margin-top: 40px;
-            text-align: center;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .footer-note img {
+            width: 18px;
+        }
+
+        /* ===== Responsiveness ===== */
+        @media (max-width: 992px) {
+            .main-content {
+                padding: 50px 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 30px 20px;
+            }
+            .feature-card {
+                flex-direction: row;
+                height: auto;
+            }
+            .feature-card img {
+                width: 28px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container py-5 text-center">
 
-        <!-- Logo -->
-        <div class="logo mb-3">&#9851;</div> 
+    
+    <section class="hero-section">
+        <img src="{{ asset('images/logo user.png') }}" alt="Logo Green Saving">
+        <h2>Welcome to <span class="text-light">Green Saving</span></h2>
+        <p>Bank Sampah Digital</p>
+    </section>
 
-        <!-- Judul -->
-        <h1 class="brand-title">Green Saving</h1>
-        <p class="subtitle mb-5">Bank Sampah Digital</p>
-
-        <!-- Headline -->
-        <h3 class="fw-bold">Kelola Sampah, Dapatkan Reward</h3>
+   
+    <div class="main-content text-center">
+        <h3 class="fw-bold mb-3 text-dark">Kelola Sampah, Dapatkan Reward</h3>
         <p class="text-muted mb-5">
             Platform Digital untuk mengelola sampah dengan sistem reward yang menguntungkan dan ramah lingkungan
         </p>
 
-        <!-- Fitur -->
-        <div class="feature-card">
-            <span class="feature-icon">&#128465;</span> 
-            <div class="text-start">
-                <h5 class="mb-0 text-success fw-semibold">Setor Sampah</h5>
-                <small class="text-muted">Mudah dan Praktis</small>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="feature-card">
+                    <img src="{{ asset('images/setor sampah.png') }}" alt="Setor Sampah">
+                    <div class="text-start">
+                        <h5 class="mb-0">Setor Sampah</h5>
+                        <small class="text-muted">Mudah dan Praktis</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="feature-card">
+                    <img src="{{ asset('images/tukar reward.png') }}" alt="Tukar Reward">
+                    <div class="text-start">
+                        <h5 class="mb-0">Tukar Reward</h5>
+                        <small class="text-muted">Poin jadi barang</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="feature-card">
+                    <img src="{{ asset('images/ramah lingkungan.png') }}" alt="Ramah Lingkungan">
+                    <div class="text-start">
+                        <h5 class="mb-0">Ramah Lingkungan</h5>
+                        <small class="text-muted">Kurangi emisi CO₂</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="feature-card">
+                    <img src="{{ asset('images/tracking lengkap.png') }}" alt="Tracking Lengkap">
+                    <div class="text-start">
+                        <h5 class="mb-0">Tracking Lengkap</h5>
+                        <small class="text-muted">Monitor Progress</small>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="feature-card">
-            <span class="feature-icon">&#127873;</span> 
-            <div class="text-start">
-                <h5 class="mb-0 text-success fw-semibold">Tukar Reward</h5>
-                <small class="text-muted">Poin jadi barang</small>
-            </div>
-        </div>
-
-        <div class="feature-card">
-            <span class="feature-icon">&#127793;</span> 
-            <div class="text-start">
-                <h5 class="mb-0 text-success fw-semibold">Ramah Lingkungan</h5>
-                <small class="text-muted">Kurangi emisi CO₂</small>
-            </div>
-        </div>
-
-        <div class="feature-card">
-            <span class="feature-icon">&#128202;</span> 
-            <div class="text-start">
-                <h5 class="mb-0 text-success fw-semibold">Tracking Lengkap</h5>
-                <small class="text-muted">Monitor Progress</small>
-            </div>
-        </div>
-
-        <!-- Tombol Navigasi -->
-        <h5 class="section-title">Jelajahi Platform:</h5>
-        <div class="d-grid gap-3 mt-3">
+        
+        <h5 class="fw-semibold mt-5 mb-3 text-dark">Jelajahi Platform:</h5>
+        <div class="d-flex justify-content-center gap-3">
             <a href="/login" class="btn btn-green">Masuk</a>
-            <a href="/register" class="btn btn-green">Daftar</a>
+            <a href="/register" class="btn btn-outline-green">Daftar</a>
         </div>
+
+        <p class="footer-note mt-5">
+            <img src="{{ asset('images/daun.png') }}" alt="Daun">
+            Bersama menjaga lingkungan untuk masa depan lebih baik
+        </p>
     </div>
+
 </body>
 </html>
