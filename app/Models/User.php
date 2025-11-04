@@ -10,11 +10,31 @@ class User extends Authenticatable
 {
     use HasFactory;
 
+    // Role constants
+    const ROLE_WARGA = 'warga';
+    const ROLE_ADMIN = 'admin';
+
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'role', 'branch_id',
+        'name', 'full_name', 'email', 'phone', 'address', 'password', 'role', 'branch_id', 'balance_points',
     ];
 
     protected $hidden = ['password'];
+
+    /**
+     * Check if user is a warga (citizen)
+     */
+    public function isWarga(): bool
+    {
+        return $this->role === self::ROLE_WARGA;
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
 
     public function branch()
     {

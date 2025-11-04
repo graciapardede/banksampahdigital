@@ -19,6 +19,7 @@ class AuthController extends Controller
         $data = $request->validated();
 
         $user = User::create([
+            'name' => $data['full_name'], // Fill both name and full_name
             'full_name' => $data['full_name'],
             'email' => $data['email'],
             'phone' => $data['phone'] ?? null,

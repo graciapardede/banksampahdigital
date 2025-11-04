@@ -29,12 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
-    // Dashboard for warga only
-    Route::get('/dashboard', function (Request $request) {
-        $user = $request->user();
-        if (! $user || ! method_exists($user, 'isWarga') || ! $user->isWarga()) {
-            abort(403);
-        }
-        return view('home');
+    // Dashboard for authenticated users
+    Route::get('/dashboard', function () {
+        return view('dashboard');
     })->name('dashboard');
 });
