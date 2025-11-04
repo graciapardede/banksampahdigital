@@ -12,7 +12,7 @@
         }
         .register-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 20px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             padding: 30px;
             max-width: 400px;

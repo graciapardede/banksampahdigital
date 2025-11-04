@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Halaman utama (Home)
+// Halaman utama (Home) 
 Route::get('/', function () {
     return view('home');
 });

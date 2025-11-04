@@ -16,7 +16,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             padding: 30px;
             max-width: 400px;
-            margin: 60px auto;
+            margin: 60px auto; 
         }
         .btn-green {
             background-color: #43a047;
