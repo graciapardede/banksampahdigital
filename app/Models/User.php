@@ -2,37 +2,56 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory;
+    use Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'role', 'branch_id',
+        'name',
+        'email',
+        'password',
+        'role',
+        'phone',
+        'branch',
     ];
 
-    protected $hidden = ['password'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
-    public function deposits(): HasMany
+    // Relationships
+    public function deposits()
     {
         return $this->hasMany(Deposit::class);
     }
 
-    public function redemptions(): HasMany
+    public function redemptions()
     {
         return $this->hasMany(Redemption::class);
     }
 
-    public function ledger(): HasMany
+    public function pointsLedger()
     {
-        return $this->hasMany(PointLedger::class);
+        return $this->hasMany(PointsLedger::class);
+    }
+
+    // Helper method untuk cek role
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
     }
 }

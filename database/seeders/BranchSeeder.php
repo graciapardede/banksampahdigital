@@ -2,23 +2,33 @@
 
 namespace Database\Seeders;
 
-use App\Models\Branch;
 use Illuminate\Database\Seeder;
+use App\Models\Branch;
 
 class BranchSeeder extends Seeder
 {
     public function run(): void
     {
-        Branch::create([
-            'name' => 'Bank Sampah Pusat',
-            'address' => 'Jl. Merdeka No. 1, Jakarta',
-            'phone' => '021-555-111',
-        ]);
+        $branches = [
+            [
+                'name' => 'Cabang Medan Utara',
+                'address' => 'Jl. Gatot Subroto No. 123, Medan',
+                'phone' => '061-1234567',
+            ],
+            [
+                'name' => 'Cabang Medan Timur',
+                'address' => 'Jl. Jend. Sudirman No. 456, Medan',
+                'phone' => '061-7654321',
+            ],
+            [
+                'name' => 'Cabang Medan Barat',
+                'address' => 'Jl. Asia No. 789, Medan',
+                'phone' => '061-9876543',
+            ],
+        ];
 
-        Branch::create([
-            'name' => 'Bank Sampah Cabang A',
-            'address' => 'Jl. Melati No. 55, Bandung',
-            'phone' => '022-777-333',
-        ]);
+        foreach ($branches as $branch) {
+            Branch::create($branch);
+        }
     }
 }

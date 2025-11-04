@@ -8,14 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('deposit_items', function (Blueprint $table) {
+        if (! Schema::hasTable('deposit_items')) {
+            Schema::create('deposit_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('deposit_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('waste_type_id')->constrained()->cascadeOnDelete();
+            // create foreign key columns as unsignedBigInteger to avoid ordering issues
+            $table->unsignedBigInteger('deposit_id');
+            $table->unsignedBigInteger('waste_type_id');
             $table->float('weight');
             $table->unsignedInteger('points')->default(0);
             $table->timestamps();
-        });
+            });
+        }
     }
 
     public function down(): void

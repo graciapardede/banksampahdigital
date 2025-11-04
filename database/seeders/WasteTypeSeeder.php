@@ -2,29 +2,43 @@
 
 namespace Database\Seeders;
 
-use App\Models\WasteType;
 use Illuminate\Database\Seeder;
+use App\Models\WasteType;
 
 class WasteTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        WasteType::create([
-            'name' => 'Plastik',
-            'unit' => 'kg',
-            'points_per_unit' => 10,
-        ]);
+        $wasteTypes = [
+            [
+                'name' => 'Plastik',
+                'unit' => 'kg',
+                'points_per_unit' => 100,
+            ],
+            [
+                'name' => 'Kertas',
+                'unit' => 'kg',
+                'points_per_unit' => 80,
+            ],
+            [
+                'name' => 'Kaleng',
+                'unit' => 'kg',
+                'points_per_unit' => 120,
+            ],
+            [
+                'name' => 'Botol Kaca',
+                'unit' => 'pcs',
+                'points_per_unit' => 50,
+            ],
+            [
+                'name' => 'Kardus',
+                'unit' => 'kg',
+                'points_per_unit' => 70,
+            ],
+        ];
 
-        WasteType::create([
-            'name' => 'Kertas',
-            'unit' => 'kg',
-            'points_per_unit' => 5,
-        ]);
-
-        WasteType::create([
-            'name' => 'Logam',
-            'unit' => 'kg',
-            'points_per_unit' => 15,
-        ]);
+        foreach ($wasteTypes as $wasteType) {
+            WasteType::create($wasteType);
+        }
     }
 }
