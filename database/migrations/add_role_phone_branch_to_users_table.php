@@ -8,18 +8,46 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('phone')->nullable();
-            $table->enum('role', ['warga', 'admin_cabang', 'super_admin'])->default('warga');
-            $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete();
-        });
+        // Make migration idempotent: only add columns/foreign keys if they don't already exist
+        if (! Schema::hasColumn('users', 'phone') || ! Schema::hasColumn('users', 'role') || ! Schema::hasColumn('users', 'branch_id')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (! Schema::hasColumn('users', 'phone')) {
+                    $table->string('phone')->nullable();
+                }
+
+                if (! Schema::hasColumn('users', 'role')) {
+                    $table->enum('role', ['warga', 'admin_cabang', 'super_admin'])->default('warga');
+                }
+
+                if (! Schema::hasColumn('users', 'branch_id')) {
+                    // create nullable branch_id column without adding a foreign key constraint here
+                    // (some environments run migrations alphabetically and branches table may not exist yet)
+                    $table->unsignedBigInteger('branch_id')->nullable();
+                }
+            });
+        }
     }
 
     public function down(): void
     {
+        // Drop only if the columns/foreign exist
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['phone', 'role']);
-            $table->dropConstrainedForeignId('branch_id');
+            if (Schema::hasColumn('users', 'phone')) {
+                $table->dropColumn('phone');
+            }
+
+            if (Schema::hasColumn('users', 'role')) {
+                $table->dropColumn('role');
+            }
+
+            if (Schema::hasColumn('users', 'branch_id')) {
+                // use dropConstrainedForeignId if available, otherwise drop column
+                try {
+                    $table->dropConstrainedForeignId('branch_id');
+                } catch (Throwable $e) {
+                    $table->dropColumn('branch_id');
+                }
+            }
         });
     }
 };
