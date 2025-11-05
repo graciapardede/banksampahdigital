@@ -25,9 +25,19 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 // Protected profile routes
-Route::middleware('auth')->group(function () {
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
+
+Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    // CRUD Waste Types (yang sudah ada)
+    Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
+    
+    // CRUD Branches (TAMBAHKAN INI) 👇
+    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
 
     // Dashboard for authenticated users
     Route::get('/dashboard', function () {

@@ -2,25 +2,39 @@
 
 namespace App\Models;
 
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;  
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'role', 'branch_id',
+        'name',
+        'email',
+        'password',
+        'role',
+        'phone',
+        'branch',
     ];
 
-    protected $hidden = ['password'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    public function branch()
+    protected function casts(): array
     {
-        return $this->belongsTo(Branch::class);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
-    public function deposits(): HasMany
+    // Relationships
+    public function deposits()
     {
         return $this->hasMany(Deposit::class);
     }
@@ -35,7 +49,7 @@ class User extends Authenticatable
         return $this->hasMany(PointsLedger::class);
     }
 
-    // Helper method untuk cek role
+    // Helper methods
     public function isAdmin()
     {
         return $this->role === 'admin';
