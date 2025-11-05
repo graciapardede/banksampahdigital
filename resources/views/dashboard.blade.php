@@ -22,31 +22,38 @@
 
     <!-- Header -->
     <header class="bg-white shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-4">
+        <div class="max-w-6xl mx-auto px-4 py-6">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                        <img src="{{ asset('images/logo user.png') }}" alt="Logo" class="w-7 h-7 filter brightness-0 invert">
+                    <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-md">
+                        <!-- Green Saving Logo -->
+                        @if(file_exists(public_path('images/logo user.png')))
+                            <img src="{{ asset('images/logo user.png') }}" alt="Green Saving Logo" class="w-8 h-8 object-contain">
+                        @else
+                            <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
+                                <div class="w-4 h-4 bg-green-500 rounded-sm"></div>
+                            </div>
+                        @endif
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-gray-500">Halo, {{ Auth::user()->full_name ?? 'Budi Santoso' }}</p>
+                        <p class="text-sm text-gray-500">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'lisbeth' }}</p>
                     </div>
                 </div>
 
                 <!-- Points and Actions -->
                 <div class="flex items-center space-x-4">
                     <div class="bg-green-100 px-6 py-2 rounded-full">
-                        <span class="text-lg font-bold text-green-700">{{ Auth::user()->balance_points ?? 15420 }} poin</span>
+                        <span class="text-lg font-bold text-green-700">19,200 poin</span>
                     </div>
                     <button class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
                         <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h6v2H4v-2zm0-4h10v2H4v-2zm0-4h10v2H4v-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5v5zM18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 01-3.46 0"></path>
                         </svg>
                     </button>
-                    <button class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center hover:bg-green-200 transition-colors">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </button>
@@ -63,30 +70,33 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="bg-green-100 px-4 py-3">
+        <div class="bg-green-100 px-4 py-4">
             <div class="max-w-6xl mx-auto">
-                <!-- Main navigation row -->
-                <div class="flex flex-wrap gap-2 mb-3">
-                    <button class="bg-green-500 text-white px-6 py-2 rounded-xl text-sm font-semibold shadow-sm">
-                        🏠 Dashboard
+                <!-- Navigation grid for consistent spacing -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <button class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                        <span>🏠</span>
+                        <span class="truncate">Dashboard</span>
                     </button>
-                    <button class="bg-white text-green-700 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors">
-                        👤 Profil
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <span>👤</span>
+                        <span class="truncate">Profil</span>
                     </button>
-                    <button class="bg-white text-green-700 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors">
-                        ♻️ Setor
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <span>♻️</span>
+                        <span class="truncate">Setor</span>
                     </button>
-                    <button class="bg-white text-green-700 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors">
-                        🎁 Tukar Point
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <span>🎁</span>
+                        <span class="truncate">Tukar Point</span>
                     </button>
-                </div>
-                <!-- Secondary navigation row -->
-                <div class="flex flex-wrap gap-2">
-                    <button class="bg-white text-green-700 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors">
-                        📊 Riwayat
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <span>📊</span>
+                        <span class="truncate">Riwayat</span>
                     </button>
-                    <button class="bg-white text-green-700 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-green-50 transition-colors">
-                        🔔 Notifikasi
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <span>🔔</span>
+                        <span class="truncate">Notifikasi</span>
                     </button>
                 </div>
             </div>
@@ -94,10 +104,10 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-6">
+    <main class="max-w-6xl mx-auto px-4 py-8">
         
         <!-- Welcome Card -->
-        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 mb-6 text-white shadow-lg">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div class="flex-1">
                     <h2 class="text-2xl font-bold mb-2">Selamat Datang, {{ Auth::user()->full_name ?? 'Budi Santoso' }}</h2>
@@ -110,11 +120,11 @@
                 </div>
                 <div class="text-center md:text-right">
                     <div class="bg-white bg-opacity-15 backdrop-blur-sm rounded-2xl px-6 py-4 mb-4">
-                        <div class="text-3xl font-bold">{{ Auth::user()->balance_points ?? '15420' }}</div>
+                        <div class="text-3xl font-bold">19,200</div>
                         <div class="text-sm opacity-90">ECO coin</div>
                     </div>
                     <button class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-30 text-white px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-200">
-                        Jelajah bersantaka
+                        Jelajahi marketplace
                     </button>
                 </div>
             </div>
@@ -165,7 +175,7 @@
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-sm">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
                             </svg>
                         </div>
                         <div>
@@ -214,7 +224,7 @@
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-sm">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
                             </svg>
                         </div>
                         <div>
@@ -315,14 +325,33 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-12">
-        <div class="max-w-6xl mx-auto px-6 py-6">
-            <div class="flex items-center justify-center">
-                <div class="flex items-center space-x-2 text-green-600">
-                    <span class="text-lg">🌱</span>
-                    <span class="text-sm font-medium">Bersama menjaga lingkungan untuk masa depan lebih baik</span>
+    <!-- Bottom Green Saving Banner -->
+    <div class="bg-white border-t mt-8 py-6">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-center space-x-4">
+                <!-- Green Saving Logo -->
+                <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-md">
+                    @if(file_exists(public_path('images/logo user.png')))
+                        <img src="{{ asset('images/logo user.png') }}" alt="Green Saving Logo" class="w-8 h-8 object-contain">
+                    @else
+                        <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
+                            <div class="w-4 h-4 bg-green-500 rounded-sm"></div>
+                        </div>
+                    @endif
                 </div>
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-green-600">Green Saving</h3>
+                    <p class="text-sm text-gray-500 mt-1">Bersama menjaga lingkungan untuk masa depan lebih baik</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-green-50 py-4">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center text-xs text-gray-500">
+                © 2025 Green Saving. All rights reserved.
             </div>
         </div>
     </footer>
