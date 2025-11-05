@@ -4,9 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PointLedger extends Model
+class PointsLedger extends Model
 {
-    protected $fillable = ['user_id', 'type', 'amount', 'description'];
+    protected $table = 'points_ledger';
+
+    protected $fillable = [
+        'user_id',
+        'type',
+        'points',
+        'balance',
+        'description',
+    ];
 
     public function user()
     {

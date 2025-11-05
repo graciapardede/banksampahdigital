@@ -3,21 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Redemption extends Model
 {
     protected $fillable = [
-        'user_id', 'branch_id', 'status', 'total_points'
+        'user_id',
+        'points_spent',
+        'status',
     ];
 
-    public function items(): HasMany
+    public function user()
     {
-        return $this->hasMany(RedemptionItem::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function branch()
+    public function redemptionItems()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->hasMany(RedemptionItem::class);
     }
 }

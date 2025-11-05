@@ -3,18 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Deposit extends Model
 {
     protected $fillable = [
-        'user_id', 'branch_id', 'status', 'total_weight', 'total_points'
+        'user_id',
+        'branch_id',
+        'total_weight',
+        'total_points',
+        'status',
     ];
-
-    public function items(): HasMany
-    {
-        return $this->hasMany(DepositItem::class);
-    }
 
     public function user()
     {
@@ -24,5 +22,10 @@ class Deposit extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function depositItems()
+    {
+        return $this->hasMany(DepositItem::class);
     }
 }
