@@ -6,23 +6,52 @@ use App\Http\Controllers\AuthController;
 
 // Halaman utama (Home) 
 Route::get('/', function () {
+    // Jika sudah login, redirect ke dashboard
+    if (auth()->check()) {
+        return redirect('/dashboard');
+    }
     return view('home');
 });
 
 // Halaman login (form)
 Route::get('/login', function () {
+    // Jika sudah login, redirect ke dashboard
+    if (auth()->check()) {
+        return redirect('/dashboard');
+    }
     return view('login');
-})->name('login')->middleware('guest');
+})->name('login');
 
 // Halaman register (form)
 Route::get('/register', function () {
+    // Jika sudah login, redirect ke dashboard
+    if (auth()->check()) {
+        return redirect('/dashboard');
+    }
     return view('register');
-})->middleware('guest');
+});
 
 // Auth actions
-Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
-Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route untuk force logout (debugging)
+Route::get('/force-logout', function () {
+    auth()->logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return redirect('/login')->with('message', 'Anda telah logout');
+});
+
+// Route untuk debug auth status
+Route::get('/debug-auth', function () {
+    return [
+        'authenticated' => auth()->check(),
+        'user' => auth()->user(),
+        'session_id' => session()->getId(),
+    ];
+});
 
 // Protected profile routes
 Route::middleware('auth')->group(function () {

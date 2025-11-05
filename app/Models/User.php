@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
+
+    // Role constants
+    const ROLE_ADMIN = 'admin';
+    const ROLE_WARGA = 'warga';
 
     protected $fillable = [
-        'name', 'email', 'phone', 'password', 'role', 'branch_id',
+        'name', 'full_name', 'email', 'phone', 'address', 'password', 'role', 'branch_id', 'balance_points',
     ];
 
     protected $hidden = ['password'];
@@ -38,11 +44,11 @@ class User extends Authenticatable
     // Helper method untuk cek role
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 
-    public function isUser()
+    public function isWarga()
     {
-        return $this->role === 'user';
+        return $this->role === self::ROLE_WARGA;
     }
 }
