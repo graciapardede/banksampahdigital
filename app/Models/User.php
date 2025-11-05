@@ -2,13 +2,19 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+=======
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+>>>>>>> b45da6f632a5529c62eb65d2f0b1c0754b8dcaee
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+<<<<<<< HEAD
     use HasFactory, Notifiable;
 
     // Role constants
@@ -17,16 +23,34 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'full_name', 'email', 'phone', 'address', 'password', 'role', 'branch_id', 'balance_points',
+=======
+    use HasFactory, Notifiable;  
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'phone',
+        'branch',
+>>>>>>> b45da6f632a5529c62eb65d2f0b1c0754b8dcaee
     ];
 
-    protected $hidden = ['password'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    public function branch()
+    protected function casts(): array
     {
-        return $this->belongsTo(Branch::class);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
-    public function deposits(): HasMany
+    // Relationships
+    public function deposits()
     {
         return $this->hasMany(Deposit::class);
     }
@@ -41,7 +65,7 @@ class User extends Authenticatable
         return $this->hasMany(PointsLedger::class);
     }
 
-    // Helper method untuk cek role
+    // Helper methods
     public function isAdmin()
     {
         return $this->role === self::ROLE_ADMIN;
