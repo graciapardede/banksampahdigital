@@ -65,6 +65,11 @@ Route::middleware('auth')->group(function () {
         return view('profil');
     })->name('profil');
     
+    // Setor Sampah
+    Route::get('/setor', function () {
+        return view('setor');
+    })->name('setor');
+    
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);

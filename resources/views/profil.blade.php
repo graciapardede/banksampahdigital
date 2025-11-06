@@ -68,29 +68,29 @@
             <div class="max-w-6xl mx-auto">
                 <!-- Navigation grid for consistent spacing -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-house-door"></i>
-                        <span class="truncate">Dashboard</span>
+                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
+                        <i class="bi bi-house-door pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-person"></i>
-                        <span class="truncate">Profil</span>
+                    <a href="/profil" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full cursor-default">
+                        <i class="bi bi-person pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Profil</span>
                     </a>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-recycle"></i>
-                        <span class="truncate">Setor</span>
+                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
+                        <i class="bi bi-recycle pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Setor</span>
+                    </a>
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
+                        <i class="bi bi-gift pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Tukar Poin</span>
                     </button>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-gift"></i>
-                        <span class="truncate">Tukar Poin</span>
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
+                        <i class="bi bi-bar-chart pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Riwayat</span>
                     </button>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-bar-chart"></i>
-                        <span class="truncate">Riwayat</span>
-                    </button>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-bell"></i>
-                        <span class="truncate">Notifikasi</span>
+                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
+                        <i class="bi bi-bell pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Notifikasi</span>
                     </button>
                 </div>
             </div>
