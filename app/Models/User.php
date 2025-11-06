@@ -3,11 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+<<<<<<< HEAD
+=======
+use Illuminate\Database\Eloquent\Relations\HasMany;
+>>>>>>> 0742658938ebbdd2973ae8919b335d0a55ca6495
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+<<<<<<< HEAD
     use HasFactory, Notifiable;
 
     // Role constants used across the app
@@ -25,6 +30,16 @@ class User extends Authenticatable
         'branch',
         'branch_id',
         'balance_points',
+=======
+    use HasFactory, Notifiable; 
+
+    // Role constants
+    const ROLE_ADMIN = 'admin';
+    const ROLE_WARGA = 'warga';
+
+    protected $fillable = [
+        'name', 'full_name', 'email', 'phone', 'address', 'password', 'role', 'branch_id', 'balance_points',
+>>>>>>> 0742658938ebbdd2973ae8919b335d0a55ca6495
     ];
 
     protected $hidden = [
