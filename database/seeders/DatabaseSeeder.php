@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             WasteTypeSeeder::class,
             AdminSeeder::class,      
             UserSeeder::class,
+            TestUserSeeder::class,
             RewardItemSeeder::class,
         ]);
     }

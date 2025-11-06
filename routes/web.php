@@ -53,23 +53,38 @@ Route::get('/debug-auth', function () {
     ];
 });
 
-// Protected profile routes
-    Route::get('/profile', [AuthController::class, 'getProfile']);
-    Route::put('/profile', [AuthController::class, 'updateProfile']);
-
-Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-
-    // CRUD Waste Types (yang sudah ada)
-    Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
-    
-    // CRUD Branches (TAMBAHKAN INI) 👇
-    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
-
-    // Dashboard for authenticated users
+// Protected routes - perlu login
+Route::middleware('auth')->group(function () {
+    // Dashboard untuk user biasa
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    
+    // Profile routes
+    Route::get('/profile', [AuthController::class, 'getProfile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
 });
+
+// Admin routes
+Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    // CRUD Waste Types
+    Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
+    
+    // CRUD Branches
+    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
+
+});
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    
+    // Waste Types
+    Route::resource('waste-types', WasteTypeController::class);
+    
+    // Branches - TAMBAHKAN INI
+    Route::resource('branches', BranchController::class);
+});
+

@@ -2,38 +2,29 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-=======
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
->>>>>>> b45da6f632a5529c62eb65d2f0b1c0754b8dcaee
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-<<<<<<< HEAD
     use HasFactory, Notifiable;
 
-    // Role constants
-    const ROLE_ADMIN = 'admin';
-    const ROLE_WARGA = 'warga';
-
-    protected $fillable = [
-        'name', 'full_name', 'email', 'phone', 'address', 'password', 'role', 'branch_id', 'balance_points',
-=======
-    use HasFactory, Notifiable;  
+    // Role constants used across the app
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_WARGA = 'warga';
 
     protected $fillable = [
         'name',
+        'full_name',
         'email',
+        'phone',
+        'address',
         'password',
         'role',
-        'phone',
         'branch',
->>>>>>> b45da6f632a5529c62eb65d2f0b1c0754b8dcaee
+        'branch_id',
+        'balance_points',
     ];
 
     protected $hidden = [
@@ -68,11 +59,17 @@ class User extends Authenticatable
     // Helper methods
     public function isAdmin()
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->role === 'admin';
     }
 
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
+
+    // Compatibility helper required by the controllers
     public function isWarga()
     {
-        return $this->role === self::ROLE_WARGA;
+        return $this->role === self::ROLE_WARGA || $this->role === 'user';
     }
 }
