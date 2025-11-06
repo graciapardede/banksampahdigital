@@ -6,6 +6,7 @@
     <title>Dashboard - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -48,21 +49,15 @@
                         <span class="text-lg font-bold text-green-700">19,200 poin</span>
                     </div>
                     <button class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5v5zM18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 01-3.46 0"></path>
-                        </svg>
+                        <i class="bi bi-bell text-gray-600"></i>
                     </button>
                     <button class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center hover:bg-green-200 transition-colors">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
+                        <i class="bi bi-person-circle text-green-600"></i>
                     </button>
                     <form method="POST" action="/logout" class="inline">
                         @csrf
                         <button type="submit" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
+                            <i class="bi bi-box-arrow-right text-gray-600"></i>
                         </button>
                     </form>
                 </div>
@@ -75,27 +70,27 @@
                 <!-- Navigation grid for consistent spacing -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     <button class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
-                        <span>🏠</span>
+                        <i class="bi bi-house-door"></i>
                         <span class="truncate">Dashboard</span>
                     </button>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <span>👤</span>
+                        <i class="bi bi-person"></i>
                         <span class="truncate">Profil</span>
                     </button>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <span>♻️</span>
+                        <i class="bi bi-recycle"></i>
                         <span class="truncate">Setor</span>
                     </button>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <span>🎁</span>
+                        <i class="bi bi-gift"></i>
                         <span class="truncate">Tukar Point</span>
                     </button>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <span>📊</span>
+                        <i class="bi bi-bar-chart"></i>
                         <span class="truncate">Riwayat</span>
                     </button>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <span>🔔</span>
+                        <i class="bi bi-bell"></i>
                         <span class="truncate">Notifikasi</span>
                     </button>
                 </div>
@@ -148,9 +143,7 @@
                 <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-l-4 border-green-500">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-                            </svg>
+                            <i class="bi bi-arrow-up text-white text-xl"></i>
                         </div>
                         <div>
                             <div class="flex items-center space-x-2 mb-1">
@@ -159,14 +152,15 @@
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>2024 - 1 - 11</span>
                                 <span class="flex items-center space-x-1">
-                                    <span>📦 2.5 kg</span>
+                                    <i class="bi bi-box text-gray-500"></i>
+                                    <span>2.5 kg</span>
                                 </span>
                                 <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">Selesai</span>
                             </div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="font-bold text-green-600 text-lg">+ 500 💰</div>
+                        <div class="font-bold text-green-600 text-lg">+ 500 <i class="bi bi-currency-dollar"></i></div>
                     </div>
                 </div>
 
@@ -174,9 +168,7 @@
                 <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-l-4 border-blue-500">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                            </svg>
+                            <i class="bi bi-arrow-down text-white text-xl"></i>
                         </div>
                         <div>
                             <div class="flex items-center space-x-2 mb-1">
@@ -189,7 +181,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="font-bold text-blue-600 text-lg">- 500 💰</div>
+                        <div class="font-bold text-blue-600 text-lg">- 500 <i class="bi bi-currency-dollar"></i></div>
                     </div>
                 </div>
 
@@ -197,9 +189,7 @@
                 <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-l-4 border-green-500">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-                            </svg>
+                            <i class="bi bi-arrow-up text-white text-xl"></i>
                         </div>
                         <div>
                             <div class="flex items-center space-x-2 mb-1">
@@ -208,14 +198,15 @@
                             <div class="flex items-center space-x-4 text-sm text-gray-500">
                                 <span>2024 - 1 - 11</span>
                                 <span class="flex items-center space-x-1">
-                                    <span>📦 2.5 kg</span>
+                                    <i class="bi bi-box text-gray-500"></i>
+                                    <span>2.5 kg</span>
                                 </span>
                                 <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">Selesai</span>
                             </div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="font-bold text-green-600 text-lg">+ 500 💰</div>
+                        <div class="font-bold text-green-600 text-lg">+ 500 <i class="bi bi-currency-dollar"></i></div>
                     </div>
                 </div>
 
@@ -223,9 +214,7 @@
                 <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-l-4 border-blue-500">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                            </svg>
+                            <i class="bi bi-arrow-down text-white text-xl"></i>
                         </div>
                         <div>
                             <div class="flex items-center space-x-2 mb-1">
@@ -238,7 +227,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="font-bold text-blue-600 text-lg">- 500 💰</div>
+                        <div class="font-bold text-blue-600 text-lg">- 500 <i class="bi bi-currency-dollar"></i></div>
                     </div>
                 </div>
             </div>
@@ -248,7 +237,7 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-8 h-8 bg-yellow-100 rounded-xl flex items-center justify-center">
-                    <span class="text-xl">🏆</span>
+                    <i class="bi bi-trophy text-yellow-600"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800">Achievement</h3>
             </div>
@@ -258,9 +247,7 @@
                 <div class="flex items-center justify-between p-5 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
-                            </svg>
+                            <i class="bi bi-check-lg text-white text-xl"></i>
                         </div>
                         <div>
                             <h4 class="font-bold text-gray-800">First Deposit</h4>
@@ -271,9 +258,7 @@
                     <div class="flex items-center space-x-2">
                         <span class="text-green-600 text-sm font-semibold">selesai</span>
                         <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
+                            <i class="bi bi-check text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -282,9 +267,7 @@
                 <div class="flex items-center justify-between p-5 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
-                            </svg>
+                            <i class="bi bi-check-lg text-white text-xl"></i>
                         </div>
                         <div>
                             <h4 class="font-bold text-gray-800">Eco Warrior</h4>
@@ -295,9 +278,7 @@
                     <div class="flex items-center space-x-2">
                         <span class="text-green-600 text-sm font-semibold">selesai</span>
                         <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
+                            <i class="bi bi-check text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -306,9 +287,7 @@
                 <div class="flex items-center justify-between p-5 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
                     <div class="flex items-center space-x-4">
                         <div class="w-12 h-12 bg-gray-400 rounded-2xl flex items-center justify-center shadow-sm">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
+                            <i class="bi bi-lock text-white text-xl"></i>
                         </div>
                         <div>
                             <h4 class="font-bold text-gray-800">Green Champion</h4>
