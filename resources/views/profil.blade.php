@@ -80,10 +80,10 @@
                         <i class="bi bi-recycle pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Setor</span>
                     </a>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-gift pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Tukar Poin</span>
-                    </button>
+                    </a>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
                         <i class="bi bi-bar-chart pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Riwayat</span>

@@ -60,11 +60,6 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
     
-<<<<<<< HEAD
-    // Profile routes
-    Route::get('/profile', [AuthController::class, 'getProfile']);
-    Route::put('/profile', [AuthController::class, 'updateProfile']);
-=======
     // Profil
     Route::get('/profil', function () {
         return view('profil');
@@ -75,6 +70,11 @@ Route::middleware('auth')->group(function () {
         return view('setor');
     })->name('setor');
     
+    // Tukar Poin
+    Route::get('/tukar-poin', function () {
+        return view('tukar-poin');
+    })->name('tukar-poin');
+    
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
@@ -91,29 +91,5 @@ Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin
     
     // CRUD Branches
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
->>>>>>> 0742658938ebbdd2973ae8919b335d0a55ca6495
-});
-
-// Admin routes
-Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-
-    // CRUD Waste Types
-    Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
-    
-    // CRUD Branches
-    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
-
-});
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    
-    // Waste Types
-    Route::resource('waste-types', WasteTypeController::class);
-    
-    // Branches - TAMBAHKAN INI
-    Route::resource('branches', BranchController::class);
 });
 
