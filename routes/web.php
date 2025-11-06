@@ -75,6 +75,11 @@ Route::middleware('auth')->group(function () {
         return view('tukar-poin');
     })->name('tukar-poin');
     
+    // Riwayat Penukaran
+    Route::get('/riwayat-tukar', function () {
+        return view('riwayat-tukar');
+    })->name('riwayat-tukar');
+    
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);

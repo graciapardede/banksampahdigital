@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -369,8 +369,9 @@
                 <p class="text-sm text-gray-500 mb-6">Lihat semua transaksi setoran sampah Anda</p>
 
                 <div class="space-y-4">
-                    <!-- Riwayat Item 1 -->
-                    <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+                    <!-- Riwayat Item 1 - Clickable -->
+                    <div onclick="showTransactionDetail('TRX001', 'Completed', 'Bank Sampah Sitolusna', '2025-2-10', '10:15', 'Admin Verifikator', 750, 2000, 2750)" 
+                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
                         <div class="flex items-start gap-4">
                             <!-- Icon -->
                             <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -385,7 +386,7 @@
                                         <p class="text-sm font-medium text-gray-600 mb-1">2.5kg</p>
                                         <div class="flex items-center text-sm text-gray-500">
                                             <i class="bi bi-geo-alt text-xs mr-1"></i>
-                                            <span>Bank Sampah Sitoluama</span>
+                                            <span>Bank Sampah Sitolusna</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
@@ -400,7 +401,7 @@
                                         <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
                                         <p class="text-sm font-semibold text-gray-700">
                                             <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                            2025-3-9 · 10:15
+                                            2025-2-10 · 10:15
                                         </p>
                                     </div>
                                     <div>
@@ -423,7 +424,8 @@
                     </div>
 
                     <!-- Riwayat Item 2 -->
-                    <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+                    <div onclick="showTransactionDetail('TRX-20250309-002', 'Completed', 'Bank Sampah Laguboti', '2025-3-9', '10:15', 'Joko Susanto', 750, 1500, 2250)" 
+                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
                         <div class="flex items-start gap-4">
                             <!-- Icon -->
                             <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -476,7 +478,8 @@
                     </div>
 
                     <!-- Riwayat Item 3 -->
-                    <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+                    <div onclick="showTransactionDetail('TRX-20250308-003', 'Completed', 'Bank Sampah Balige', '2025-3-8', '14:30', 'Siti Aminah', 750, 1000, 1750)" 
+                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
                         <div class="flex items-start gap-4">
                             <!-- Icon -->
                             <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -529,7 +532,8 @@
                     </div>
 
                     <!-- Riwayat Item 4 -->
-                    <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow">
+                    <div onclick="showTransactionDetail('TRX-20250307-004', 'Completed', 'Bank Sampah Sitolusna', '2025-3-7', '09:00', 'Ahmad Rizki', 900, 500, 1400)" 
+                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
                         <div class="flex items-start gap-4">
                             <!-- Icon -->
                             <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -624,6 +628,272 @@
             </div>
         </div>
     </footer>
+
+    <!-- Modal Detail Transaksi -->
+    <div id="transactionDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-4xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-t-3xl p-6 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                            <i class="bi bi-file-text-fill text-green-600 text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Detail Transaksi</h2>
+                            <p class="text-green-50 text-sm">Riwayat Setoran Sampah</p>
+                        </div>
+                    </div>
+                    <button onclick="closeTransactionDetail()" class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-x-lg text-white text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                
+                <!-- Transaction Info Grid -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 mb-6">
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 flex items-center">
+                                <i class="bi bi-info-circle text-gray-400 mr-2"></i>
+                                Status
+                            </p>
+                            <p id="modalStatus" class="font-semibold text-gray-800">Completed</p>
+                        </div>
+                        <div class="text-right">
+                            <span id="modalStatusBadge" class="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                Completed
+                            </span>
+                        </div>
+
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 flex items-center">
+                                <i class="bi bi-geo-alt-fill text-gray-400 mr-2"></i>
+                                Lokasi
+                            </p>
+                            <p id="modalLokasi" class="font-semibold text-gray-800">-</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500 mb-1"></p>
+                        </div>
+
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 flex items-center">
+                                <i class="bi bi-calendar-event text-gray-400 mr-2"></i>
+                                Tanggal & Waktu
+                            </p>
+                            <p id="modalTanggalWaktu" class="font-semibold text-gray-800">-</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500 mb-1"></p>
+                        </div>
+
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1 flex items-center">
+                                <i class="bi bi-person-check text-gray-400 mr-2"></i>
+                                Admin Verifikator
+                            </p>
+                            <p id="modalAdmin" class="font-semibold text-gray-800">-</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500 mb-1"></p>
+                        </div>
+
+                        <div class="col-span-2 border-t border-green-200 pt-4 mt-2">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    <p class="text-xs text-gray-500 mb-2">Poin Diperoleh</p>
+                                    <p id="modalPoinDiperoleh" class="font-bold text-green-600 text-2xl">
+                                        <i class="bi bi-coin text-green-500 mr-1"></i>
+                                        750 poin
+                                    </p>
+                                </div>
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    <p class="text-xs text-gray-500 mb-2">Poin Sebelum</p>
+                                    <p id="modalPoinSebelum" class="font-semibold text-gray-800 text-lg">2000 poin</p>
+                                </div>
+                                <div class="bg-white rounded-xl p-4 shadow-sm">
+                                    <p class="text-xs text-gray-500 mb-2">Poin Setelah</p>
+                                    <p id="modalPoinSetelah" class="font-semibold text-gray-800 text-lg">2750 poin</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Item Sampah Section -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="font-bold text-gray-800 mb-4 text-xl flex items-center">
+                        <i class="bi bi-list-ul text-green-600 mr-2"></i>
+                        Detail Item Sampah
+                    </h3>
+                    
+                    <!-- Table -->
+                    <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-green-500 to-green-600">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-white border-r border-green-400">Jenis Sampah</th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-white border-r border-green-400">Berat (kg)</th>
+                                    <th class="px-4 py-3 text-center text-sm font-semibold text-white border-r border-green-400">Poin per Unit</th>
+                                    <th class="px-4 py-3 text-right text-sm font-semibold text-white">Poin Diperoleh</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50 border-b border-gray-200">
+                                    <td class="px-4 py-3 text-gray-800 border-r border-gray-200">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-2">
+                                                <i class="bi bi-recycle text-blue-600"></i>
+                                            </div>
+                                            Plastik
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 border-r border-gray-200 font-medium">1.0 kg</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 border-r border-gray-200">300 poin/kg</td>
+                                    <td class="px-4 py-3 text-right font-semibold text-gray-800">300 poin</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 border-b border-gray-200">
+                                    <td class="px-4 py-3 text-gray-800 border-r border-gray-200">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-2">
+                                                <i class="bi bi-box-seam text-amber-600"></i>
+                                            </div>
+                                            Kardus
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 border-r border-gray-200 font-medium">1.5 kg</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 border-r border-gray-200">50 poin/kg</td>
+                                    <td class="px-4 py-3 text-right font-semibold text-gray-800">75 poin</td>
+                                </tr>
+                                <tr class="bg-gradient-to-r from-green-50 to-emerald-50 font-semibold">
+                                    <td class="px-4 py-3 text-gray-800 border-r border-gray-200 text-lg">
+                                        <i class="bi bi-calculator text-green-600 mr-2"></i>
+                                        Sub Total
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 border-r border-gray-200 text-lg">2.5 kg</td>
+                                    <td class="px-4 py-3 text-center border-r border-gray-200"></td>
+                                    <td class="px-4 py-3 text-right text-green-700 text-xl">
+                                        <i class="bi bi-coin text-green-500 mr-1"></i>
+                                        375 poin
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="border-t border-gray-200 mt-6 pt-6">
+                    <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5">
+                        <div class="flex items-center justify-between flex-wrap gap-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="bi bi-recycle text-white text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Sampah</p>
+                                    <p class="font-bold text-gray-800 text-lg">Plastik & Kardus</p>
+                                    <p class="text-sm font-semibold text-green-600">2.5kg</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center hidden sm:block">
+                                <p class="text-sm text-gray-500 mb-1">
+                                    <i class="bi bi-geo-alt-fill text-green-600 mr-1"></i>
+                                    Lokasi Penyetoran
+                                </p>
+                                <p class="font-semibold text-gray-800">Bank Sampah Sitolusna</p>
+                            </div>
+                            
+                            <div class="text-right">
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <i class="bi bi-clock text-gray-400"></i>
+                                        <span class="text-sm text-gray-600">2025-2-10 10:15</span>
+                                    </div>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <i class="bi bi-weight text-gray-400"></i>
+                                        <span class="text-sm font-medium text-gray-800">2.5kg</span>
+                                    </div>
+                                    <span class="inline-block px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                                        <i class="bi bi-check-circle-fill mr-1"></i>
+                                        Completed
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="mt-6 flex gap-3">
+                    <button onclick="closeTransactionDetail()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 rounded-xl transition-all">
+                        <i class="bi bi-x-circle mr-2"></i>
+                        Tutup
+                    </button>
+                    <button class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-4 rounded-xl transition-all shadow-md hover:shadow-lg">
+                        <i class="bi bi-printer mr-2"></i>
+                        Cetak Bukti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTransactionDetail(kode, status, lokasi, tanggal, waktu, admin, poinDiperoleh, poinSebelum, poinSetelah) {
+            // Update modal content
+            document.getElementById('modalStatus').textContent = status;
+            document.getElementById('modalLokasi').textContent = lokasi;
+            document.getElementById('modalTanggalWaktu').textContent = tanggal + ' · ' + waktu;
+            document.getElementById('modalAdmin').textContent = admin;
+            document.getElementById('modalPoinDiperoleh').innerHTML = '<i class="bi bi-coin text-green-500 mr-1"></i>' + poinDiperoleh.toLocaleString('id-ID') + ' poin';
+            document.getElementById('modalPoinSebelum').textContent = poinSebelum.toLocaleString('id-ID') + ' poin';
+            document.getElementById('modalPoinSetelah').textContent = poinSetelah.toLocaleString('id-ID') + ' poin';
+            
+            // Update status badge
+            const badge = document.getElementById('modalStatusBadge');
+            if (status === 'Completed') {
+                badge.className = 'inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold';
+                badge.innerHTML = '<i class="bi bi-check-circle-fill mr-1"></i>Completed';
+            }
+            
+            // Show modal
+            const modal = document.getElementById('transactionDetailModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTransactionDetail() {
+            const modal = document.getElementById('transactionDetailModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            // Restore body scroll
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('transactionDetailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTransactionDetail();
+            }
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTransactionDetail();
+            }
+        });
+    </script>
 
 </body>
 </html>

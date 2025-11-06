@@ -85,7 +85,7 @@
                         <span class="truncate pointer-events-none">Tukar Poin</span>
                     </a>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
-                        <i class="bi bi-bar-chart pointer-events-none"></i>
+                        <i class="bi bi-clock-history pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Riwayat</span>
                     </button>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
@@ -110,7 +110,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             <!-- Reward Item 1: Minyak Goreng -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow reward-card" 
+                 data-name="Minyak Goreng" 
+                 data-desc="1 Liter - Minyak goreng berkualitas" 
+                 data-price="7500"
+                 data-image="{{ asset('images/minyak goreng.png') }}">
                 <div class="p-5">
                     <!-- Image -->
                     <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
@@ -134,7 +138,7 @@
                             </div>
                         </div>
                         
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
+                        <button class="exchange-btn w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
                             <i class="bi bi-cart-plus mr-2"></i>
                             Tukar Sekarang
                         </button>
@@ -766,6 +770,261 @@
             </div>
         </div>
     </footer>
+
+    <!-- Modal Konfirmasi Penukaran -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl transform transition-all">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-t-3xl p-6 text-center">
+                <div class="w-20 h-20 bg-white rounded-full mx-auto flex items-center justify-center shadow-lg mb-4">
+                    <i class="bi bi-cart-check-fill text-green-500 text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Konfirmasi Penukaran</h2>
+                <p class="text-green-50 text-sm">Apakah Anda yakin ingin menukar poin dengan reward ini?</p>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6">
+                <!-- Product Info -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 mb-6 flex items-center space-x-4">
+                    <div class="w-20 h-20 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                        <img id="modalProductImage" src="" alt="" class="h-16 w-auto object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <h3 id="modalProductName" class="font-bold text-gray-800 text-lg mb-1"></h3>
+                        <p id="modalProductDesc" class="text-sm text-gray-600"></p>
+                    </div>
+                </div>
+
+                <!-- Point Details -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span class="text-gray-600 text-sm">Harga:</span>
+                        <span id="modalProductPrice" class="font-bold text-lg text-gray-800"></span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span class="text-gray-600 text-sm">Saldo Anda:</span>
+                        <span class="font-bold text-lg text-green-600">
+                            <i class="bi bi-coin text-green-500 mr-1"></i>
+                            15420 poin
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-gray-700 font-semibold">Sisa Setelah Tukar:</span>
+                        <span id="modalRemainingPoints" class="font-bold text-xl text-green-600">
+                            <i class="bi bi-coin text-green-500 mr-1"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Warning Message (if insufficient points) -->
+                <div id="insufficientPointsWarning" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="bi bi-exclamation-triangle-fill text-red-500 text-xl mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-red-800 text-sm">Poin Anda Tidak Mencukupi!</p>
+                            <p class="text-red-700 text-xs mt-1">Poin anda kurang <span id="pointsShortage" class="font-bold"></span></p>
+                            <p class="text-red-600 text-xs mt-1">Pilih barang lain atau tukarkan sampah Anda untuk menambah poin.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button onclick="closeConfirmModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3.5 rounded-xl transition-all">
+                        <i class="bi bi-x-circle mr-2"></i>
+                        Batal
+                    </button>
+                    <button id="confirmExchangeBtn" onclick="confirmExchange()" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg">
+                        <i class="bi bi-check-circle-fill mr-2"></i>
+                        Konfirmasi Tukar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Success -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl transform transition-all">
+            <!-- Success Animation -->
+            <div class="p-8 text-center">
+                <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto flex items-center justify-center shadow-lg mb-6 animate-bounce">
+                    <i class="bi bi-check-lg text-white text-5xl"></i>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">Penukaran Poin Berhasil!</h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-green-400 to-green-600 mx-auto rounded-full mb-4"></div>
+                
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    Segera ambil barang Anda sesuai lokasi yang dipilih dalam waktu 
+                    <span class="font-bold text-green-600">1 x 24 jam</span>
+                </p>
+
+                <!-- Pickup Location Info -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 mb-6">
+                    <div class="flex items-start space-x-3">
+                        <i class="bi bi-geo-alt-fill text-green-600 text-2xl mt-1"></i>
+                        <div class="text-left flex-1">
+                            <p class="font-semibold text-gray-800 mb-1">Lokasi Pengambilan:</p>
+                            <p class="text-sm text-gray-600">Bank Sampah Sitolusna</p>
+                            <p class="text-sm text-gray-600">Jl. Sitolusna, Kec. Balige, Toba, Sumatera Utara</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Balance -->
+                <div class="bg-white border-2 border-green-200 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-gray-600 mb-2">Saldo Poin Anda Sekarang:</p>
+                    <p class="text-3xl font-bold text-green-600">
+                        <i class="bi bi-coin text-green-500 mr-2"></i>
+                        <span id="newBalance">15420</span> poin
+                    </p>
+                </div>
+
+                <button onclick="closeSuccessModal()" class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-4 rounded-xl transition-all shadow-md hover:shadow-lg">
+                    <i class="bi bi-check-circle mr-2"></i>
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedProduct = {
+            name: '',
+            description: '',
+            price: 0,
+            image: ''
+        };
+
+        const currentPoints = 15420;
+
+        // Universal event listener for all exchange buttons  
+        document.addEventListener('DOMContentLoaded', function() {
+            const exchangeButtons = document.querySelectorAll('.exchange-btn, button:not(#loadMoreBtn):not(#confirmExchangeBtn):not([onclick*="close"])');
+            
+            exchangeButtons.forEach(button => {
+                const buttonText = button.textContent.trim();
+                if (buttonText.includes('Tukar Sekarang')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Find parent card
+                        const card = this.closest('.bg-white.rounded-2xl');
+                        if (!card) return;
+                        
+                        // Extract product data from card
+                        const productNameEl = card.querySelector('h3');
+                        const productDescEl = card.querySelector('h3 + p');
+                        const productPriceEl = card.querySelector('.text-lg.font-bold.text-green-600');
+                        const productImageEl = card.querySelector('img');
+                        
+                        if (!productNameEl || !productPriceEl || !productImageEl) return;
+                        
+                        const productName = productNameEl.textContent.trim();
+                        const productDesc = productDescEl ? productDescEl.textContent.trim() : '';
+                        const priceText = productPriceEl.textContent.trim();
+                        const productPrice = parseInt(priceText.replace(/[^\d]/g, ''));
+                        const productImage = productImageEl.src;
+                        
+                        openConfirmModal(productName, productDesc, productPrice, productImage);
+                    });
+                }
+            });
+        });
+
+        function openConfirmModal(productName, productDesc, productPrice, productImage) {
+            selectedProduct = {
+                name: productName,
+                description: productDesc,
+                price: productPrice,
+                image: productImage
+            };
+
+            // Update modal content
+            document.getElementById('modalProductName').textContent = productName;
+            document.getElementById('modalProductDesc').textContent = productDesc;
+            document.getElementById('modalProductPrice').innerHTML = '<i class="bi bi-coin text-green-500 mr-1"></i>' + productPrice.toLocaleString('id-ID') + ' poin';
+            document.getElementById('modalProductImage').src = productImage;
+            document.getElementById('modalProductImage').alt = productName;
+
+            // Calculate remaining points
+            const remaining = currentPoints - productPrice;
+            const remainingElement = document.getElementById('modalRemainingPoints');
+            
+            if (remaining >= 0) {
+                remainingElement.innerHTML = remaining.toLocaleString('id-ID') + ' poin';
+                remainingElement.classList.remove('text-red-600');
+                remainingElement.classList.add('text-green-600');
+                document.getElementById('insufficientPointsWarning').classList.add('hidden');
+                document.getElementById('confirmExchangeBtn').disabled = false;
+                document.getElementById('confirmExchangeBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                remainingElement.innerHTML = remaining.toLocaleString('id-ID') + ' poin';
+                remainingElement.classList.remove('text-green-600');
+                remainingElement.classList.add('text-red-600');
+                document.getElementById('pointsShortage').textContent = Math.abs(remaining).toLocaleString('id-ID') + ' poin';
+                document.getElementById('insufficientPointsWarning').classList.remove('hidden');
+                document.getElementById('confirmExchangeBtn').disabled = true;
+                document.getElementById('confirmExchangeBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            // Show modal with animation
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.querySelector('.bg-white').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
+
+        function confirmExchange() {
+            const remaining = currentPoints - selectedProduct.price;
+            
+            if (remaining < 0) {
+                return; // Prevent exchange if insufficient points
+            }
+
+            // Close confirm modal
+            closeConfirmModal();
+
+            // Update new balance
+            document.getElementById('newBalance').textContent = remaining.toLocaleString('id-ID');
+
+            // Show success modal
+            setTimeout(() => {
+                document.getElementById('successModal').classList.remove('hidden');
+                document.getElementById('successModal').classList.add('flex');
+            }, 300);
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            document.getElementById('successModal').classList.remove('flex');
+            
+            // Refresh page or update UI here
+            // location.reload();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
+
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSuccessModal();
+            }
+        });
+    </script>
 
 </body>
 </html>
