@@ -51,9 +51,9 @@
                     <button class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
                         <i class="bi bi-bell text-gray-600"></i>
                     </button>
-                    <button class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center hover:bg-green-200 transition-colors">
+                    <a href="/profil" class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center hover:bg-green-200 transition-colors">
                         <i class="bi bi-person-circle text-green-600"></i>
-                    </button>
+                    </a>
                     <form method="POST" action="/logout" class="inline">
                         @csrf
                         <button type="submit" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
@@ -73,10 +73,10 @@
                         <i class="bi bi-house-door"></i>
                         <span class="truncate">Dashboard</span>
                     </button>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                    <a href="/profil" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-person"></i>
                         <span class="truncate">Profil</span>
-                    </button>
+                    </a>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-recycle"></i>
                         <span class="truncate">Setor</span>

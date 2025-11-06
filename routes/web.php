@@ -60,6 +60,11 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
     
+    // Profil
+    Route::get('/profil', function () {
+        return view('profil');
+    })->name('profil');
+    
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
