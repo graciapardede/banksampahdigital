@@ -49,36 +49,41 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-md">
-                        @if(file_exists(public_path('images/logo user.png')))
-                            <img src="{{ asset('images/logo user.png') }}" alt="Green Saving Logo" class="w-8 h-8 object-contain">
-                        @else
-                            <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-                                <div class="w-4 h-4 bg-green-500 rounded-sm"></div>
-                            </div>
-                        @endif
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="bi bi-recycle text-white text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-gray-500">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'Budi Santoso' }}</p>
+                        <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
+                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'lisbeth' }}</p>
                     </div>
                 </div>
 
-                <!-- Points and Actions -->
+                <!-- Points & Actions -->
                 <div class="flex items-center space-x-4">
-                    <div class="bg-green-100 px-6 py-2 rounded-full">
-                        <span class="text-lg font-bold text-green-700">15420 poin</span>
+                    <!-- Points Display -->
+                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                        <div class="flex items-center space-x-2">
+                            <i class="bi bi-coin text-green-600 text-xl"></i>
+                            <span class="font-bold text-green-700 text-lg">15420 poin</span>
+                        </div>
                     </div>
-                    <button class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                        <i class="bi bi-bell text-gray-600"></i>
+
+                    <!-- Notification Bell -->
+                    <button class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all relative">
+                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">3</span>
                     </button>
-                    <a href="/profil" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                        <i class="bi bi-person-circle text-gray-600"></i>
+
+                    <!-- Profile Button -->
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-person-fill text-white text-xl"></i>
                     </a>
+
+                    <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                            <i class="bi bi-box-arrow-right text-gray-600"></i>
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>
                 </div>
@@ -88,7 +93,6 @@
         <!-- Navigation Tabs -->
         <div class="bg-green-100 px-4 py-4">
             <div class="max-w-6xl mx-auto">
-                <!-- Navigation grid for consistent spacing -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                     <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-house-door pointer-events-none"></i>
@@ -106,10 +110,10 @@
                         <i class="bi bi-gift pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Tukar Poin</span>
                     </a>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
-                        <i class="bi bi-bar-chart pointer-events-none"></i>
+                    <a href="/riwayat" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
+                        <i class="bi bi-clock-history pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Riwayat</span>
-                    </button>
+                    </a>
                     <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
                         <i class="bi bi-bell pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Notifikasi</span>
@@ -600,31 +604,24 @@
     </main>
 
     <!-- Footer -->
-    <div class="bg-white border-t mt-8 py-6">
+    <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">
         <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-center space-x-4">
-                <!-- Green Saving Logo -->
-                <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-md">
-                    @if(file_exists(public_path('images/logo user.png')))
-                        <img src="{{ asset('images/logo user.png') }}" alt="Green Saving Logo" class="w-8 h-8 object-contain">
-                    @else
-                        <div class="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
-                            <div class="w-4 h-4 bg-green-500 rounded-sm"></div>
-                        </div>
-                    @endif
+            <div class="flex flex-col items-center gap-4">
+                <!-- Logo -->
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="bi bi-recycle text-white text-3xl"></i>
                 </div>
-                <div class="text-center">
-                    <h3 class="text-xl font-bold text-green-600">Green Saving</h3>
-                    <p class="text-sm text-gray-500 mt-1">Bersama menjaga lingkungan untuk masa depan lebih baik</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-green-50 py-4">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="text-center text-xs text-gray-500">
-                © 2025 Green Saving. All rights reserved.
+                
+                <!-- Title -->
+                <h3 class="text-xl font-bold text-green-600">Green Saving</h3>
+                
+                <!-- Tagline -->
+                <p class="text-sm text-gray-600 text-center">
+                    Bersama menjaga lingkungan untuk masa depan lebih baik
+                </p>
+                
+                <!-- Copyright -->
+                <p class="text-sm text-gray-500">© 2025 Green Saving. All rights reserved.</p>
             </div>
         </div>
     </footer>

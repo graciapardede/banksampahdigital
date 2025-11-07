@@ -75,6 +75,11 @@ Route::middleware('auth')->group(function () {
         return view('tukar-poin');
     })->name('tukar-poin');
     
+    // Riwayat Transaksi
+    Route::get('/riwayat', function () {
+        return view('riwayat');
+    })->name('riwayat');
+    
     // Riwayat Penukaran
     Route::get('/riwayat-tukar', function () {
         return view('riwayat-tukar');
