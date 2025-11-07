@@ -80,6 +80,11 @@ Route::middleware('auth')->group(function () {
         return view('riwayat');
     })->name('riwayat');
     
+    // Notifikasi
+    Route::get('/notifikasi', function () {
+        return view('notifikasi');
+    })->name('notifikasi');
+    
     // Riwayat Penukaran
     Route::get('/riwayat-tukar', function () {
         return view('riwayat-tukar');

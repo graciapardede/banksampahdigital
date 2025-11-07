@@ -47,10 +47,9 @@
                     </div>
 
                     <!-- Notification Bell -->
-                    <button class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all relative">
+                    <a href="/notifikasi" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
                         <i class="bi bi-bell text-gray-700 text-xl"></i>
-                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">3</span>
-                    </button>
+                    </a>
 
                     <!-- Profile Button -->
                     <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
@@ -92,10 +91,10 @@
                         <i class="bi bi-clock-history pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Riwayat</span>
                     </a>
-                    <button class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-not-allowed opacity-60">
+                    <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-bell pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Notifikasi</span>
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
