@@ -108,3 +108,7 @@ Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
 });
 
+// Temporary dev routes for previewing views without wiring controllers
+Route::view('/_dev/setoran','admin.setoran.index');
+
+

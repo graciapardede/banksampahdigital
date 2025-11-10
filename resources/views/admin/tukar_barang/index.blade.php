@@ -11,7 +11,7 @@
                     <span>Export</span>
                 </a>
 
-                <a href="#" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="#" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" x-on:click.prevent="openAddModal()">
                     + Tambah Barang
                 </a>
             </div>
@@ -19,7 +19,29 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="{
+            showModal: false,
+            modalItem: null,
+            qty: 1,
+            // Add-item modal state
+            showAddModal: false,
+            addForm: {
+                name: '',
+                points: '',
+                description: '',
+                stock: 1,
+                imageUrl: ''
+            },
+            openModal(item){ this.modalItem = item; this.qty = 1; this.showModal = true },
+            closeModal(){ this.showModal = false; this.modalItem = null; this.qty = 1 },
+            inc(){ this.qty = Number(this.qty) + 1 },
+            dec(){ if(this.qty > 1) this.qty = Number(this.qty) - 1 },
+            // add-item modal methods
+            openAddModal(){ this.addForm = { name: '', points: '', description: '', stock: 1, imageUrl: '' }; if($refs && $refs.addImage) $refs.addImage.value = null; this.showAddModal = true },
+            closeAddModal(){ this.showAddModal = false },
+            onAddImageChange(e){ const file = e.target.files && e.target.files[0]; if(!file){ this.addForm.imageUrl = ''; return } const reader = new FileReader(); reader.onload = (ev) => { this.addForm.imageUrl = ev.target.result }; reader.readAsDataURL(file) },
+            submitAdd(){ console.log('Tambah Barang:', this.addForm); this.showAddModal = false }
+        }">
             {{-- Alert Success (consistent with other admin pages) --}}
             @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
@@ -33,8 +55,8 @@
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div class="max-w-7xl">
                     <!-- Statistics cards -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                         @php
@@ -68,21 +90,48 @@
                             </select>
                         </div>
                     </div>
+                </div>
+            </div>
 
+            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div class="max-w-7xl">
                     <!-- Product grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @php
-                            // If controller provided $items, use it. Otherwise create demo items to show layout.
-                            if(!isset($items)) {
-                                $items = collect(range(1,6))->map(function($i){
-                                    return (object)[
+                            // If controller provided $items, use it. Otherwise create simple demo items to show layout.
+                            if (!isset($items) || empty($items)) {
+                                // prefer an image name without spaces; fall back to file with space if present
+                                $imgWithUnderscore = public_path('images/tukar_reward.png');
+                                $imgWithSpace = public_path('images/tukar reward.png');
+
+                                if (file_exists($imgWithUnderscore)) {
+                                    $defaultImage = asset('images/tukar_reward.png');
+                                } elseif (file_exists($imgWithSpace)) {
+                                    // encode spaces for URLs
+                                    $defaultImage = asset('images/' . rawurlencode('tukar reward.png'));
+                                } else {
+                                    // final fallback to an existing image in project
+                                    $defaultImage = asset('images/tukar reward.png');
+                                }
+
+                                $items = [];
+                                for ($i = 1; $i <= 6; $i++) {
+                                    $items[] = (object) [
                                         'id' => $i,
                                         'name' => 'Beras Premium 5 kg',
                                         'points' => 200,
                                         'stock' => 20,
-                                        'image' => asset('images/tukar reward.png'),
+                                        'image' => $defaultImage,
                                     ];
-                                });
+                                }
+                            }
+                        @endphp
+
+                        @php
+                            // prepare JSON-safe first item for header button
+                            $firstItem = null;
+                            if (!empty($items)) {
+                                $firstItem = $items[0];
                             }
                         @endphp
 
@@ -98,13 +147,106 @@
                                         <div class="text-sm text-gray-500 mt-2">Stok: <span class="font-medium">{{ $item->stock }}</span></div>
 
                                         <div class="mt-4 flex gap-2">
-                                            <button class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded">Tambah Stok</button>
+                                            <button
+                                                class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+                                                x-on:click="openModal({!! json_encode(['id'=> $item->id, 'name'=> $item->name, 'image'=> $item->image, 'stock'=> $item->stock, 'points'=> $item->points]) !!})"
+                                            >
+                                                Tambah Stok
+                                            </button>
                                             <a href="#" class="flex-1 border border-gray-200 text-gray-700 py-2 rounded text-center">Lihat</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+                </div>
+            </div>
+            {{-- Modal for add stock --}}
+            <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
+                <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-40"></div>
+                <div x-show="showModal" x-transition class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4 z-50">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Tambah Stok</h3>
+                        <p class="text-sm text-gray-500">Apakah Anda ingin menambahkan Stok Barang ?</p>
+
+                        <div class="mt-6 flex gap-6 items-center">
+                            <div class="w-36 h-36 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
+                                <template x-if="modalItem">
+                                    <img :src="modalItem.image" :alt="modalItem.name" class="object-contain h-full" />
+                                </template>
+                            </div>
+
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-800" x-text="modalItem ? modalItem.name : ''"></div>
+                                <div class="text-sm text-gray-500 mt-2">Minyak berkualitas untuk memasak</div>
+
+                                <div class="mt-4 flex items-center gap-2">
+                                    <button type="button" class="px-3 py-1 bg-gray-100 rounded" x-on:click="dec">-</button>
+                                    <input type="number" x-model="qty" min="1" class="w-20 text-center px-2 py-1 border rounded" />
+                                    <button type="button" class="px-3 py-1 bg-gray-100 rounded" x-on:click="inc">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button type="button" class="px-4 py-2 bg-white border rounded" x-on:click="closeModal">Batal</button>
+                            <button type="button" class="px-4 py-2 bg-green-600 text-white rounded" x-on:click.prevent="console.log('Tambah', modalItem, qty); closeModal()">Tambahkan Stok</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- Modal for Tambah Barang (create new exchange item) --}}
+            <div x-show="showAddModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
+                <div x-show="showAddModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-40"></div>
+                <div x-show="showAddModal" x-transition class="bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 z-50">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-800">Tambah Barang</h3>
+                        <p class="text-sm text-gray-500">Tambahkan detail barang yang dapat ditukar menggunakan poin.</p>
+
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                            <div class="col-span-1 flex flex-col items-center gap-3">
+                                <div class="w-40 h-40 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border">
+                                    <template x-if="addForm.imageUrl">
+                                        <img :src="addForm.imageUrl" alt="preview" class="object-contain h-full w-full" />
+                                    </template>
+                                    <template x-if="!addForm.imageUrl">
+                                        <div class="text-gray-400">Preview</div>
+                                    </template>
+                                </div>
+                                <input type="file" accept="image/*" x-ref="addImage" @change="onAddImageChange($event)" class="text-sm text-gray-500" />
+                            </div>
+
+                            <div class="col-span-2">
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Nama Barang</label>
+                                        <input type="text" x-model="addForm.name" class="mt-1 block w-full rounded border px-3 py-2" placeholder="Masukkan nama barang" />
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Poin</label>
+                                            <input type="number" x-model="addForm.points" class="mt-1 block w-full rounded border px-3 py-2" placeholder="Jumlah poin" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Stok Awal</label>
+                                            <input type="number" x-model="addForm.stock" min="0" class="mt-1 block w-full rounded border px-3 py-2" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                                        <textarea x-model="addForm.description" class="mt-1 block w-full rounded border px-3 py-2" rows="3" placeholder="Deskripsi singkat barang"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button type="button" class="px-4 py-2 bg-white border rounded" x-on:click="closeAddModal">Batal</button>
+                            <button type="button" class="px-4 py-2 bg-green-600 text-white rounded" x-on:click.prevent="submitAdd()">Tambahkan Barang</button>
+                        </div>
                     </div>
                 </div>
             </div>
