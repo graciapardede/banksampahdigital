@@ -5,16 +5,36 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @if(Auth::user()->role === 'admin')
+                        {{-- Admin Navigation --}}
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
+                            {{ __('Setoran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.penukaran')" :active="request()->routeIs('admin.penukaran')">
+                            {{ __('Penukaran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.tukar-barang')" :active="request()->routeIs('admin.tukar-barang')">
+                            {{ __('Tukar Barang') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.waste-types.index')" :active="request()->routeIs('admin.waste-types.*')">
+                            {{ __('Jenis Sampah') }}
+                        </x-nav-link>
+                    @else
+                        {{-- User Navigation --}}
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -34,9 +54,9 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
+                        <div class="px-4 py-2 text-xs text-gray-400">
+                            {{ Auth::user()->email }}
+                        </div>
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -67,9 +87,29 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @if(Auth::user()->role === 'admin')
+                {{-- Admin Responsive Navigation --}}
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
+                    {{ __('Setoran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.penukaran')" :active="request()->routeIs('admin.penukaran')">
+                    {{ __('Penukaran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.tukar-barang')" :active="request()->routeIs('admin.tukar-barang')">
+                    {{ __('Tukar Barang') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.waste-types.index')" :active="request()->routeIs('admin.waste-types.*')">
+                    {{ __('Jenis Sampah') }}
+                </x-responsive-nav-link>
+            @else
+                {{-- User Responsive Navigation --}}
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -80,10 +120,6 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -6,18 +6,22 @@ use App\Http\Controllers\AuthController;
 
 // Halaman utama (Home) 
 Route::get('/', function () {
-    // Jika sudah login, redirect ke dashboard
+    // Jika sudah login, redirect ke dashboard sesuai role
     if (auth()->check()) {
-        return redirect('/dashboard');
+        return auth()->user()->role === 'admin' 
+            ? redirect('/admin/dashboard') 
+            : redirect('/dashboard');
     }
     return view('home');
 });
 
 // Halaman login (form)
 Route::get('/login', function () {
-    // Jika sudah login, redirect ke dashboard
+    // Jika sudah login, redirect ke dashboard sesuai role
     if (auth()->check()) {
-        return redirect('/dashboard');
+        return auth()->user()->role === 'admin' 
+            ? redirect('/admin/dashboard') 
+            : redirect('/dashboard');
     }
     return view('login');
 })->name('login');
@@ -96,10 +100,32 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin routes
-Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'isAdmin'])->group(function () {
+    // Redirect /admin to /admin/dashboard
+    Route::get('/admin', function () {
+        return redirect()->route('admin.dashboard');
+    });
+});
+
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    })->name('admin.dashboard');
+    })->name('dashboard');
+
+    // Manajemen Setoran
+    Route::get('/setoran', function () {
+        return view('admin.setoran.index');
+    })->name('setoran');
+
+    // Manajemen Tukar Barang
+    Route::get('/tukar-barang', function () {
+        return view('admin.tukar_barang.index');
+    })->name('tukar-barang');
+
+    // Daftar Permintaan Penukaran
+    Route::get('/penukaran', function () {
+        return view('admin.penukaran.index');
+    })->name('penukaran');
 
     // CRUD Waste Types
     Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
@@ -110,5 +136,8 @@ Route::middleware(['auth', 'verified', 'isAdmin'])->prefix('admin')->name('admin
 
 // Temporary dev routes for previewing views without wiring controllers
 Route::view('/_dev/setoran','admin.setoran.index');
+Route::view('/_dev/tukar-barang','admin.tukar_barang.index');
+Route::view('/_dev/penukaran','admin.penukaran.index');
+Route::view('/_dev/waste-types','admin.waste_types.index');
 
 

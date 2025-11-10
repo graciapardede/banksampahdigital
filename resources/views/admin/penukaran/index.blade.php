@@ -1,94 +1,242 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Daftar Permintaan Penukaran') }}</h2>
-            <p class="text-sm text-gray-500">Menampilkan permintaan penukaran</p>
+        <div class="bg-gradient-to-r from-emerald-500 to-teal-600 -mx-4 -my-3 px-4 py-6 sm:-mx-6 sm:px-6">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                <div class="text-white">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-2xl">{{ __('Daftar Permintaan Penukaran') }}</h2>
+                            <p class="text-sm text-emerald-100">Kelola permintaan penukaran poin warga</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="bg-white bg-opacity-20 backdrop-blur-sm px-6 py-3 rounded-xl">
+                        <div class="text-xs text-emerald-100">Total Permintaan</div>
+                        <div class="text-2xl font-bold text-white">4</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
-                     class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                    <span @click="show = false" class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer">
-                        <svg class="fill-current h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                     class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <span class="font-semibold">{{ session('success') }}</span>
+                    </div>
+                    <button @click="show = false" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-all">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
-                    </span>
+                    </button>
                 </div>
             @endif
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-full">
-                    <h3 class="text-gray-700 font-semibold mb-4">Daftar Permintaan Penukaran</h3>
-                    <p class="text-sm text-gray-500 mb-6">Menampilkan permintaan penukaran</p>
+            {{-- Stats Summary --}}
+            @php
+                $demoRows = [
+                    (object)['user'=>'Sari Simanullang','item'=>'Beras Premium 5kg','points'=>100,'date'=>'20 Jan 2025, 14:30','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
+                    (object)['user'=>'Binsar Hutabarat','item'=>'Minyak goreng 2L, gula pasir','points'=>250,'date'=>'19 Jan 2025, 16:45','status'=>'Dikonfirmasi','method'=>'Ambil di Cabang (Cabang Lajubet)'],
+                    (object)['user'=>'Maria Situmorang','item'=>'Kertas','points'=>50,'date'=>'18 Jan 2025, 10:20','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
+                    (object)['user'=>'Toba Siahaan','item'=>'Plastik','points'=>80,'date'=>'17 Jan 2025, 13:15','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
+                ];
+                $rows = isset($requests) && count($requests) ? $requests : $demoRows;
+                $pendingCount = collect($rows)->filter(fn($r) => strtolower($r->status) === 'menunggu')->count();
+                $confirmedCount = collect($rows)->filter(fn($r) => strtolower($r->status) === 'dikonfirmasi')->count();
+                $totalPoints = collect($rows)->sum('points');
+            @endphp
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Warga</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Barang</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poin</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @php
-                                    // demo fallback data
-                                    $demoRows = [
-                                        (object)['user'=>'Sari Simanullang','item'=>'Beras Premium 5kg','points'=>100,'date'=>'20 Jan 2025, 14:30','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
-                                        (object)['user'=>'Binsar Hutabarat','item'=>'Minyak goreng 2L, gula pasir','points'=>250,'date'=>'19 Jan 2025, 16:45','status'=>'Dikonfirmasi','method'=>'Ambil di Cabang (Cabang Lajubet)'],
-                                        (object)['user'=>'Maria Situmorang','item'=>'Kertas','points'=>50,'date'=>'18 Jan 2025, 10:20','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
-                                        (object)['user'=>'Toba Siahaan','item'=>'Plastik','points'=>80,'date'=>'17 Jan 2025, 13:15','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
-                                    ];
-                                    $rows = isset($requests) && count($requests) ? $requests : $demoRows;
-                                    $pendingCount = collect($rows)->filter(fn($r) => strtolower($r->status) === 'menunggu')->count();
-                                @endphp
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        @if($pendingCount > 0)
+                            <span class="w-6 h-6 bg-white text-orange-600 rounded-full flex items-center justify-center text-xs font-bold animate-pulse">{{ $pendingCount }}</span>
+                        @endif
+                    </div>
+                    <div class="text-sm font-medium opacity-90">Menunggu</div>
+                    <div class="text-3xl font-bold mt-1">{{ $pendingCount }}</div>
+                    <div class="text-xs opacity-80 mt-1">Perlu konfirmasi</div>
+                </div>
 
-                                @foreach($rows as $r)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $r->user }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $r->item }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{{ $r->points }} poin</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $r->date }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            @if(strtolower($r->status) === 'menunggu')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">Menunggu</span>
-                                            @elseif(strtolower($r->status) === 'dikonfirmasi')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">Dikonfirmasi</span>
-                                            @else
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">{{ $r->status }}</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $r->method }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center gap-2">
-                                            <a href="#" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 text-gray-700" title="Lihat">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3C6 3 2.7 5.2 1 9c1.7 3.8 5 6 9 6s7.3-2.2 9-6c-1.7-3.8-5-6-9-6zm0 10a4 4 0 110-8 4 4 0 010 8z"/></svg>
-                                            </a>
+                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-sm font-medium opacity-90">Dikonfirmasi</div>
+                    <div class="text-3xl font-bold mt-1">{{ $confirmedCount }}</div>
+                    <div class="text-xs opacity-80 mt-1">Siap diserahkan</div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-sm font-medium opacity-90">Total Poin</div>
+                    <div class="text-3xl font-bold mt-1">{{ $totalPoints }}</div>
+                    <div class="text-xs opacity-80 mt-1">Poin ditukar</div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 px-6 py-4 border-b-2 border-emerald-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800">Daftar Permintaan</h3>
+                                <p class="text-sm text-gray-600">Kelola permintaan penukaran poin</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="px-4 py-2 bg-white border-2 border-emerald-300 text-emerald-600 rounded-xl font-semibold hover:bg-emerald-50 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                </svg>
+                                Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="space-y-4">
+
+                        @foreach($rows as $index => $r)
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 {{ strtolower($r->status) === 'menunggu' ? 'border-yellow-300' : 'border-emerald-200' }} p-6 hover:shadow-lg transition-all">
+                                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                    <!-- User Info -->
+                                    <div class="flex items-start gap-4 flex-1">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
+                                            {{ substr($r->user, 0, 1) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h4 class="font-bold text-gray-800 text-lg">{{ $r->user }}</h4>
+                                                @if(strtolower($r->status) === 'menunggu')
+                                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Menunggu
+                                                    </span>
+                                                @elseif(strtolower($r->status) === 'dikonfirmasi')
+                                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Dikonfirmasi
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                    </svg>
+                                                    <span class="font-semibold text-gray-700">{{ $r->item }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    <span class="text-gray-600">{{ $r->date }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-sm mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span class="text-gray-600">{{ $r->method }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Points & Actions -->
+                                    <div class="flex items-center gap-4 lg:flex-shrink-0">
+                                        <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl px-6 py-4 text-white shadow-lg">
+                                            <div class="text-xs font-medium opacity-90">Poin</div>
+                                            <div class="text-3xl font-bold">{{ $r->points }}</div>
+                                        </div>
+                                        
+                                        <div class="flex flex-col gap-2">
+                                            <button class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-xl text-gray-700 font-semibold text-sm shadow-sm hover:shadow-md transition-all" title="Lihat Detail">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                                </svg>
+                                                Detail
+                                            </button>
+                                            
                                             @if(strtolower($r->status) === 'menunggu')
                                                 <form action="#" method="POST" class="inline-block" onsubmit="event.preventDefault(); alert('Konfirmasi action (demo)')">
                                                     @csrf
-                                                    <button type="submit" class="inline-flex items-center justify-center h-9 px-3 rounded bg-green-600 text-white text-sm" title="Konfirmasi">Konfirmasi</button>
+                                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Konfirmasi
+                                                    </button>
                                                 </form>
                                             @elseif(strtolower($r->status) === 'dikonfirmasi')
-                                                <button class="inline-flex items-center justify-center h-9 px-3 rounded bg-blue-600 text-white text-sm">Diserahkan</button>
+                                                <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    Diserahkan
+                                                </button>
                                             @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
                     @if($pendingCount > 0)
-                        <div class="mt-6 p-4 rounded border-l-4 border-yellow-400 bg-yellow-50 text-yellow-800">
-                            Ada {{ $pendingCount }} permintaan yang menunggu konfirmasi
+                        <div class="mt-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 rounded-xl p-4 shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-yellow-800">Perhatian!</div>
+                                    <div class="text-sm text-yellow-700">Ada <span class="font-bold">{{ $pendingCount }}</span> permintaan yang menunggu konfirmasi Anda</div>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>
