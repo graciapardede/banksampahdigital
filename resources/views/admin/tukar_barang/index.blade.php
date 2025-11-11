@@ -1,25 +1,132 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Manajemen Barang Tukar') }}
-            </h2>
-            <div class="flex items-center gap-3">
-                <a href="#" class="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-3 py-2 rounded shadow-sm hover:bg-gray-50">
-                    <!-- Export icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h10a1 1 0 100-2H3z"/><path d="M3 7a1 1 0 000 2h6a1 1 0 100-2H3z"/><path d="M3 11a1 1 0 000 2h4a1 1 0 100-2H3z"/></svg>
-                    <span>Export</span>
-                </a>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Barang Tukar - Green Saving</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
-                <a href="#" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" x-on:click.prevent="openAddModal()">
-                    + Tambah Barang
-                </a>
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-gray-800">Green Saving Admin</h1>
+                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->name }}</p>
+                    </div>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Admin Badge -->
+                    <div class="bg-gradient-to-r from-green-100 to-emerald-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                        <div class="flex items-center space-x-2">
+                            <i class="bi bi-shield-check text-green-600 text-xl"></i>
+                            <span class="font-bold text-green-700 text-sm">Administrator</span>
+                        </div>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <a href="#" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                    </a>
+
+                    <!-- Logout Button -->
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="{
+        <!-- Navigation Tabs -->
+        <div class="bg-green-100 px-4 py-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <a href="{{ route('admin.dashboard') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-house-door"></i>
+                        <span class="truncate">Dashboard</span>
+                    </a>
+                    <a href="{{ route('admin.setoran') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="truncate">Setoran</span>
+                    </a>
+                    <a href="{{ route('admin.penukaran') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="truncate">Penukaran</span>
+                    </a>
+                    <a href="{{ route('admin.tukar-barang') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-gift"></i>
+                        <span class="truncate">Tukar Barang</span>
+                    </a>
+                    <a href="{{ route('admin.waste-types.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-recycle"></i>
+                        <span class="truncate">Jenis Sampah</span>
+                    </a>
+                    <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-building"></i>
+                        <span class="truncate">Cabang</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header with Actions -->
+    <div class="max-w-6xl mx-auto px-4 py-6">
+        <div class="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl shadow-lg p-6">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                <div class="text-white">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <i class="bi bi-gift text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-2xl">{{ __('Manajemen Barang Tukar') }}</h2>
+                            <p class="text-sm text-teal-100">Kelola stok dan katalog barang reward</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="#" class="inline-flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm border-2 border-white text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:bg-opacity-30 transition-all">
+                        <i class="bi bi-download"></i>
+                        <span>Export</span>
+                    </a>
+                    <button x-on:click.prevent="openAddModal()" class="inline-flex items-center gap-2 bg-white text-teal-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                        <i class="bi bi-plus-circle text-lg"></i>
+                        <span>Tambah Barang</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 pb-8" x-data="{
             showModal: false,
             modalItem: null,
             qty: 1,
@@ -251,5 +358,23 @@
                 </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="bi bi-recycle text-white text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-green-600">Green Saving Admin Panel</h3>
+                <p class="text-sm text-gray-600 text-center">
+                    Sistem Manajemen Bank Sampah Digital
+                </p>
+                <p class="text-sm text-gray-500">© 2025 Green Saving. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

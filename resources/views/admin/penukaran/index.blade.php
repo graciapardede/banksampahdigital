@@ -1,32 +1,104 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="bg-gradient-to-r from-emerald-500 to-teal-600 -mx-4 -my-3 px-4 py-6 sm:-mx-6 sm:px-6">
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                <div class="text-white">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="font-bold text-2xl">{{ __('Daftar Permintaan Penukaran') }}</h2>
-                            <p class="text-sm text-emerald-100">Kelola permintaan penukaran poin warga</p>
-                        </div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Permintaan Penukaran - Green Saving</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-gray-800">Green Saving Admin</h1>
+                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->name }}</p>
                     </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-3">
-                    <div class="bg-white bg-opacity-20 backdrop-blur-sm px-6 py-3 rounded-xl">
-                        <div class="text-xs text-emerald-100">Total Permintaan</div>
-                        <div class="text-2xl font-bold text-white">4</div>
+
+                <!-- Admin Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Admin Badge -->
+                    <div class="bg-gradient-to-r from-green-100 to-emerald-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                        <div class="flex items-center space-x-2">
+                            <i class="bi bi-shield-check text-green-600 text-xl"></i>
+                            <span class="font-bold text-green-700 text-sm">Administrator</span>
+                        </div>
                     </div>
+
+                    <!-- Notification Bell -->
+                    <a href="#" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                    </a>
+
+                    <!-- Logout Button -->
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-    </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <!-- Navigation Tabs -->
+        <div class="bg-green-100 px-4 py-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <a href="{{ route('admin.dashboard') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-house-door"></i>
+                        <span class="truncate">Dashboard</span>
+                    </a>
+                    <a href="{{ route('admin.setoran') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="truncate">Setoran</span>
+                    </a>
+                    <a href="{{ route('admin.penukaran') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="truncate">Penukaran</span>
+                    </a>
+                    <a href="{{ route('admin.tukar-barang') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-gift"></i>
+                        <span class="truncate">Tukar Barang</span>
+                    </a>
+                    <a href="{{ route('admin.waste-types.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-recycle"></i>
+                        <span class="truncate">Jenis Sampah</span>
+                    </a>
+                    <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-building"></i>
+                        <span class="truncate">Cabang</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="space-y-6">
             @if(session('success'))
                 <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
                      class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between">
@@ -242,5 +314,23 @@
                 </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="bi bi-recycle text-white text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-green-600">Green Saving Admin Panel</h3>
+                <p class="text-sm text-gray-600 text-center">
+                    Sistem Manajemen Bank Sampah Digital
+                </p>
+                <p class="text-sm text-gray-500">© 2025 Green Saving. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

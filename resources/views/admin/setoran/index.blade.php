@@ -1,6 +1,103 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="bg-gradient-to-r from-green-500 to-emerald-600 -mx-4 -my-3 px-4 py-6 sm:-mx-6 sm:px-6">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Setoran - Green Saving</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl text-gray-800">Green Saving Admin</h1>
+                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->name }}</p>
+                    </div>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Admin Badge -->
+                    <div class="bg-gradient-to-r from-green-100 to-emerald-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                        <div class="flex items-center space-x-2">
+                            <i class="bi bi-shield-check text-green-600 text-xl"></i>
+                            <span class="font-bold text-green-700 text-sm">Administrator</span>
+                        </div>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <a href="#" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                    </a>
+
+                    <!-- Logout Button -->
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-green-100 px-4 py-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <a href="{{ route('admin.dashboard') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-house-door"></i>
+                        <span class="truncate">Dashboard</span>
+                    </a>
+                    <a href="{{ route('admin.setoran') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="truncate">Setoran</span>
+                    </a>
+                    <a href="{{ route('admin.penukaran') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="truncate">Penukaran</span>
+                    </a>
+                    <a href="{{ route('admin.tukar-barang') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-gift"></i>
+                        <span class="truncate">Tukar Barang</span>
+                    </a>
+                    <a href="{{ route('admin.waste-types.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-recycle"></i>
+                        <span class="truncate">Jenis Sampah</span>
+                    </a>
+                    <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-building"></i>
+                        <span class="truncate">Cabang</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header with Actions -->
+    <div class="max-w-6xl mx-auto px-4 py-6">
+        <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div class="text-white">
                     <div class="flex items-center gap-3 mb-2">
@@ -30,10 +127,11 @@
                 </div>
             </div>
         </div>
-    </x-slot>
+    </div>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 pb-8">
+        <div class="space-y-6">
             {{-- Branch Info Card with Gradient --}}
             <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl shadow-lg overflow-hidden">
                 <div class="p-6">
@@ -379,5 +477,23 @@
                 </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <i class="bi bi-recycle text-white text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-green-600">Green Saving Admin Panel</h3>
+                <p class="text-sm text-gray-600 text-center">
+                    Sistem Manajemen Bank Sampah Digital
+                </p>
+                <p class="text-sm text-gray-500">© 2025 Green Saving. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
