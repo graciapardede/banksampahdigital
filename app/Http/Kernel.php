@@ -37,5 +37,6 @@ class Kernel extends HttpKernel
         'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'role' => \App\Http\Middleware\EnsureRole::class,
+        'isAdmin' => \App\Http\Middleware\IsAdmin::class,
     ];
 }
