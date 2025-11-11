@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Cabang - Green Saving</title>
+    <title>Manajemen Jenis Sampah - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -83,11 +83,11 @@
                         <i class="bi bi-gift"></i>
                         <span class="truncate">Tukar Barang</span>
                     </a>
-                    <a href="{{ route('admin.waste-types.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                    <a href="{{ route('admin.waste-types.index') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-recycle"></i>
                         <span class="truncate">Jenis Sampah</span>
                     </a>
-                    <a href="{{ route('admin.branches.index') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                    <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-building"></i>
                         <span class="truncate">Cabang</span>
                     </a>
@@ -98,23 +98,23 @@
 
     <!-- Page Header with Actions -->
     <div class="max-w-6xl mx-auto px-4 py-6">
-        <div class="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-lg p-6">
+        <div class="bg-gradient-to-r from-lime-500 to-green-600 rounded-2xl shadow-lg p-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div class="text-white">
                     <div class="flex items-center gap-3 mb-2">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="bi bi-building text-2xl"></i>
+                            <i class="bi bi-recycle text-2xl"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-2xl">{{ __('Kelola Cabang') }}</h2>
-                            <p class="text-sm text-cyan-100">Manajemen lokasi cabang Bank Sampah</p>
+                            <h2 class="font-bold text-2xl">Manajemen Jenis Sampah</h2>
+                            <p class="text-sm text-lime-100">Kelola kategori dan harga sampah</p>
                         </div>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <a href="{{ route('admin.branches.create') }}" class="inline-flex items-center gap-2 bg-white text-cyan-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                    <a href="{{ route('admin.waste-types.create') }}" class="inline-flex items-center gap-2 bg-white text-lime-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
                         <i class="bi bi-plus-circle text-lg"></i>
-                        <span>Tambah Cabang</span>
+                        <span>Tambah Jenis Sampah</span>
                     </a>
                 </div>
             </div>
@@ -146,129 +146,138 @@
 
             {{-- Stats Summary --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="bg-gradient-to-br from-lime-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="bi bi-building text-2xl"></i>
+                            <i class="bi bi-recycle text-2xl"></i>
                         </div>
                     </div>
-                    <div class="text-sm font-medium opacity-90">Total Cabang</div>
-                    <div class="text-3xl font-bold mt-1">{{ $branches->total() }}</div>
-                    <div class="text-xs opacity-80 mt-1">Lokasi terdaftar</div>
+                    <div class="text-sm font-medium opacity-90">Total Jenis Sampah</div>
+                    <div class="text-3xl font-bold mt-1">{{ $wasteTypes->total() }}</div>
+                    <div class="text-xs opacity-80 mt-1">Kategori terdaftar</div>
                 </div>
 
-                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="bi bi-check-circle text-2xl"></i>
+                            <i class="bi bi-currency-dollar text-2xl"></i>
                         </div>
                     </div>
-                    <div class="text-sm font-medium opacity-90">Cabang Aktif</div>
-                    <div class="text-3xl font-bold mt-1">{{ $branches->count() }}</div>
-                    <div class="text-xs opacity-80 mt-1">Siap melayani</div>
+                    <div class="text-sm font-medium opacity-90">Rata-rata Harga</div>
+                    <div class="text-3xl font-bold mt-1">{{ number_format($wasteTypes->avg('price_per_kg') ?? 0, 0) }}</div>
+                    <div class="text-xs opacity-80 mt-1">Per kilogram</div>
                 </div>
 
                 <div class="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl p-6 text-white shadow-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="bi bi-geo-alt text-2xl"></i>
+                            <i class="bi bi-check-circle text-2xl"></i>
                         </div>
                     </div>
-                    <div class="text-sm font-medium opacity-90">Wilayah</div>
-                    <div class="text-3xl font-bold mt-1">{{ $branches->count() }}</div>
-                    <div class="text-xs opacity-80 mt-1">Area layanan</div>
+                    <div class="text-sm font-medium opacity-90">Status Aktif</div>
+                    <div class="text-3xl font-bold mt-1">{{ $wasteTypes->where('is_active', true)->count() }}</div>
+                    <div class="text-xs opacity-80 mt-1">Dari total {{ $wasteTypes->total() }} jenis</div>
                 </div>
             </div>
 
-            {{-- Branches Cards --}}
+            {{-- Waste Types Table --}}
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-cyan-50 to-blue-50 px-6 py-4 border-b-2 border-cyan-200">
+                <div class="bg-gradient-to-r from-lime-50 to-green-50 px-6 py-4 border-b-2 border-lime-200">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                            <div class="w-10 h-10 bg-gradient-to-br from-lime-500 to-green-600 rounded-xl flex items-center justify-center shadow-md">
                                 <i class="bi bi-list-ul text-white text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-gray-800">Daftar Cabang</h3>
-                                <p class="text-sm text-gray-600">Kelola lokasi cabang Bank Sampah</p>
+                                <h3 class="text-lg font-bold text-gray-800">Daftar Jenis Sampah</h3>
+                                <p class="text-sm text-gray-600">Kelola kategori dan harga sampah</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="p-6">
-                    @forelse($branches as $index => $branch)
-                        <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 border-cyan-200 p-6 hover:shadow-lg transition-all mb-4">
-                            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <!-- Branch Info -->
-                                <div class="flex items-start gap-4 flex-1">
-                                    <div class="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-md flex-shrink-0">
-                                        {{ $branches->firstItem() + $index }}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <h4 class="font-bold text-gray-800 text-xl">{{ $branch->name }}</h4>
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-400 to-emerald-400 text-white shadow-sm">
-                                                <i class="bi bi-check-circle"></i>
-                                                Aktif
-                                            </span>
-                                        </div>
-                                        
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                                            <div class="flex items-start gap-2 text-sm">
-                                                <i class="bi bi-geo-alt text-cyan-600 text-lg mt-0.5"></i>
-                                                <div>
-                                                    <span class="text-gray-500 block">Alamat:</span>
-                                                    <span class="font-semibold text-gray-700">{{ $branch->address }}</span>
-                                                </div>
+                    @if($wasteTypes->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($wasteTypes as $waste)
+                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 border-lime-200 p-6 hover:shadow-lg transition-all">
+                                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                        <!-- Waste Type Info -->
+                                        <div class="flex items-start gap-4 flex-1">
+                                            <div class="w-16 h-16 bg-gradient-to-br from-lime-400 to-green-500 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-md flex-shrink-0">
+                                                <i class="bi bi-trash3"></i>
                                             </div>
-                                            <div class="flex items-start gap-2 text-sm">
-                                                <i class="bi bi-telephone text-blue-600 text-lg mt-0.5"></i>
-                                                <div>
-                                                    <span class="text-gray-500 block">Telepon:</span>
-                                                    <span class="font-semibold text-gray-700">{{ $branch->phone }}</span>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <h4 class="font-bold text-gray-800 text-xl">{{ $waste->name }}</h4>
+                                                    @if($waste->is_active)
+                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-400 to-emerald-400 text-white shadow-sm">
+                                                            <i class="bi bi-check-circle"></i>
+                                                            Aktif
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-sm">
+                                                            <i class="bi bi-x-circle"></i>
+                                                            Nonaktif
+                                                        </span>
+                                                    @endif
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                                
+                                                @if($waste->description)
+                                                    <p class="text-sm text-gray-600 mb-3">{{ $waste->description }}</p>
+                                                @endif
 
-                                <!-- Actions -->
-                                <div class="flex flex-col gap-2 lg:flex-shrink-0">
-                                    <a href="{{ route('admin.branches.edit', $branch) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
-                                        <i class="bi bi-pencil-square"></i>
-                                        Edit
-                                    </a>
-                                    
-                                    <form action="{{ route('admin.branches.destroy', $branch) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus cabang ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
-                                            <i class="bi bi-trash3"></i>
-                                            Hapus
-                                        </button>
-                                    </form>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                                    <div class="flex items-center gap-2 text-sm">
+                                                        <i class="bi bi-currency-dollar text-lime-600"></i>
+                                                        <span class="text-gray-600">Harga:</span>
+                                                        <span class="font-bold text-lime-600">Rp {{ number_format($waste->price_per_kg, 0, ',', '.') }}/kg</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 text-sm">
+                                                        <i class="bi bi-coin text-emerald-600"></i>
+                                                        <span class="text-gray-600">Poin:</span>
+                                                        <span class="font-bold text-emerald-600">{{ $waste->points_per_kg }} poin/kg</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="flex flex-col gap-2 lg:flex-shrink-0">
+                                            <a href="{{ route('admin.waste-types.edit', $waste->id) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                <i class="bi bi-pencil-square"></i>
+                                                Edit
+                                            </a>
+                                            
+                                            <form action="{{ route('admin.waste-types.destroy', $waste->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus jenis sampah ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                    <i class="bi bi-trash3"></i>
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
-                    @empty
+
+                        {{-- Pagination --}}
+                        <div class="mt-6">
+                            {{ $wasteTypes->links() }}
+                        </div>
+                    @else
                         <div class="text-center py-12">
                             <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="bi bi-inbox text-gray-400 text-4xl"></i>
                             </div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Belum ada data cabang</h3>
-                            <p class="text-gray-600 mb-4">Belum ada cabang yang terdaftar dalam sistem</p>
-                            <a href="{{ route('admin.branches.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">Belum ada data</h3>
+                            <p class="text-gray-600 mb-4">Belum ada jenis sampah yang terdaftar</p>
+                            <a href="{{ route('admin.waste-types.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-lime-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
                                 <i class="bi bi-plus-circle"></i>
-                                Tambah Cabang Pertama
+                                Tambah Jenis Sampah Pertama
                             </a>
-                        </div>
-                    @endforelse
-
-                    {{-- Pagination --}}
-                    @if($branches->hasPages())
-                        <div class="mt-6">
-                            {{ $branches->links() }}
                         </div>
                     @endif
                 </div>
