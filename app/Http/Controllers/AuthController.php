@@ -36,7 +36,7 @@ class AuthController extends Controller
             return redirect()->intended('/dashboard');
         }
 
-        return redirect()->intended('/admin');
+        return redirect()->intended('/admin/dashboard');
     }
 
     /**
@@ -54,7 +54,7 @@ class AuthController extends Controller
                 return redirect()->intended('/dashboard');
             }
 
-            return redirect()->intended('/admin');
+            return redirect()->intended('/admin/dashboard');
         }
 
         return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
