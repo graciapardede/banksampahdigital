@@ -588,7 +588,7 @@
                         description: '',
                         imageUrl: ''
                     };
-                    if(this.$refs && this.$refs.addImageInput) {
+                    if(this.$refs && this.$refs.addImageInput) { 
                         this.$refs.addImageInput.value = null;
                     }
                     this.showAddModal = true;
