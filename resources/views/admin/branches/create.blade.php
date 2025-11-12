@@ -52,7 +52,7 @@
                             </label>
                             <input type="text" 
                                    name="phone" 
-                                   id="phone" 
+                                   id="phone"  
                                    value="{{ old('phone') }}"
                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('phone') border-red-500 @enderror"
                                    placeholder="Contoh: 061-1234567"
