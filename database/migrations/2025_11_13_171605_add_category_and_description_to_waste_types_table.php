@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('waste_types', function (Blueprint $table) {
-            $table->foreignId('branch_id')->nullable()->after('id')->constrained()->nullOnDelete();
+            $table->string('category')->nullable()->after('name');
+            $table->text('description')->nullable()->after('points_per_unit');
+            $table->string('image')->nullable()->after('description');
         });
     }
 
@@ -22,8 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('waste_types', function (Blueprint $table) {
-            $table->dropForeign(['branch_id']);
-            $table->dropColumn('branch_id');
+            $table->dropColumn(['category', 'description', 'image']);
         });
     }
 };

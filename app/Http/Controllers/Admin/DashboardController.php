@@ -69,16 +69,31 @@ class DashboardController extends Controller
      */
     private function getDepositsByMonth()
     {
-        $deposits = Deposit::select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('COUNT(*) as total')
-            )
-            ->where('created_at', '>=', Carbon::now()->subMonths(12))
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get();
+        $dbDriver = DB::connection()->getDriverName();
+        
+        if ($dbDriver === 'sqlite') {
+            $deposits = Deposit::select(
+                    DB::raw("CAST(strftime('%m', created_at) as INTEGER) as month"),
+                    DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year"),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->where('created_at', '>=', Carbon::now()->subMonths(12))
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'asc')
+                ->orderBy('month', 'asc')
+                ->get();
+        } else {
+            $deposits = Deposit::select(
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->where('created_at', '>=', Carbon::now()->subMonths(12))
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'asc')
+                ->orderBy('month', 'asc')
+                ->get();
+        }
 
         // Format untuk chart
         $result = [];
@@ -105,16 +120,31 @@ class DashboardController extends Controller
      */
     private function getRedemptionsByMonth()
     {
-        $redemptions = Redemption::select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('COUNT(*) as total')
-            )
-            ->where('created_at', '>=', Carbon::now()->subMonths(12))
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get();
+        $dbDriver = DB::connection()->getDriverName();
+        
+        if ($dbDriver === 'sqlite') {
+            $redemptions = Redemption::select(
+                    DB::raw("CAST(strftime('%m', created_at) as INTEGER) as month"),
+                    DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year"),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->where('created_at', '>=', Carbon::now()->subMonths(12))
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'asc')
+                ->orderBy('month', 'asc')
+                ->get();
+        } else {
+            $redemptions = Redemption::select(
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->where('created_at', '>=', Carbon::now()->subMonths(12))
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'asc')
+                ->orderBy('month', 'asc')
+                ->get();
+        }
 
         // Format untuk chart
         $result = [];

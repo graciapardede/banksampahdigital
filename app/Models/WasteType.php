@@ -10,9 +10,13 @@ class WasteType extends Model
     use HasFactory;
 
     protected $fillable = [
+        'branch_id',
         'name',
+        'category',
         'unit',
         'points_per_unit',
+        'description',
+        'image',
     ];
 
     public function depositItems()
