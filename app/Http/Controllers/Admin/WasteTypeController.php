@@ -11,14 +11,8 @@ class WasteTypeController extends Controller
     // Tampilkan semua data
     public function index()
     {
-        $wasteTypes = WasteType::latest()->paginate(10);
-        return view('admin.waste-types.index', compact('wasteTypes'));
-    }
-
-    // Form tambah data
-    public function create()
-    {
-        return view('admin.waste-types.create');
+        $wasteTypes = WasteType::latest()->paginate(20);
+        return view('admin.waste_types.index', compact('wasteTypes'));
     }
 
     // Simpan data baru
@@ -26,9 +20,17 @@ class WasteTypeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255',
             'unit' => 'required|string|max:50',
             'points_per_unit' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string|max:255',
         ]);
+
+        // Set branch_id if admin has one
+        if (auth()->user()->branch_id) {
+            $validated['branch_id'] = auth()->user()->branch_id;
+        }
 
         WasteType::create($validated);
 
@@ -36,19 +38,16 @@ class WasteTypeController extends Controller
             ->with('success', 'Jenis sampah berhasil ditambahkan!');
     }
 
-    // Form edit data
-    public function edit(WasteType $wasteType)
-    {
-        return view('admin.waste-types.edit', compact('wasteType'));
-    }
-
     // Update data
     public function update(Request $request, WasteType $wasteType)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'category' => 'nullable|string|max:255',
             'unit' => 'required|string|max:50',
             'points_per_unit' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string|max:255',
         ]);
 
         $wasteType->update($validated);

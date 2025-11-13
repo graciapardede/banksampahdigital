@@ -146,6 +146,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 
     // CRUD Reward Items (Barang Penukaran)
     Route::resource('reward-items', \App\Http\Controllers\Admin\RewardItemController::class);
+    Route::post('/reward-items/{rewardItem}/update-stock', [\App\Http\Controllers\Admin\RewardItemController::class, 'updateStock'])->name('reward-items.update-stock');
     // Alias route untuk backward compatibility
     Route::get('/tukar-barang', function () {
         return redirect()->route('admin.reward-items.index');
