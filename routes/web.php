@@ -62,20 +62,12 @@ Route::middleware('auth')->group(function () {
     // Dashboard untuk user biasa
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
-<<<<<<< Updated upstream
-    // Profil - View (show form) dan API untuk update
-    Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
-=======
-
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
-    // Profil
-    Route::get('/profil', function () {
-        return view('profil');
-    })->name('profil');
->>>>>>> Stashed changes
+    // Profil - View (show form) dan API untuk update
+    Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
     
     // Setor Sampah (read-only untuk user - tampilkan view dengan riwayat)
     Route::get('/setor', function() {
@@ -164,16 +156,12 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     
     // CRUD Branches (hanya untuk super admin, bukan admin cabang)
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
-<<<<<<< Updated upstream
     
     // Laporan (Report)
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');
     Route::get('/laporan/detail-redemptions', [\App\Http\Controllers\Admin\ReportController::class, 'detailRedemptions'])->name('laporan.detail-redemptions');
     Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'exportPdf'])->name('laporan.export-pdf');
-=======
-
->>>>>>> Stashed changes
 });
 
 // Temporary dev routes for previewing views without wiring controllers
