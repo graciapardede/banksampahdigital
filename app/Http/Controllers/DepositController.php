@@ -10,57 +10,51 @@ use Illuminate\Support\Facades\Auth;
 
 class DepositController extends Controller
 {
-    public function index()
+    /**
+     * Tampilkan riwayat setoran user (read-only)
+     * User TIDAK bisa submit setoran sendiri - hanya admin yang bisa
+     */
+    public function index(Request $request)
     {
-        $deposits = Deposit::with('items.wasteType')
+        $query = Deposit::with(['items.wasteType', 'branch'])
             ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
+            ->latest();
+
+        // Filter by status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date range
+        if ($request->has('date_from') && $request->date_from != '') {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && $request->date_to != '') {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $deposits = $query->get();
 
         return response()->json($deposits);
     }
 
-    // Simpan setoran baru
-    public function store(Request $request)
-    {
-        $request->validate([
-            'branch_id' => 'required|exists:branches,id',
-            'items' => 'required|array|min:1',
-            'items.*.waste_type_id' => 'required|exists:waste_types,id',
-            'items.*.weight' => 'required|numeric|min:0.1',
-        ]);
-
-        $totalPoints = 0;
-
-        $deposit = Deposit::create([
-            'user_id' => Auth::id(),
-            'branch_id' => $request->branch_id,
-            'status' => 'pending',
-        ]);
-
-        foreach ($request->items as $item) {
-            $points = $item['weight'] * wastePoints($item['waste_type_id']); // helper function
-            $totalPoints += $points;
-
-            DepositItem::create([
-                'deposit_id' => $deposit->id,
-                'waste_type_id' => $item['waste_type_id'],
-                'weight' => $item['weight'],
-                'points' => $points,
-            ]);
-        }
-
-        $deposit->update(['total_points' => $totalPoints]);
-
-        return response()->json([
-            'message' => 'Setoran berhasil dibuat, menunggu verifikasi admin.',
-            'deposit_id' => $deposit->id,
-        ], 201);
-    }
-
+    /**
+     * Tampilkan detail setoran
+     */
     public function show($id)
     {
-        $deposit = Deposit::with('items.wasteType')->findOrFail($id);
+        $deposit = Deposit::with(['items.wasteType', 'branch'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+            
         return response()->json($deposit);
+    }
+    
+    /**
+     * Tampilkan halaman riwayat (view)
+     */
+    public function history()
+    {
+        return view('riwayat');
     }
 }

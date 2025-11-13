@@ -42,7 +42,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span class="font-bold text-green-700 text-lg">15420 poin</span>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
                         </div>
                     </div>
 

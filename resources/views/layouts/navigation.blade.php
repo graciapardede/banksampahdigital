@@ -17,13 +17,13 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
+                        <x-nav-link :href="route('admin.setoran.index')" :active="request()->routeIs('admin.setoran.*')">
                             {{ __('Setoran') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.penukaran')" :active="request()->routeIs('admin.penukaran')">
+                        <x-nav-link :href="route('admin.penukaran.index')" :active="request()->routeIs('admin.penukaran.*')">
                             {{ __('Penukaran') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.tukar-barang')" :active="request()->routeIs('admin.tukar-barang')">
+                        <x-nav-link :href="route('admin.reward-items.index')" :active="request()->routeIs('admin.reward-items.*')">
                             {{ __('Tukar Barang') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.waste-types.index')" :active="request()->routeIs('admin.waste-types.*')">
@@ -92,13 +92,13 @@
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
+                <x-responsive-nav-link :href="route('admin.setoran.index')" :active="request()->routeIs('admin.setoran.*')">
                     {{ __('Setoran') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.penukaran')" :active="request()->routeIs('admin.penukaran')">
+                <x-responsive-nav-link :href="route('admin.penukaran.index')" :active="request()->routeIs('admin.penukaran.*')">
                     {{ __('Penukaran') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.tukar-barang')" :active="request()->routeIs('admin.tukar-barang')">
+                <x-responsive-nav-link :href="route('admin.reward-items.index')" :active="request()->routeIs('admin.reward-items.*')">
                     {{ __('Tukar Barang') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.waste-types.index')" :active="request()->routeIs('admin.waste-types.*')">
