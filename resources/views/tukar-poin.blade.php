@@ -952,14 +952,14 @@
 
             grid.innerHTML = allRewards.map((reward, index) => {
                 const colorClass = colors[index % colors.length];
-                const imagePath = reward.image ? `/storage/${reward.image}` : '/images/default-reward.png';
+                const imagePath = reward.image ? `/images/${reward.image}` : '/images/tukar reward.png';
                 const canAfford = currentPoints >= reward.points_cost;
 
                 return `
                     <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                         <div class="p-5">
                             <div class="bg-gradient-to-br ${colorClass} rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                                <img src="${imagePath}" alt="${reward.name}" class="h-40 w-auto object-contain" onerror="this.src='/images/default-reward.png'">
+                                <img src="${imagePath}" alt="${reward.name}" class="h-40 w-auto object-contain" onerror="this.src='/images/tukar reward.png'">
                             </div>
                             
                             <div class="space-y-3">
@@ -1009,7 +1009,7 @@
             document.getElementById('modalProductDesc').textContent = selectedReward.description || 'Hadiah menarik';
             document.getElementById('modalProductPrice').innerHTML = `<i class="bi bi-coin text-green-500 mr-1"></i>${selectedReward.points_cost.toLocaleString('id-ID')} poin`;
             
-            const imagePath = selectedReward.image ? `/storage/${selectedReward.image}` : '/images/default-reward.png';
+            const imagePath = selectedReward.image ? `/images/${selectedReward.image}` : '/images/tukar reward.png';
             document.getElementById('modalProductImage').src = imagePath;
             document.getElementById('modalProductImage').alt = selectedReward.name;
 

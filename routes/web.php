@@ -62,6 +62,13 @@ Route::middleware('auth')->group(function () {
     // Dashboard untuk user biasa
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
+<<<<<<< HEAD
+=======
+    // Profile routes
+    Route::get('/profile', [AuthController::class, 'getProfile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+
+>>>>>>> cddc942861797fc86d7951fc19fde40adafdf668
     // Profil - View (show form) dan API untuk update
     Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
     
@@ -142,6 +149,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 
     // CRUD Reward Items (Barang Penukaran)
     Route::resource('reward-items', \App\Http\Controllers\Admin\RewardItemController::class);
+    Route::post('/reward-items/{rewardItem}/update-stock', [\App\Http\Controllers\Admin\RewardItemController::class, 'updateStock'])->name('reward-items.update-stock');
     // Alias route untuk backward compatibility
     Route::get('/tukar-barang', function () {
         return redirect()->route('admin.reward-items.index');
@@ -150,6 +158,12 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     // CRUD Waste Types
     Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
     
+<<<<<<< HEAD
+=======
+    // CRUD Branches (hanya untuk super admin, bukan admin cabang)
+    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
+    
+>>>>>>> cddc942861797fc86d7951fc19fde40adafdf668
     // Laporan (Report)
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');

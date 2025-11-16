@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Manajemen Jenis Sampah - Green Saving</title>
+    <title>Manajemen Barang Tukar - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -80,17 +80,17 @@
                         <i class="bi bi-arrow-left-right"></i>
                         <span class="truncate">Penukaran</span>
                     </a>
-                    <a href="{{ route('admin.reward-items.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                    <a href="{{ route('admin.reward-items.index') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-gift"></i>
                         <span class="truncate">Tukar Barang</span>
                     </a>
-                    <a href="{{ route('admin.waste-types.index') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                    <a href="{{ route('admin.waste-types.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-recycle"></i>
                         <span class="truncate">Jenis Sampah</span>
                     </a>
-                    <a href="{{ route('admin.laporan.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span class="truncate">Laporan</span>
+                    <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-building"></i>
+                        <span class="truncate">Cabang</span>
                     </a>
                 </div>
             </div>
@@ -99,23 +99,23 @@
 
     <!-- Page Header with Actions -->
     <div class="max-w-6xl mx-auto px-4 py-6">
-        <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6">
+        <div class="bg-gradient-to-r from-teal-500 to-cyan-600 rounded-2xl shadow-lg p-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div class="text-white">
                     <div class="flex items-center gap-3 mb-2">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="bi bi-recycle text-2xl"></i>
+                            <i class="bi bi-gift text-2xl"></i>
                         </div>
                         <div>
-                            <h2 class="font-bold text-2xl">{{ __('Manajemen Jenis Sampah') }}</h2>
-                            <p class="text-sm text-green-100">Kelola kategori dan nilai poin sampah</p>
+                            <h2 class="font-bold text-2xl">{{ __('Manajemen Barang Tukar') }}</h2>
+                            <p class="text-sm text-teal-100">Kelola stok dan katalog barang reward</p>
                         </div>
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <button x-on:click.prevent="openAddModal()" class="inline-flex items-center gap-2 bg-white text-green-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                    <button x-on:click.prevent="openAddModal()" class="inline-flex items-center gap-2 bg-white text-teal-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
                         <i class="bi bi-plus-circle text-lg"></i>
-                        <span>Tambah Jenis Sampah</span>
+                        <span>Tambah Barang</span>
                     </button>
                 </div>
             </div>
@@ -124,13 +124,16 @@
 
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 pb-8" x-data="{
+            showModal: false,
+            modalItem: null,
+            qty: 1,
+            action: 'add',
             showAddModal: false,
             addForm: {
                 name: '',
-                category: '',
-                unit: 'kg',
-                points_per_unit: '',
+                points_cost: '',
                 description: '',
+                stock: 1,
                 image: ''
             },
             showEditModal: false,
@@ -140,15 +143,50 @@
             availableImages: @js(array_values(array_filter(scandir(public_path('images')), function($file) {
                 return !in_array($file, ['.', '..']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $file);
             }))),
+            openModal(item, actionType){ 
+                this.modalItem = item; 
+                this.qty = 1; 
+                this.action = actionType; 
+                this.showModal = true 
+            },
+            closeModal(){ this.showModal = false; this.modalItem = null; this.qty = 1 },
+            inc(){ this.qty = Number(this.qty) + 1 },
+            dec(){ if(this.qty > 1) this.qty = Number(this.qty) - 1 },
+            submitStock(){
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/reward-items/${this.modalItem.id}/update-stock`;
+                
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = document.querySelector('meta[name=csrf-token]').content;
+                form.appendChild(csrf);
+                
+                const qtyInput = document.createElement('input');
+                qtyInput.type = 'hidden';
+                qtyInput.name = 'quantity';
+                qtyInput.value = this.qty;
+                form.appendChild(qtyInput);
+                
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = this.action;
+                form.appendChild(actionInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            },
             openAddModal(){ 
-                this.addForm = { name: '', category: '', unit: 'kg', points_per_unit: '', description: '', image: '' }; 
+                this.addForm = { name: '', points_cost: '', description: '', stock: 1, image: '' }; 
                 this.showAddModal = true 
             },
             closeAddModal(){ this.showAddModal = false },
             submitAdd(){
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route('admin.waste-types.store') }}';
+                form.action = '{{ route('admin.reward-items.store') }}';
                 
                 const csrf = document.createElement('input');
                 csrf.type = 'hidden';
@@ -175,7 +213,7 @@
             submitEdit(){
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `/admin/waste-types/${this.editForm.id}`;
+                form.action = `/admin/reward-items/${this.editForm.id}`;
                 
                 const csrf = document.createElement('input');
                 csrf.type = 'hidden';
@@ -189,7 +227,7 @@
                 method.value = 'PUT';
                 form.appendChild(method);
                 
-                ['name', 'category', 'unit', 'points_per_unit', 'description', 'image'].forEach(key => {
+                ['name', 'points_cost', 'description', 'stock', 'image'].forEach(key => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = key;
@@ -208,7 +246,7 @@
             submitDelete(){
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `/admin/waste-types/${this.deleteItem.id}`;
+                form.action = `/admin/reward-items/${this.deleteItem.id}`;
                 
                 const csrf = document.createElement('input');
                 csrf.type = 'hidden';
@@ -241,41 +279,41 @@
 
             <!-- Statistics cards -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="p-4 rounded-lg border bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm">
-                        <div class="text-sm text-blue-600 font-medium">Total Jenis</div>
-                        <div class="mt-2 text-2xl font-bold text-blue-800">{{ $wasteTypes->count() }}</div>
+                        <div class="text-sm text-blue-600 font-medium">Total Barang</div>
+                        <div class="mt-2 text-2xl font-bold text-blue-800">{{ $stats['total'] ?? 0 }}</div>
                     </div>
                     <div class="p-4 rounded-lg border bg-gradient-to-br from-green-50 to-green-100 shadow-sm">
-                        <div class="text-sm text-green-600 font-medium">Plastik</div>
-                        <div class="mt-2 text-2xl font-bold text-green-800">{{ $wasteTypes->where('category', 'Plastik')->count() }}</div>
-                    </div>
-                    <div class="p-4 rounded-lg border bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-sm">
-                        <div class="text-sm text-yellow-600 font-medium">Kertas</div>
-                        <div class="mt-2 text-2xl font-bold text-yellow-800">{{ $wasteTypes->where('category', 'Kertas')->count() }}</div>
+                        <div class="text-sm text-green-600 font-medium">Aktif</div>
+                        <div class="mt-2 text-2xl font-bold text-green-800">{{ $stats['active'] ?? 0 }}</div>
                     </div>
                     <div class="p-4 rounded-lg border bg-gradient-to-br from-purple-50 to-purple-100 shadow-sm">
-                        <div class="text-sm text-purple-600 font-medium">Logam</div>
-                        <div class="mt-2 text-2xl font-bold text-purple-800">{{ $wasteTypes->where('category', 'Logam')->count() }}</div>
+                        <div class="text-sm text-purple-600 font-medium">Total Stok</div>
+                        <div class="mt-2 text-2xl font-bold text-purple-800">{{ $stats['total_stock'] ?? 0 }}</div>
+                    </div>
+                    <div class="p-4 rounded-lg border bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-sm">
+                        <div class="text-sm text-yellow-600 font-medium">Stok Menipis</div>
+                        <div class="mt-2 text-2xl font-bold text-yellow-800">{{ $stats['low_stock'] ?? 0 }}</div>
+                    </div>
+                    <div class="p-4 rounded-lg border bg-gradient-to-br from-pink-50 to-pink-100 shadow-sm">
+                        <div class="text-sm text-pink-600 font-medium">Total Ditukar</div>
+                        <div class="mt-2 text-2xl font-bold text-pink-800">{{ $stats['total_redeemed'] ?? 0 }}</div>
                     </div>
                 </div>
             </div>
 
             <!-- Search and filters -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-4">
-                <form method="GET" action="{{ route('admin.waste-types.index') }}" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <form method="GET" action="{{ route('admin.reward-items.index') }}" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="flex-1">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari jenis sampah..." class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama barang..." class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
                     </div>
                     <div class="flex items-center gap-3">
-                        <select name="category" class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">Semua Kategori</option>
-                            <option value="Plastik" {{ request('category') === 'Plastik' ? 'selected' : '' }}>Plastik</option>
-                            <option value="Kertas" {{ request('category') === 'Kertas' ? 'selected' : '' }}>Kertas</option>
-                            <option value="Logam" {{ request('category') === 'Logam' ? 'selected' : '' }}>Logam</option>
-                            <option value="Kaca" {{ request('category') === 'Kaca' ? 'selected' : '' }}>Kaca</option>
-                            <option value="Organik" {{ request('category') === 'Organik' ? 'selected' : '' }}>Organik</option>
-                            <option value="Elektronik" {{ request('category') === 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
+                        <select name="status" class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Semua Status</option>
+                            <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                            <option value="habis" {{ request('status') === 'habis' ? 'selected' : '' }}>Habis</option>
                         </select>
                         <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             <i class="bi bi-search"></i> Cari
@@ -284,43 +322,56 @@
                 </form>
             </div>
 
-            <!-- Waste types grid -->
+            <!-- Product grid -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                @if($wasteTypes->isEmpty())
+                @if($rewardItems->isEmpty())
                     <div class="text-center py-12">
-                        <i class="bi bi-recycle text-6xl text-gray-300"></i>
-                        <p class="mt-4 text-gray-500">Belum ada jenis sampah. Tambahkan jenis sampah pertama Anda!</p>
+                        <i class="bi bi-inbox text-6xl text-gray-300"></i>
+                        <p class="mt-4 text-gray-500">Belum ada barang reward. Tambahkan barang pertama Anda!</p>
                         <button x-on:click="openAddModal()" class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                            Tambah Jenis Sampah
+                            Tambah Barang
                         </button>
                     </div>
                 @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($wasteTypes as $item)
+                        @foreach($rewardItems as $item)
                             <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 border border-gray-200">
                                 <div class="flex flex-col items-center text-center gap-3">
                                     <div class="w-40 h-40 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg flex items-center justify-center overflow-hidden border-2 border-gray-200">
                                         @if($item->image)
                                             <img src="{{ asset('images/' . $item->image) }}" alt="{{ $item->name }}" class="object-contain h-full w-full p-2" />
                                         @else
-                                            <i class="bi bi-recycle text-6xl text-gray-300"></i>
+                                            <i class="bi bi-image text-6xl text-gray-300"></i>
                                         @endif
                                     </div>
                                     <div class="w-full">
                                         <h3 class="font-semibold text-lg text-gray-800">{{ $item->name }}</h3>
                                         <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $item->description ?? 'Tidak ada deskripsi' }}</p>
-                                        <div class="mt-2 flex items-center justify-center gap-2 flex-wrap">
-                                            @if($item->category)
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                                    <i class="bi bi-tag mr-1"></i> {{ $item->category }}
-                                                </span>
-                                            @endif
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                                <i class="bi bi-coin mr-1"></i> {{ $item->points_per_unit }} poin/{{ $item->unit }}
+                                        <div class="mt-2 flex items-center justify-center gap-2">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                                                <i class="bi bi-coin mr-1"></i> {{ $item->points_cost }} poin
+                                            </span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="text-sm text-gray-600">Stok: </span>
+                                            <span class="font-bold text-lg {{ $item->stock > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                                {{ $item->stock }}
                                             </span>
                                         </div>
 
                                         <div class="mt-4 grid grid-cols-2 gap-2">
+                                            <button
+                                                class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                                                x-on:click="openModal(@js($item), 'add')"
+                                            >
+                                                <i class="bi bi-plus-circle"></i> Tambah Stok
+                                            </button>
+                                            <button
+                                                class="bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
+                                                x-on:click="openModal(@js($item), 'subtract')"
+                                            >
+                                                <i class="bi bi-dash-circle"></i> Kurangi Stok
+                                            </button>
                                             <button
                                                 class="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 py-2 rounded-lg text-sm font-medium transition-colors"
                                                 x-on:click="openEditModal(@js($item))"
@@ -339,16 +390,70 @@
                             </div>
                         @endforeach
                     </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        {{ $rewardItems->links() }}
+                    </div>
                 @endif
             </div>
 
-            {{-- Modal for Tambah Jenis Sampah --}}
+            {{-- Modal for update stock --}}
+            <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
+                <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50" x-on:click="closeModal()"></div>
+                <div x-show="showModal" x-transition class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 z-50">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800" x-text="action === 'add' ? 'Tambah Stok' : 'Kurangi Stok'"></h3>
+                        <p class="text-sm text-gray-500 mt-1">Kelola stok barang reward</p>
+
+                        <div class="mt-6 flex gap-6 items-start">
+                            <div class="w-36 h-36 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2">
+                                <template x-if="modalItem && modalItem.image">
+                                    <img :src="`/images/${modalItem.image}`" :alt="modalItem.name" class="object-contain h-full w-full p-2" />
+                                </template>
+                                <template x-if="modalItem && !modalItem.image">
+                                    <i class="bi bi-image text-6xl text-gray-300"></i>
+                                </template>
+                            </div>
+
+                            <div class="flex-1">
+                                <div class="font-semibold text-lg text-gray-800" x-text="modalItem ? modalItem.name : ''"></div>
+                                <div class="text-sm text-gray-500 mt-1" x-text="modalItem ? modalItem.description : ''"></div>
+                                <div class="mt-2">
+                                    <span class="text-sm text-gray-600">Stok saat ini: </span>
+                                    <span class="font-bold text-lg text-green-600" x-text="modalItem ? modalItem.stock : 0"></span>
+                                </div>
+
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors" x-on:click="dec">-</button>
+                                        <input type="number" x-model="qty" min="1" class="w-24 text-center px-3 py-2 border-2 border-gray-300 rounded-lg font-bold text-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                        <button type="button" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors" x-on:click="inc">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeModal">Batal</button>
+                            <button type="button" class="px-6 py-2 text-white rounded-lg font-medium transition-colors" 
+                                :class="action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-600 hover:bg-orange-700'"
+                                x-on:click="submitStock()">
+                                <span x-text="action === 'add' ? 'Tambahkan' : 'Kurangi'"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Modal for Tambah Barang --}}
             <div x-show="showAddModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
                 <div x-show="showAddModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50" x-on:click="closeAddModal()"></div>
                 <div x-show="showAddModal" x-transition class="bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 z-50 max-h-[90vh] overflow-y-auto">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800">Tambah Jenis Sampah</h3>
-                        <p class="text-sm text-gray-500 mt-1">Tambahkan jenis sampah baru ke sistem</p>
+                        <h3 class="text-xl font-bold text-gray-800">Tambah Barang Baru</h3>
+                        <p class="text-sm text-gray-500 mt-1">Tambahkan barang yang dapat ditukar dengan poin</p>
 
                         <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="col-span-1">
@@ -359,7 +464,7 @@
                                     </template>
                                     <template x-if="!addForm.image">
                                         <div class="text-center">
-                                            <i class="bi bi-recycle text-6xl text-gray-300"></i>
+                                            <i class="bi bi-image text-6xl text-gray-300"></i>
                                             <p class="text-xs text-gray-400 mt-2">Pilih gambar</p>
                                         </div>
                                     </template>
@@ -375,41 +480,24 @@
                             <div class="col-span-2">
                                 <div class="space-y-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Sampah <span class="text-red-500">*</span></label>
-                                        <input type="text" x-model="addForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: Botol Plastik PET" required />
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang <span class="text-red-500">*</span></label>
+                                        <input type="text" x-model="addForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: Beras Premium 5kg" required />
                                     </div>
 
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
-                                            <select x-model="addForm.category" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                                                <option value="">-- Pilih Kategori --</option>
-                                                <option value="Plastik">Plastik</option>
-                                                <option value="Kertas">Kertas</option>
-                                                <option value="Logam">Logam</option>
-                                                <option value="Kaca">Kaca</option>
-                                                <option value="Organik">Organik</option>
-                                                <option value="Elektronik">Elektronik</option>
-                                            </select>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Poin <span class="text-red-500">*</span></label>
+                                            <input type="number" x-model="addForm.points_cost" min="1" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="200" required />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Satuan <span class="text-red-500">*</span></label>
-                                            <select x-model="addForm.unit" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                                                <option value="kg">kg (kilogram)</option>
-                                                <option value="pcs">pcs (pieces)</option>
-                                                <option value="liter">liter</option>
-                                            </select>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label>
+                                            <input type="number" x-model="addForm.stock" min="0" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
                                         </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Poin per Satuan <span class="text-red-500">*</span></label>
-                                        <input type="number" x-model="addForm.points_per_unit" min="1" step="0.01" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="100" required />
                                     </div>
 
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                        <textarea x-model="addForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" rows="3" placeholder="Deskripsi jenis sampah..."></textarea>
+                                        <textarea x-model="addForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" rows="4" placeholder="Deskripsi singkat tentang barang..."></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -417,19 +505,19 @@
 
                         <div class="mt-6 flex justify-end gap-3">
                             <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeAddModal">Batal</button>
-                            <button type="button" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitAdd()">Tambahkan</button>
+                            <button type="button" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitAdd()">Tambahkan Barang</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Modal for Edit Jenis Sampah --}}
+            {{-- Modal for Edit Barang --}}
             <div x-show="showEditModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
                 <div x-show="showEditModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50" x-on:click="closeEditModal()"></div>
                 <div x-show="showEditModal" x-transition class="bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 z-50 max-h-[90vh] overflow-y-auto">
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800">Edit Jenis Sampah</h3>
-                        <p class="text-sm text-gray-500 mt-1">Perbarui informasi jenis sampah</p>
+                        <h3 class="text-xl font-bold text-gray-800">Edit Barang</h3>
+                        <p class="text-sm text-gray-500 mt-1">Perbarui informasi barang reward</p>
 
                         <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="col-span-1">
@@ -439,7 +527,7 @@
                                         <img :src="`/images/${editForm.image}`" alt="preview" class="object-contain h-full w-full p-2" />
                                     </template>
                                     <template x-if="!editForm.image">
-                                        <i class="bi bi-recycle text-6xl text-gray-300"></i>
+                                        <i class="bi bi-image text-6xl text-gray-300"></i>
                                     </template>
                                 </div>
                                 <select x-model="editForm.image" class="mt-3 block w-full rounded-lg border px-3 py-2 text-sm">
@@ -453,41 +541,24 @@
                             <div class="col-span-2">
                                 <div class="space-y-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Sampah <span class="text-red-500">*</span></label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang <span class="text-red-500">*</span></label>
                                         <input type="text" x-model="editForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
                                     </div>
 
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
-                                            <select x-model="editForm.category" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                                <option value="">-- Pilih Kategori --</option>
-                                                <option value="Plastik">Plastik</option>
-                                                <option value="Kertas">Kertas</option>
-                                                <option value="Logam">Logam</option>
-                                                <option value="Kaca">Kaca</option>
-                                                <option value="Organik">Organik</option>
-                                                <option value="Elektronik">Elektronik</option>
-                                            </select>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Poin <span class="text-red-500">*</span></label>
+                                            <input type="number" x-model="editForm.points_cost" min="1" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Satuan <span class="text-red-500">*</span></label>
-                                            <select x-model="editForm.unit" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                                <option value="kg">kg (kilogram)</option>
-                                                <option value="pcs">pcs (pieces)</option>
-                                                <option value="liter">liter</option>
-                                            </select>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Stok</label>
+                                            <input type="number" x-model="editForm.stock" min="0" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Poin per Satuan <span class="text-red-500">*</span></label>
-                                        <input type="number" x-model="editForm.points_per_unit" min="1" step="0.01" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
                                     </div>
 
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                        <textarea x-model="editForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+                                        <textarea x-model="editForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -511,19 +582,15 @@
                                 <i class="bi bi-exclamation-triangle text-red-600 text-2xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold text-gray-800">Hapus Jenis Sampah</h3>
-                                <p class="text-sm text-gray-600 mt-1">Apakah Anda yakin ingin menghapus jenis sampah ini?</p>
+                                <h3 class="text-lg font-bold text-gray-800">Hapus Barang</h3>
+                                <p class="text-sm text-gray-600 mt-1">Apakah Anda yakin ingin menghapus barang ini?</p>
                             </div>
                         </div>
 
                         <div class="mt-4 bg-gray-50 rounded-lg p-4">
                             <div class="font-semibold text-gray-800" x-text="deleteItem ? deleteItem.name : ''"></div>
                             <div class="text-sm text-gray-500 mt-1">
-                                Kategori: <span class="font-medium" x-text="deleteItem ? deleteItem.category : ''"></span>
-                            </div>
-                            <div class="text-sm text-gray-500">
-                                Poin: <span class="font-medium" x-text="deleteItem ? deleteItem.points_per_unit : 0"></span>/
-                                <span x-text="deleteItem ? deleteItem.unit : ''"></span>
+                                Stok: <span class="font-medium" x-text="deleteItem ? deleteItem.stock : 0"></span>
                             </div>
                         </div>
 
@@ -534,7 +601,7 @@
                         <div class="mt-6 flex justify-end gap-3">
                             <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeDeleteModal">Batal</button>
                             <button type="button" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitDelete()">
-                                <i class="bi bi-trash"></i> Hapus
+                                <i class="bi bi-trash"></i> Hapus Barang
                             </button>
                         </div>
                     </div>
