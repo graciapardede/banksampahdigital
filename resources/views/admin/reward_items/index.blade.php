@@ -20,8 +20,100 @@
             }
         }
     </script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
+<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins" x-data="{
+        showAddModal: false,
+        addForm: {
+            name: '',
+            points_cost: '',
+            description: '',
+            stock: 1
+        },
+        addImagePreview: null,
+        showEditModal: false,
+        editForm: {},
+        editImagePreview: null,
+        showDeleteModal: false,
+        deleteItem: null,
+        openAddModal(){ 
+            this.addForm = { name: '', points_cost: '', description: '', stock: 1 };
+            this.addImagePreview = null;
+            this.showAddModal = true;
+            console.log('Modal opened!');
+        },
+        closeAddModal(){ 
+            this.showAddModal = false;
+            this.addImagePreview = null;
+        },
+        handleAddImageUpload(event){
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.addImagePreview = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        submitAdd(){
+            const form = document.getElementById('addForm');
+            form.submit();
+        },
+        openEditModal(item){
+            this.editForm = {...item};
+            this.editImagePreview = item.image ? `/images/${item.image}` : null;
+            this.showEditModal = true;
+        },
+        closeEditModal(){ 
+            this.showEditModal = false;
+            this.editImagePreview = null;
+        },
+        handleEditImageUpload(event){
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.editImagePreview = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        submitEdit(){
+            const form = document.getElementById('editForm');
+            form.submit();
+        },
+        openDeleteModal(item){
+            this.deleteItem = item;
+            this.showDeleteModal = true;
+        },
+        closeDeleteModal(){ 
+            this.showDeleteModal = false; 
+            this.deleteItem = null;
+        },
+        submitDelete(){
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/reward-items/${this.deleteItem.id}`;
+            
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = document.querySelector('meta[name=csrf-token]').content;
+            form.appendChild(csrf);
+            
+            const method = document.createElement('input');
+            method.type = 'hidden';
+            method.name = '_method';
+            method.value = 'DELETE';
+            form.appendChild(method);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }">
 
     <!-- Header -->
     <header class="bg-white shadow-sm">
@@ -123,161 +215,53 @@
     </div>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 pb-8" x-data="{
-            showModal: false,
-            modalItem: null,
-            qty: 1,
-            action: 'add',
-            showAddModal: false,
-            addForm: {
-                name: '',
-                points_cost: '',
-                description: '',
-                stock: 1,
-                image: ''
-            },
-            showEditModal: false,
-            editForm: {},
-            showDeleteModal: false,
-            deleteItem: null,
-            availableImages: @js(array_values(array_filter(scandir(public_path('images')), function($file) {
-                return !in_array($file, ['.', '..']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $file);
-            }))),
-            openModal(item, actionType){ 
-                this.modalItem = item; 
-                this.qty = 1; 
-                this.action = actionType; 
-                this.showModal = true 
-            },
-            closeModal(){ this.showModal = false; this.modalItem = null; this.qty = 1 },
-            inc(){ this.qty = Number(this.qty) + 1 },
-            dec(){ if(this.qty > 1) this.qty = Number(this.qty) - 1 },
-            submitStock(){
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/reward-items/${this.modalItem.id}/update-stock`;
-                
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = document.querySelector('meta[name=csrf-token]').content;
-                form.appendChild(csrf);
-                
-                const qtyInput = document.createElement('input');
-                qtyInput.type = 'hidden';
-                qtyInput.name = 'quantity';
-                qtyInput.value = this.qty;
-                form.appendChild(qtyInput);
-                
-                const actionInput = document.createElement('input');
-                actionInput.type = 'hidden';
-                actionInput.name = 'action';
-                actionInput.value = this.action;
-                form.appendChild(actionInput);
-                
-                document.body.appendChild(form);
-                form.submit();
-            },
-            openAddModal(){ 
-                this.addForm = { name: '', points_cost: '', description: '', stock: 1, image: '' }; 
-                this.showAddModal = true 
-            },
-            closeAddModal(){ this.showAddModal = false },
-            submitAdd(){
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route('admin.reward-items.store') }}';
-                
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = document.querySelector('meta[name=csrf-token]').content;
-                form.appendChild(csrf);
-                
-                Object.keys(this.addForm).forEach(key => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = this.addForm[key];
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
-            },
-            openEditModal(item){
-                this.editForm = {...item};
-                this.showEditModal = true;
-            },
-            closeEditModal(){ this.showEditModal = false },
-            submitEdit(){
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/reward-items/${this.editForm.id}`;
-                
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = document.querySelector('meta[name=csrf-token]').content;
-                form.appendChild(csrf);
-                
-                const method = document.createElement('input');
-                method.type = 'hidden';
-                method.name = '_method';
-                method.value = 'PUT';
-                form.appendChild(method);
-                
-                ['name', 'points_cost', 'description', 'stock', 'image'].forEach(key => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = this.editForm[key] || '';
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
-            },
-            openDeleteModal(item){
-                this.deleteItem = item;
-                this.showDeleteModal = true;
-            },
-            closeDeleteModal(){ this.showDeleteModal = false; this.deleteItem = null },
-            submitDelete(){
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/reward-items/${this.deleteItem.id}`;
-                
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = document.querySelector('meta[name=csrf-token]').content;
-                form.appendChild(csrf);
-                
-                const method = document.createElement('input');
-                method.type = 'hidden';
-                method.name = '_method';
-                method.value = 'DELETE';
-                form.appendChild(method);
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }">
-            {{-- Alert Success --}}
-            @if(session('success'))
-                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
-                     class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                    <span @click="show = false" class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer">
-                        <svg class="fill-current h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+    <main class="max-w-6xl mx-auto px-4 pb-8">
+        <!-- Statistics Cards -->
+        {{-- Alert Success --}}
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+                 class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                <span class="block sm:inline">{{ session('success') }}</span>
+                <span @click="show = false" class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer">
+                    <svg class="fill-current h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                    </svg>
+                </span>
+            </div>
+        @endif
+
+        {{-- Alert Error --}}
+        @if(session('error'))
+            <div x-data="{ show: true }" x-show="show"
+                 class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <span class="block sm:inline">{{ session('error') }}</span>
+                <span @click="show = false" class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer">
+                    <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                    </svg>
+                </span>
+            </div>
+        @endif
+
+        {{-- Validation Errors --}}
+        @if($errors->any())
+            <div x-data="{ show: true }" x-show="show"
+                 class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong class="font-bold">Terjadi kesalahan!</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <span @click="show = false" class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer">
+                    <svg class="fill-current h-6 w-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
                         </svg>
                     </span>
-                </div>
-            @endif
+            </div>
+        @endif
 
-            <!-- Statistics cards -->
+        <!-- Statistics cards -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="p-4 rounded-lg border bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm">
@@ -361,25 +345,13 @@
 
                                         <div class="mt-4 grid grid-cols-2 gap-2">
                                             <button
-                                                class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
-                                                x-on:click="openModal(@js($item), 'add')"
-                                            >
-                                                <i class="bi bi-plus-circle"></i> Tambah Stok
-                                            </button>
-                                            <button
-                                                class="bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
-                                                x-on:click="openModal(@js($item), 'subtract')"
-                                            >
-                                                <i class="bi bi-dash-circle"></i> Kurangi Stok
-                                            </button>
-                                            <button
-                                                class="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 py-2 rounded-lg text-sm font-medium transition-colors"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
                                                 x-on:click="openEditModal(@js($item))"
                                             >
                                                 <i class="bi bi-pencil"></i> Edit
                                             </button>
                                             <button
-                                                class="border-2 border-red-500 text-red-600 hover:bg-red-50 py-2 rounded-lg text-sm font-medium transition-colors"
+                                                class="bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-medium transition-colors"
                                                 x-on:click="openDeleteModal(@js($item))"
                                             >
                                                 <i class="bi bi-trash"></i> Hapus
@@ -398,55 +370,6 @@
                 @endif
             </div>
 
-            {{-- Modal for update stock --}}
-            <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
-                <div x-show="showModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50" x-on:click="closeModal()"></div>
-                <div x-show="showModal" x-transition class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 z-50">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800" x-text="action === 'add' ? 'Tambah Stok' : 'Kurangi Stok'"></h3>
-                        <p class="text-sm text-gray-500 mt-1">Kelola stok barang reward</p>
-
-                        <div class="mt-6 flex gap-6 items-start">
-                            <div class="w-36 h-36 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2">
-                                <template x-if="modalItem && modalItem.image">
-                                    <img :src="`/images/${modalItem.image}`" :alt="modalItem.name" class="object-contain h-full w-full p-2" />
-                                </template>
-                                <template x-if="modalItem && !modalItem.image">
-                                    <i class="bi bi-image text-6xl text-gray-300"></i>
-                                </template>
-                            </div>
-
-                            <div class="flex-1">
-                                <div class="font-semibold text-lg text-gray-800" x-text="modalItem ? modalItem.name : ''"></div>
-                                <div class="text-sm text-gray-500 mt-1" x-text="modalItem ? modalItem.description : ''"></div>
-                                <div class="mt-2">
-                                    <span class="text-sm text-gray-600">Stok saat ini: </span>
-                                    <span class="font-bold text-lg text-green-600" x-text="modalItem ? modalItem.stock : 0"></span>
-                                </div>
-
-                                <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
-                                    <div class="flex items-center gap-2">
-                                        <button type="button" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors" x-on:click="dec">-</button>
-                                        <input type="number" x-model="qty" min="1" class="w-24 text-center px-3 py-2 border-2 border-gray-300 rounded-lg font-bold text-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-                                        <button type="button" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors" x-on:click="inc">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeModal">Batal</button>
-                            <button type="button" class="px-6 py-2 text-white rounded-lg font-medium transition-colors" 
-                                :class="action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-600 hover:bg-orange-700'"
-                                x-on:click="submitStock()">
-                                <span x-text="action === 'add' ? 'Tambahkan' : 'Kurangi'"></span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {{-- Modal for Tambah Barang --}}
             <div x-show="showAddModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
                 <div x-show="showAddModal" x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50" x-on:click="closeAddModal()"></div>
@@ -455,58 +378,60 @@
                         <h3 class="text-xl font-bold text-gray-800">Tambah Barang Baru</h3>
                         <p class="text-sm text-gray-500 mt-1">Tambahkan barang yang dapat ditukar dengan poin</p>
 
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="col-span-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Gambar</label>
-                                <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2">
-                                    <template x-if="addForm.image">
-                                        <img :src="`/images/${addForm.image}`" alt="preview" class="object-contain h-full w-full p-2" />
-                                    </template>
-                                    <template x-if="!addForm.image">
-                                        <div class="text-center">
-                                            <i class="bi bi-image text-6xl text-gray-300"></i>
-                                            <p class="text-xs text-gray-400 mt-2">Pilih gambar</p>
-                                        </div>
-                                    </template>
+                        <form id="addForm" method="POST" action="{{ route('admin.reward-items.store') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Gambar</label>
+                                    <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 hover:border-green-500 transition-colors cursor-pointer" x-on:click="$refs.addImageInput.click()">
+                                        <template x-if="addImagePreview">
+                                            <img :src="addImagePreview" alt="preview" class="object-contain h-full w-full p-2" />
+                                        </template>
+                                        <template x-if="!addImagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-cloud-upload text-6xl text-gray-300"></i>
+                                                <p class="text-xs text-gray-400 mt-2">Klik untuk upload gambar</p>
+                                                <p class="text-xs text-gray-300 mt-1">PNG, JPG, JPEG, GIF</p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <input type="file" x-ref="addImageInput" name="image" accept="image/*" class="hidden" x-on:change="handleAddImageUpload($event)" />
+                                    <button type="button" x-show="addImagePreview" x-on:click="addImagePreview = null; $refs.addImageInput.value = ''" class="mt-2 w-full px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200">
+                                        Hapus Gambar
+                                    </button>
                                 </div>
-                                <select x-model="addForm.image" class="mt-3 block w-full rounded-lg border px-3 py-2 text-sm">
-                                    <option value="">-- Pilih Gambar --</option>
-                                    <template x-for="img in availableImages" :key="img">
-                                        <option :value="img" x-text="img"></option>
-                                    </template>
-                                </select>
+
+                                <div class="col-span-2">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang <span class="text-red-500">*</span></label>
+                                            <input type="text" name="name" x-model="addForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: Beras Premium 5kg" required />
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Poin <span class="text-red-500">*</span></label>
+                                                <input type="number" name="points_cost" x-model="addForm.points_cost" min="1" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="200" required />
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label>
+                                                <input type="number" name="stock" x-model="addForm.stock" min="0" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                            <textarea name="description" x-model="addForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" rows="4" placeholder="Deskripsi singkat tentang barang..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="col-span-2">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang <span class="text-red-500">*</span></label>
-                                        <input type="text" x-model="addForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: Beras Premium 5kg" required />
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Poin <span class="text-red-500">*</span></label>
-                                            <input type="number" x-model="addForm.points_cost" min="1" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="200" required />
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label>
-                                            <input type="number" x-model="addForm.stock" min="0" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                        <textarea x-model="addForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" rows="4" placeholder="Deskripsi singkat tentang barang..."></textarea>
-                                    </div>
-                                </div>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeAddModal">Batal</button>
+                                <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Tambahkan Barang</button>
                             </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeAddModal">Batal</button>
-                            <button type="button" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitAdd()">Tambahkan Barang</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -519,55 +444,65 @@
                         <h3 class="text-xl font-bold text-gray-800">Edit Barang</h3>
                         <p class="text-sm text-gray-500 mt-1">Perbarui informasi barang reward</p>
 
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="col-span-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Gambar</label>
-                                <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2">
-                                    <template x-if="editForm.image">
-                                        <img :src="`/images/${editForm.image}`" alt="preview" class="object-contain h-full w-full p-2" />
-                                    </template>
-                                    <template x-if="!editForm.image">
-                                        <i class="bi bi-image text-6xl text-gray-300"></i>
-                                    </template>
-                                </div>
-                                <select x-model="editForm.image" class="mt-3 block w-full rounded-lg border px-3 py-2 text-sm">
-                                    <option value="">-- Pilih Gambar --</option>
-                                    <template x-for="img in availableImages" :key="img">
-                                        <option :value="img" x-text="img"></option>
-                                    </template>
-                                </select>
-                            </div>
-
-                            <div class="col-span-2">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang <span class="text-red-500">*</span></label>
-                                        <input type="text" x-model="editForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                        <form :id="'editForm'" :action="`/admin/reward-items/${editForm.id}`" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Gambar</label>
+                                    <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors cursor-pointer" x-on:click="$refs.editImageInput.click()">
+                                        <template x-if="editImagePreview">
+                                            <img :src="editImagePreview" alt="preview" class="object-contain h-full w-full p-2" />
+                                        </template>
+                                        <template x-if="!editImagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-cloud-upload text-6xl text-gray-300"></i>
+                                                <p class="text-xs text-gray-400 mt-2">Klik untuk upload gambar baru</p>
+                                                <p class="text-xs text-gray-300 mt-1">PNG, JPG, JPEG, GIF</p>
+                                            </div>
+                                        </template>
                                     </div>
+                                    <input type="file" x-ref="editImageInput" name="image" accept="image/*" class="hidden" x-on:change="handleEditImageUpload($event)" />
+                                    <button type="button" x-show="editImagePreview" x-on:click="editImagePreview = null; $refs.editImageInput.value = ''" class="mt-2 w-full px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200">
+                                        Hapus Gambar
+                                    </button>
+                                </div>
 
-                                    <div class="grid grid-cols-2 gap-4">
+                                <div class="col-span-2">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Barang <span class="text-red-500">*</span></label>
+                                            <input type="text" name="name" x-model="editForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                        </div>
+
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Poin <span class="text-red-500">*</span></label>
-                                            <input type="number" x-model="editForm.points_cost" min="1" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                            <input type="number" name="points_cost" x-model="editForm.points_cost" min="1" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="200" required />
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Stok</label>
-                                            <input type="number" x-model="editForm.stock" min="0" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                        </div>
-                                    </div>
 
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                        <textarea x-model="editForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4"></textarea>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kelola Stok</label>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" class="w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold text-xl transition-colors flex items-center justify-center" x-on:click="editForm.stock = Math.max(0, Number(editForm.stock) - 1)">−</button>
+                                                <input type="number" name="stock" x-model="editForm.stock" min="0" class="flex-1 text-center rounded-lg border-2 border-gray-300 px-4 py-3 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                                <button type="button" class="w-12 h-12 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold text-xl transition-colors flex items-center justify-center" x-on:click="editForm.stock = Number(editForm.stock) + 1">+</button>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">Klik - untuk mengurangi atau + untuk menambah stok</p>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                            <textarea name="description" x-model="editForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4"></textarea>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeEditModal">Batal</button>
-                            <button type="button" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitEdit()">Simpan Perubahan</button>
-                        </div>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeEditModal">Batal</button>
+                                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">Simpan Perubahan</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

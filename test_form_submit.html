@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Form Submit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8 bg-gray-100">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-bold mb-4">Test Form Submit Reward Item</h2>
+        
+        <form action="http://127.0.0.1:8000/admin/reward-items" method="POST" enctype="multipart/form-data">
+            <!-- CSRF Token - Anda harus login dulu dan ambil token dari halaman admin -->
+            <input type="hidden" name="_token" value="PASTE_YOUR_CSRF_TOKEN_HERE">
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-medium mb-1">Upload Gambar</label>
+                    <input type="file" name="image" accept="image/*" class="block w-full border rounded px-3 py-2" required>
+                    <p class="text-sm text-gray-500">Format: JPG, PNG, GIF (Max 2MB)</p>
+                </div>
+                
+                <div>
+                    <label class="block font-medium mb-1">Nama Barang *</label>
+                    <input type="text" name="name" class="block w-full border rounded px-3 py-2" required>
+                </div>
+                
+                <div>
+                    <label class="block font-medium mb-1">Poin Cost *</label>
+                    <input type="number" name="points_cost" min="1" class="block w-full border rounded px-3 py-2" required>
+                </div>
+                
+                <div>
+                    <label class="block font-medium mb-1">Stok Awal</label>
+                    <input type="number" name="stock" min="0" value="0" class="block w-full border rounded px-3 py-2">
+                </div>
+                
+                <div>
+                    <label class="block font-medium mb-1">Deskripsi</label>
+                    <textarea name="description" rows="3" class="block w-full border rounded px-3 py-2"></textarea>
+                </div>
+                
+                <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                    Submit Test
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+            <p class="font-medium text-yellow-800">Cara menggunakan:</p>
+            <ol class="list-decimal ml-5 mt-2 text-sm text-yellow-700">
+                <li>Login sebagai admin di browser</li>
+                <li>Buka halaman admin/reward-items</li>
+                <li>Buka Developer Tools (F12) → Console</li>
+                <li>Ketik: <code class="bg-yellow-100 px-1">document.querySelector('meta[name="csrf-token"]').content</code></li>
+                <li>Copy token yang muncul</li>
+                <li>Paste di field "_token" di atas (ganti PASTE_YOUR_CSRF_TOKEN_HERE)</li>
+                <li>Isi form dan submit</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
