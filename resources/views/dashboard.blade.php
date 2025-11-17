@@ -39,7 +39,7 @@
                 <!-- Points & Actions -->
                 <div class="flex items-center space-x-4">
                     <!-- Points Display -->
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-200 shadow-sm">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
                             <span class="font-bold text-green-700 text-lg">15420 poin</span>
@@ -117,7 +117,7 @@
                 </div>
                 <div class="text-center md:text-right">
                     <div class="bg-white bg-opacity-15 backdrop-blur-sm rounded-2xl px-6 py-4 mb-4">
-                        <div class="text-3xl font-bold">19,200</div>
+                        <div class="text-3xl font-bold">15,420</div>
                         <div class="text-sm opacity-90">ECO coin</div>
                     </div>
                     <button class="bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-30 text-white px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-200">
@@ -336,6 +336,45 @@
             const buttons = document.querySelectorAll('button');
             buttons.forEach(button => {
                 button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-1px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-1px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+n closeModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchDashboardData();
+            
+            // Auto refresh every 30 seconds
+            setInterval(fetchDashboardData, 30000);
+        });
+    </script>
+
+</body>
+</html>tton.addEventListener('mouseenter', function() {
                     this.style.transform = 'translateY(-1px)';
                 });
                 button.addEventListener('mouseleave', function() {
