@@ -64,19 +64,14 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
     
-<<<<<<< Updated upstream
-    // Profil
-    Route::get('/profil', function () {
-        return view('profil');
-    })->name('profil');
-=======
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
-    // Profil - View (show form) dan API untuk update
-    Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
->>>>>>> Stashed changes
+    // Profil
+    Route::get('/profil', function () {
+        return view('profil');
+    })->name('profil');
     
     // Setor Sampah
     Route::get('/setor', function () {
@@ -102,10 +97,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/riwayat-tukar', function () {
         return view('riwayat-tukar');
     })->name('riwayat-tukar');
-    
-    // Profile routes
-    Route::get('/profile', [AuthController::class, 'getProfile']);
-    Route::put('/profile', [AuthController::class, 'updateProfile']);
 });
 
 // Admin routes
@@ -139,11 +130,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     // CRUD Waste Types
     Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
     
-<<<<<<< Updated upstream
     // CRUD Branches
-    Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
-=======
-    // CRUD Branches (hanya untuk super admin, bukan admin cabang)
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
     
     // Laporan (Report)
@@ -151,11 +138,9 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');
     Route::get('/laporan/detail-redemptions', [\App\Http\Controllers\Admin\ReportController::class, 'detailRedemptions'])->name('laporan.detail-redemptions');
     Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'exportPdf'])->name('laporan.export-pdf');
->>>>>>> Stashed changes
 });
 
-// Temporary dev routes for previewing views without wiring controllers
-Route::view('/_dev/setoran','admin.setoran.index');
+// Development routes (optional - untuk testing)
 Route::view('/_dev/tukar-barang','admin.tukar_barang.index');
 Route::view('/_dev/penukaran','admin.penukaran.index');
 Route::view('/_dev/waste-types','admin.waste_types.index');
