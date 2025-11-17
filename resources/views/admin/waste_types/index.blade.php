@@ -130,74 +130,58 @@
                 category: '',
                 unit: 'kg',
                 points_per_unit: '',
-                description: '',
-                image: ''
+                description: ''
             },
+            addImagePreview: null,
             showEditModal: false,
             editForm: {},
+            editImagePreview: null,
             showDeleteModal: false,
             deleteItem: null,
-            availableImages: @js(array_values(array_filter(scandir(public_path('images')), function($file) {
-                return !in_array($file, ['.', '..']) && preg_match('/\.(jpg|jpeg|png|gif)$/i', $file);
-            }))),
             openAddModal(){ 
-                this.addForm = { name: '', category: '', unit: 'kg', points_per_unit: '', description: '', image: '' }; 
+                this.addForm = { name: '', category: '', unit: 'kg', points_per_unit: '', description: '' };
+                this.addImagePreview = null;
                 this.showAddModal = true 
             },
-            closeAddModal(){ this.showAddModal = false },
+            closeAddModal(){ 
+                this.showAddModal = false;
+                this.addImagePreview = null;
+            },
+            handleAddImageUpload(event){
+                const file = event.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.addImagePreview = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
             submitAdd(){
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route('admin.waste-types.store') }}';
-                
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = document.querySelector('meta[name=csrf-token]').content;
-                form.appendChild(csrf);
-                
-                Object.keys(this.addForm).forEach(key => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = this.addForm[key];
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
+                const form = document.getElementById('addWasteForm');
                 form.submit();
             },
             openEditModal(item){
                 this.editForm = {...item};
+                this.editImagePreview = item.image ? `/images/${item.image}` : null;
                 this.showEditModal = true;
             },
-            closeEditModal(){ this.showEditModal = false },
+            closeEditModal(){ 
+                this.showEditModal = false;
+                this.editImagePreview = null;
+            },
+            handleEditImageUpload(event){
+                const file = event.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.editImagePreview = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
             submitEdit(){
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/waste-types/${this.editForm.id}`;
-                
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden';
-                csrf.name = '_token';
-                csrf.value = document.querySelector('meta[name=csrf-token]').content;
-                form.appendChild(csrf);
-                
-                const method = document.createElement('input');
-                method.type = 'hidden';
-                method.name = '_method';
-                method.value = 'PUT';
-                form.appendChild(method);
-                
-                ['name', 'category', 'unit', 'points_per_unit', 'description', 'image'].forEach(key => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = this.editForm[key] || '';
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
+                const form = document.getElementById('editWasteForm');
                 form.submit();
             },
             openDeleteModal(item){
@@ -350,75 +334,77 @@
                         <h3 class="text-xl font-bold text-gray-800">Tambah Jenis Sampah</h3>
                         <p class="text-sm text-gray-500 mt-1">Tambahkan jenis sampah baru ke sistem</p>
 
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="col-span-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Gambar</label>
-                                <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2">
-                                    <template x-if="addForm.image">
-                                        <img :src="`/images/${addForm.image}`" alt="preview" class="object-contain h-full w-full p-2" />
-                                    </template>
-                                    <template x-if="!addForm.image">
-                                        <div class="text-center">
-                                            <i class="bi bi-recycle text-6xl text-gray-300"></i>
-                                            <p class="text-xs text-gray-400 mt-2">Pilih gambar</p>
-                                        </div>
-                                    </template>
+                        <form id="addWasteForm" method="POST" action="{{ route('admin.waste-types.store') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Gambar</label>
+                                    <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 hover:border-green-500 transition-colors cursor-pointer" x-on:click="$refs.addWasteImageInput.click()">
+                                        <template x-if="addImagePreview">
+                                            <img :src="addImagePreview" alt="preview" class="object-contain h-full w-full p-2" />
+                                        </template>
+                                        <template x-if="!addImagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-cloud-upload text-6xl text-gray-300"></i>
+                                                <p class="text-xs text-gray-400 mt-2">Klik untuk upload gambar</p>
+                                                <p class="text-xs text-gray-300 mt-1">PNG, JPG, JPEG, GIF</p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <input type="file" x-ref="addWasteImageInput" name="image" accept="image/*" class="hidden" x-on:change="handleAddImageUpload($event)" />
+                                    <button type="button" x-show="addImagePreview" x-on:click="addImagePreview = null; $refs.addWasteImageInput.value = ''" class="mt-2 w-full px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200">
+                                        Hapus Gambar
+                                    </button>
                                 </div>
-                                <select x-model="addForm.image" class="mt-3 block w-full rounded-lg border px-3 py-2 text-sm">
-                                    <option value="">-- Pilih Gambar --</option>
-                                    <template x-for="img in availableImages" :key="img">
-                                        <option :value="img" x-text="img"></option>
-                                    </template>
-                                </select>
+
+                                <div class="col-span-2">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Sampah <span class="text-red-500">*</span></label>
+                                            <input type="text" name="name" x-model="addForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: Botol Plastik PET" required />
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
+                                                <select name="category" x-model="addForm.category" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                                    <option value="">-- Pilih Kategori --</option>
+                                                    <option value="Plastik">Plastik</option>
+                                                    <option value="Kertas">Kertas</option>
+                                                    <option value="Logam">Logam</option>
+                                                    <option value="Kaca">Kaca</option>
+                                                    <option value="Organik">Organik</option>
+                                                    <option value="Elektronik">Elektronik</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Satuan <span class="text-red-500">*</span></label>
+                                                <select name="unit" x-model="addForm.unit" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                                    <option value="kg">kg (kilogram)</option>
+                                                    <option value="pcs">pcs (pieces)</option>
+                                                    <option value="liter">liter</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Poin per Satuan <span class="text-red-500">*</span></label>
+                                            <input type="number" name="points_per_unit" x-model="addForm.points_per_unit" min="1" step="0.01" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="100" required />
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                            <textarea name="description" x-model="addForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" rows="3" placeholder="Deskripsi jenis sampah..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="col-span-2">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Sampah <span class="text-red-500">*</span></label>
-                                        <input type="text" x-model="addForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Contoh: Botol Plastik PET" required />
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
-                                            <select x-model="addForm.category" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                                                <option value="">-- Pilih Kategori --</option>
-                                                <option value="Plastik">Plastik</option>
-                                                <option value="Kertas">Kertas</option>
-                                                <option value="Logam">Logam</option>
-                                                <option value="Kaca">Kaca</option>
-                                                <option value="Organik">Organik</option>
-                                                <option value="Elektronik">Elektronik</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Satuan <span class="text-red-500">*</span></label>
-                                            <select x-model="addForm.unit" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                                                <option value="kg">kg (kilogram)</option>
-                                                <option value="pcs">pcs (pieces)</option>
-                                                <option value="liter">liter</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Poin per Satuan <span class="text-red-500">*</span></label>
-                                        <input type="number" x-model="addForm.points_per_unit" min="1" step="0.01" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="100" required />
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                        <textarea x-model="addForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" rows="3" placeholder="Deskripsi jenis sampah..."></textarea>
-                                    </div>
-                                </div>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeAddModal">Batal</button>
+                                <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">Tambahkan</button>
                             </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeAddModal">Batal</button>
-                            <button type="button" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitAdd()">Tambahkan</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -431,72 +417,78 @@
                         <h3 class="text-xl font-bold text-gray-800">Edit Jenis Sampah</h3>
                         <p class="text-sm text-gray-500 mt-1">Perbarui informasi jenis sampah</p>
 
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="col-span-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Gambar</label>
-                                <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2">
-                                    <template x-if="editForm.image">
-                                        <img :src="`/images/${editForm.image}`" alt="preview" class="object-contain h-full w-full p-2" />
-                                    </template>
-                                    <template x-if="!editForm.image">
-                                        <i class="bi bi-recycle text-6xl text-gray-300"></i>
-                                    </template>
+                        <form :id="'editWasteForm'" :action="`/admin/waste-types/${editForm.id}`" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Gambar</label>
+                                    <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors cursor-pointer" x-on:click="$refs.editWasteImageInput.click()">
+                                        <template x-if="editImagePreview">
+                                            <img :src="editImagePreview" alt="preview" class="object-contain h-full w-full p-2" />
+                                        </template>
+                                        <template x-if="!editImagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-cloud-upload text-6xl text-gray-300"></i>
+                                                <p class="text-xs text-gray-400 mt-2">Klik untuk upload gambar baru</p>
+                                                <p class="text-xs text-gray-300 mt-1">PNG, JPG, JPEG, GIF</p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <input type="file" x-ref="editWasteImageInput" name="image" accept="image/*" class="hidden" x-on:change="handleEditImageUpload($event)" />
+                                    <button type="button" x-show="editImagePreview" x-on:click="editImagePreview = null; $refs.editWasteImageInput.value = ''" class="mt-2 w-full px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200">
+                                        Hapus Gambar
+                                    </button>
                                 </div>
-                                <select x-model="editForm.image" class="mt-3 block w-full rounded-lg border px-3 py-2 text-sm">
-                                    <option value="">-- Pilih Gambar --</option>
-                                    <template x-for="img in availableImages" :key="img">
-                                        <option :value="img" x-text="img"></option>
-                                    </template>
-                                </select>
+
+                                <div class="col-span-2">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Sampah <span class="text-red-500">*</span></label>
+                                            <input type="text" name="name" x-model="editForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
+                                                <select name="category" x-model="editForm.category" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                                    <option value="">-- Pilih Kategori --</option>
+                                                    <option value="Plastik">Plastik</option>
+                                                    <option value="Kertas">Kertas</option>
+                                                    <option value="Logam">Logam</option>
+                                                    <option value="Kaca">Kaca</option>
+                                                    <option value="Organik">Organik</option>
+                                                    <option value="Elektronik">Elektronik</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Satuan <span class="text-red-500">*</span></label>
+                                                <select name="unit" x-model="editForm.unit" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                                    <option value="kg">kg (kilogram)</option>
+                                                    <option value="pcs">pcs (pieces)</option>
+                                                    <option value="liter">liter</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Poin per Satuan <span class="text-red-500">*</span></label>
+                                            <input type="number" name="points_per_unit" x-model="editForm.points_per_unit" min="1" step="0.01" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                            <textarea name="description" x-model="editForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="col-span-2">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Jenis Sampah <span class="text-red-500">*</span></label>
-                                        <input type="text" x-model="editForm.name" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
-                                            <select x-model="editForm.category" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                                <option value="">-- Pilih Kategori --</option>
-                                                <option value="Plastik">Plastik</option>
-                                                <option value="Kertas">Kertas</option>
-                                                <option value="Logam">Logam</option>
-                                                <option value="Kaca">Kaca</option>
-                                                <option value="Organik">Organik</option>
-                                                <option value="Elektronik">Elektronik</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Satuan <span class="text-red-500">*</span></label>
-                                            <select x-model="editForm.unit" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                                <option value="kg">kg (kilogram)</option>
-                                                <option value="pcs">pcs (pieces)</option>
-                                                <option value="liter">liter</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Poin per Satuan <span class="text-red-500">*</span></label>
-                                        <input type="number" x-model="editForm.points_per_unit" min="1" step="0.01" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                                        <textarea x-model="editForm.description" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
-                                    </div>
-                                </div>
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeEditModal">Batal</button>
+                                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">Simpan Perubahan</button>
                             </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-end gap-3">
-                            <button type="button" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" x-on:click="closeEditModal">Batal</button>
-                            <button type="button" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors" x-on:click="submitEdit()">Simpan Perubahan</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>

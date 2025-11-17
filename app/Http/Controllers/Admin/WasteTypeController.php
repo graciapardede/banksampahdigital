@@ -24,12 +24,20 @@ class WasteTypeController extends Controller
             'unit' => 'required|string|max:50',
             'points_per_unit' => 'required|numeric|min:0',
             'description' => 'nullable|string',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
         ]);
 
         // Set branch_id if admin has one
         if (auth()->user()->branch_id) {
             $validated['branch_id'] = auth()->user()->branch_id;
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $validated['image'] = $imageName;
         }
 
         WasteType::create($validated);
@@ -47,8 +55,21 @@ class WasteTypeController extends Controller
             'unit' => 'required|string|max:50',
             'points_per_unit' => 'required|numeric|min:0',
             'description' => 'nullable|string',
-            'image' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
         ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($wasteType->image && file_exists(public_path('images/' . $wasteType->image))) {
+                unlink(public_path('images/' . $wasteType->image));
+            }
+            
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $validated['image'] = $imageName;
+        }
 
         $wasteType->update($validated);
 
