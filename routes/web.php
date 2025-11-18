@@ -64,6 +64,13 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
     
+<<<<<<< Updated upstream
+=======
+    // Profile routes
+    Route::get('/profile', [AuthController::class, 'getProfile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
+
+>>>>>>> Stashed changes
     // Profil
     Route::get('/profil', function () {
         return view('profil');
@@ -132,6 +139,15 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     
     // CRUD Branches
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
+<<<<<<< Updated upstream
+=======
+    
+    // Laporan (Report)
+    Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');
+    Route::get('/laporan/detail-redemptions', [\App\Http\Controllers\Admin\ReportController::class, 'detailRedemptions'])->name('laporan.detail-redemptions');
+    Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'exportPdf'])->name('laporan.export-pdf');
+>>>>>>> Stashed changes
 });
 
 // Temporary dev routes for previewing views without wiring controllers
