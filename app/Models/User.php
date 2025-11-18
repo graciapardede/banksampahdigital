@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -23,6 +22,7 @@ class User extends Authenticatable
         'address',
         'password',
         'role',
+        'branch',
         'branch_id',
         'balance_points',
     ];
@@ -32,15 +32,17 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     // Relationships
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
     public function deposits()
     {
         return $this->hasMany(Deposit::class);
@@ -57,18 +59,18 @@ class User extends Authenticatable
     }
 
     // Helper methods
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 
-    public function isUser()
+    public function isUser(): bool
     {
         return $this->role === 'user';
     }
 
     // Compatibility helper required by the controllers
-    public function isWarga()
+    public function isWarga(): bool
     {
         return $this->role === self::ROLE_WARGA || $this->role === 'user';
     }

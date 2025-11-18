@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Tukar Poin - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -42,7 +43,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span class="font-bold text-green-700 text-lg">15420 poin</span>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
                         </div>
                     </div>
 
@@ -106,13 +107,24 @@
         <!-- Page Header -->
         <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
             <h2 class="text-xl font-bold text-gray-800 mb-2">Tukar Poin Hadiah</h2>
-            <p class="text-sm text-gray-500">Tukarkan poin Anda dengan berbagai hadiah menarik</p>
+            <p class="text-sm text-gray-500">Tukarkan poin Anda dengan hadiah menarik yang tersedia</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-rewards" class="flex justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-rewards" class="hidden text-center py-12 bg-white rounded-2xl">
+            <i class="bi bi-gift text-gray-300 text-6xl mb-4"></i>
+            <p class="text-gray-500 text-lg font-semibold">Belum ada hadiah tersedia</p>
+            <p class="text-gray-400 text-sm">Silakan cek kembali nanti</p>
         </div>
 
         <!-- Rewards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <!-- Reward Item 1: Minyak Goreng -->
+        <div id="rewards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Items will be loaded dynamically via JavaScript -->
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow reward-card" 
                  data-name="Minyak Goreng" 
                  data-desc="1 Liter - Minyak goreng berkualitas" 
@@ -887,17 +899,199 @@
     </div>
 
     <script>
-        let selectedProduct = {
-            name: '',
-            description: '',
-            price: 0,
-            image: ''
-        };
+        let selectedReward = null;
+        let allRewards = [];
+        const currentPoints = {{ Auth::user()->balance_points ?? 0 }};
 
-        const currentPoints = 15420;
+        // === FETCH DATA ===
+        async function fetchRewards() {
+            const loading = document.getElementById('loading-rewards');
+            const empty = document.getElementById('empty-rewards');
+            const grid = document.getElementById('rewards-grid');
 
-        // Universal event listener for all exchange buttons  
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+            grid.classList.add('hidden');
+
+            try {
+                const response = await fetch('/api/reward-items');
+                allRewards = await response.json();
+                
+                renderRewards();
+            } catch (error) {
+                console.error('Error fetching rewards:', error);
+                loading.classList.add('hidden');
+                empty.classList.remove('hidden');
+            }
+        }
+
+        function renderRewards() {
+            const loading = document.getElementById('loading-rewards');
+            const empty = document.getElementById('empty-rewards');
+            const grid = document.getElementById('rewards-grid');
+
+            loading.classList.add('hidden');
+
+            if (allRewards.length === 0) {
+                empty.classList.remove('hidden');
+                grid.classList.add('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            const colors = [
+                'from-amber-50 to-orange-50',
+                'from-blue-50 to-cyan-50',
+                'from-green-50 to-emerald-50',
+                'from-purple-50 to-pink-50',
+                'from-yellow-50 to-amber-50',
+                'from-red-50 to-pink-50'
+            ];
+
+            grid.innerHTML = allRewards.map((reward, index) => {
+                const colorClass = colors[index % colors.length];
+                const imagePath = reward.image ? `/images/${reward.image}` : '/images/tukar reward.png';
+                const canAfford = currentPoints >= reward.points_cost;
+
+                return `
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+                        <div class="p-5">
+                            <div class="bg-gradient-to-br ${colorClass} rounded-xl p-4 mb-4 flex items-center justify-center h-48">
+                                <img src="${imagePath}" alt="${reward.name}" class="h-40 w-auto object-contain" onerror="this.src='/images/tukar reward.png'">
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg mb-1">${reward.name}</h3>
+                                    <p class="text-sm text-gray-500">${reward.description || 'Hadiah menarik'}</p>
+                                </div>
+                                
+                                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Harga</p>
+                                        <p class="text-lg font-bold text-green-600">
+                                            <i class="bi bi-coin text-green-500 mr-1"></i>
+                                            ${reward.points_cost.toLocaleString('id-ID')} poin
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-xs text-gray-500 mb-1">Stok</p>
+                                        <p class="text-sm font-semibold ${reward.stock < 5 ? 'text-red-600' : 'text-gray-700'}">
+                                            ${reward.stock} tersedia
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="selectReward(${reward.id})" 
+                                        class="w-full ${canAfford ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg"
+                                        ${!canAfford ? 'disabled' : ''}>
+                                    <i class="bi bi-cart-plus mr-2"></i>
+                                    ${canAfford ? 'Tukar Sekarang' : 'Poin Tidak Cukup'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectReward(rewardId) {
+            selectedReward = allRewards.find(r => r.id === rewardId);
+            if (!selectedReward) return;
+
+            openConfirmModal();
+        }
+
+        function openConfirmModal() {
+            document.getElementById('modalProductName').textContent = selectedReward.name;
+            document.getElementById('modalProductDesc').textContent = selectedReward.description || 'Hadiah menarik';
+            document.getElementById('modalProductPrice').innerHTML = `<i class="bi bi-coin text-green-500 mr-1"></i>${selectedReward.points_cost.toLocaleString('id-ID')} poin`;
+            
+            const imagePath = selectedReward.image ? `/images/${selectedReward.image}` : '/images/tukar reward.png';
+            document.getElementById('modalProductImage').src = imagePath;
+            document.getElementById('modalProductImage').alt = selectedReward.name;
+
+            const remaining = currentPoints - selectedReward.points_cost;
+            const remainingEl = document.getElementById('modalRemainingPoints');
+            
+            if (remaining >= 0) {
+                remainingEl.innerHTML = `<i class="bi bi-coin text-green-500 mr-1"></i>${remaining.toLocaleString('id-ID')} poin`;
+                remainingEl.classList.remove('text-red-600');
+                remainingEl.classList.add('text-green-600');
+                document.getElementById('insufficientPointsWarning').classList.add('hidden');
+                document.getElementById('confirmExchangeBtn').disabled = false;
+                document.getElementById('confirmExchangeBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                remainingEl.innerHTML = `<i class="bi bi-coin text-red-500 mr-1"></i>${remaining.toLocaleString('id-ID')} poin`;
+                remainingEl.classList.add('text-red-600');
+                remainingEl.classList.remove('text-green-600');
+                document.getElementById('pointsShortage').textContent = Math.abs(remaining).toLocaleString('id-ID') + ' poin';
+                document.getElementById('insufficientPointsWarning').classList.remove('hidden');
+                document.getElementById('confirmExchangeBtn').disabled = true;
+                document.getElementById('confirmExchangeBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        async function confirmExchange() {
+            if (currentPoints < selectedReward.points_cost) return;
+
+            try {
+                const response = await fetch('/api/redemptions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        items: [{
+                            reward_item_id: selectedReward.id,
+                            quantity: 1
+                        }]
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    closeConfirmModal();
+                    const newBalance = currentPoints - selectedReward.points_cost;
+                    document.getElementById('newBalance').textContent = newBalance.toLocaleString('id-ID');
+                    
+                    // Show success modal
+                    setTimeout(() => {
+                        document.getElementById('successModal').classList.remove('hidden');
+                        document.getElementById('successModal').classList.add('flex');
+                    }, 300);
+                } else {
+                    alert(result.message || 'Terjadi kesalahan');
+                    closeConfirmModal();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengirim data');
+                closeConfirmModal();
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            window.location.href = '/riwayat';
+        }
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            fetchRewards();
+        });
+    </script>
             const exchangeButtons = document.querySelectorAll('.exchange-btn, button:not(#loadMoreBtn):not(#confirmExchangeBtn):not([onclick*="close"])');
             
             exchangeButtons.forEach(button => {

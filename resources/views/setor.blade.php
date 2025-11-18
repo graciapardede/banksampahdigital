@@ -64,7 +64,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span class="font-bold text-green-700 text-lg">15420 poin</span>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
                         </div>
                     </div>
 
@@ -371,133 +371,24 @@
                 <h2 class="text-xl font-bold text-gray-800 mb-2">Riwayat Setoran Sampah</h2>
                 <p class="text-sm text-gray-500 mb-6">Lihat semua transaksi setoran sampah Anda</p>
 
-                <div class="space-y-4">
-                    <!-- Riwayat Item 1 - Clickable -->
-                    <div onclick="showTransactionDetail('TRX001', 'Completed', 'Bank Sampah Sitolusna', '2025-2-10', '10:15', 'Admin Verifikator', 750, 2000, 2750)" 
-                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
-                        <div class="flex items-start gap-4">
-                            <!-- Icon -->
-                            <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="bi bi-recycle text-green-600 text-2xl"></i>
-                            </div>
-                            
-                            <!-- Content -->
-                            <div class="flex-1">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-1">Plastik, Kardus</h4>
-                                        <p class="text-sm font-medium text-gray-600 mb-1">2.5kg</p>
-                                        <div class="flex items-center text-sm text-gray-500">
-                                            <i class="bi bi-geo-alt text-xs mr-1"></i>
-                                            <span>Bank Sampah Sitolusna</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
-                                        <i class="bi bi-check-circle-fill text-green-600 text-sm mr-1"></i>
-                                        <span class="text-xs font-semibold text-green-700">Completed</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Details Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
-                                        <p class="text-sm font-semibold text-gray-700">
-                                            <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                            2025-2-10 · 10:15
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Point</p>
-                                        <p class="text-sm font-bold text-green-600">
-                                            <i class="bi bi-coin text-green-500 mr-1"></i>
-                                            750 poin
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Status</p>
-                                        <p class="text-sm font-semibold text-green-600">
-                                            <i class="bi bi-check-circle text-green-500 mr-1"></i>
-                                            Completed
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Loading State -->
+                <div id="loading-deposits" class="flex justify-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+                </div>
 
-                    <!-- Riwayat Item 2 -->
-                    <div onclick="showTransactionDetail('TRX-20250309-002', 'Completed', 'Bank Sampah Laguboti', '2025-3-9', '10:15', 'Joko Susanto', 750, 1500, 2250)" 
-                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
-                        <div class="flex items-start gap-4">
-                            <!-- Icon -->
-                            <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="bi bi-recycle text-green-600 text-2xl"></i>
-                            </div>
-                            
-                            <!-- Content -->
-                            <div class="flex-1">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-1">Plastik</h4>
-                                        <p class="text-sm font-medium text-gray-600 mb-1">2.5kg</p>
-                                        <div class="flex items-center text-sm text-gray-500">
-                                            <i class="bi bi-geo-alt text-xs mr-1"></i>
-                                            <span>Bank Sampah Laguboti</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
-                                        <i class="bi bi-check-circle-fill text-green-600 text-sm mr-1"></i>
-                                        <span class="text-xs font-semibold text-green-700">Completed</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Details Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
-                                        <p class="text-sm font-semibold text-gray-700">
-                                            <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                            2025-3-9 · 10:15
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Point</p>
-                                        <p class="text-sm font-bold text-green-600">
-                                            <i class="bi bi-coin text-green-500 mr-1"></i>
-                                            750 poin
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Status</p>
-                                        <p class="text-sm font-semibold text-green-600">
-                                            <i class="bi bi-check-circle text-green-500 mr-1"></i>
-                                            Completed
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Deposits Container -->
+                <div id="deposits-container" class="space-y-4 hidden">
+                    <!-- Data will be loaded here -->
+                </div>
 
-                    <!-- Riwayat Item 3 -->
-                    <div onclick="showTransactionDetail('TRX-20250308-003', 'Completed', 'Bank Sampah Balige', '2025-3-8', '14:30', 'Siti Aminah', 750, 1000, 1750)" 
-                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
-                        <div class="flex items-start gap-4">
-                            <!-- Icon -->
-                            <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="bi bi-recycle text-green-600 text-2xl"></i>
-                            </div>
-                            
-                            <!-- Content -->
-                            <div class="flex-1">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-1">Plastik</h4>
-                                        <p class="text-sm font-medium text-gray-600 mb-1">2.5kg</p>
-                                        <div class="flex items-center text-sm text-gray-500">
-                                            <i class="bi bi-geo-alt text-xs mr-1"></i>
-                                            <span>Bank Sampah Balige</span>
+                <!-- Empty State -->
+                <div id="empty-deposits" class="hidden text-center py-12">
+                    <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
+                    <p class="text-gray-500 font-semibold">Belum ada riwayat setoran</p>
+                    <p class="text-sm text-gray-400 mt-2">Hubungi admin untuk menyetor sampah</p>
+                </div>
+            </div>
+        </div>
                                         </div>
                                     </div>
                                     <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
@@ -841,7 +732,7 @@
     </div>
 
     <script>
-        function showTransactionDetail(kode, status, lokasi, tanggal, waktu, admin, poinDiperoleh, poinSebelum, poinSetelah) {
+        function showTransactionDetail(kode, status, lokasi, tanggal, waktu, admin, poinDiperoleh, poinSebelum, poinSetelah, wasteTypes, itemsHTML) {
             // Update modal content
             document.getElementById('modalStatus').textContent = status;
             document.getElementById('modalLokasi').textContent = lokasi;
@@ -853,9 +744,12 @@
             
             // Update status badge
             const badge = document.getElementById('modalStatusBadge');
-            if (status === 'Completed') {
+            if (status === 'Selesai' || status === 'Completed') {
                 badge.className = 'inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold';
-                badge.innerHTML = '<i class="bi bi-check-circle-fill mr-1"></i>Completed';
+                badge.innerHTML = '<i class="bi bi-check-circle-fill mr-1"></i>Selesai';
+            } else {
+                badge.className = 'inline-block px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold';
+                badge.innerHTML = '<i class="bi bi-clock-fill mr-1"></i>Pending';
             }
             
             // Show modal
@@ -889,6 +783,197 @@
                 closeTransactionDetail();
             }
         });
+
+        // Fetch deposits from API
+        let deposits = [];
+
+        async function fetchDeposits() {
+            try {
+                const response = await fetch('/api/deposits', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch');
+
+                deposits = await response.json();
+                renderDeposits();
+            } catch (error) {
+                console.error('Error fetching deposits:', error);
+                document.getElementById('loading-deposits').classList.add('hidden');
+                document.getElementById('empty-deposits').classList.remove('hidden');
+            }
+        }
+
+        function renderDeposits() {
+            const container = document.getElementById('deposits-container');
+            const loading = document.getElementById('loading-deposits');
+            const empty = document.getElementById('empty-deposits');
+
+            loading.classList.add('hidden');
+
+            if (deposits.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+
+            const statusConfig = {
+                pending: {
+                    bg: 'bg-yellow-50',
+                    icon: 'bi-clock-fill',
+                    iconColor: 'text-yellow-600',
+                    textColor: 'text-yellow-700',
+                    label: 'Pending'
+                },
+                confirmed: {
+                    bg: 'bg-green-50',
+                    icon: 'bi-check-circle-fill',
+                    iconColor: 'text-green-600',
+                    textColor: 'text-green-700',
+                    label: 'Selesai'
+                }
+            };
+
+            container.innerHTML = deposits.map(deposit => {
+                const status = statusConfig[deposit.status] || statusConfig.pending;
+                const date = new Date(deposit.created_at);
+                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+                const timeStr = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
+                const totalWeight = deposit.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
+                const wasteTypes = deposit.items?.map(item => item.waste_type?.name).filter(Boolean).join(', ') || 'Sampah';
+
+                return `
+                    <div onclick="showDepositDetail(${deposit.id})" 
+                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
+                        <div class="flex items-start gap-4">
+                            <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="bi bi-recycle text-green-600 text-2xl"></i>
+                            </div>
+                            
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800 mb-1">${wasteTypes}</h4>
+                                        <p class="text-sm font-medium text-gray-600 mb-1">${totalWeight.toFixed(1)}kg</p>
+                                        ${deposit.branch ? `
+                                            <div class="flex items-center text-sm text-gray-500">
+                                                <i class="bi bi-geo-alt text-xs mr-1"></i>
+                                                <span>${deposit.branch.name}</span>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                    <div class="flex items-center ${status.bg} px-3 py-1 rounded-full">
+                                        <i class="bi ${status.icon} ${status.iconColor} text-sm mr-1"></i>
+                                        <span class="text-xs font-semibold ${status.textColor}">${status.label}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
+                                        <p class="text-sm font-semibold text-gray-700">
+                                            <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
+                                            ${dateStr} · ${timeStr}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Poin</p>
+                                        <p class="text-sm font-bold text-green-600">
+                                            <i class="bi bi-coin text-green-500 mr-1"></i>
+                                            ${(deposit.total_points || 0).toLocaleString('id-ID')} poin
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 mb-1">Status</p>
+                                        <p class="text-sm font-semibold ${status.textColor}">
+                                            <i class="bi ${status.icon === 'bi-clock-fill' ? 'bi-clock' : 'bi-check-circle'} ${status.iconColor} mr-1"></i>
+                                            ${status.label}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show deposit detail modal
+        async function showDepositDetail(depositId) {
+            const deposit = deposits.find(d => d.id === depositId);
+            if (!deposit) return;
+
+            // Fetch full detail
+            try {
+                const response = await fetch(`/api/deposits/${depositId}`);
+                const fullDeposit = await response.json();
+
+                const date = new Date(fullDeposit.created_at);
+                const dateStr = date.toLocaleDateString('id-ID', { 
+                    weekday: 'long',
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const totalWeight = fullDeposit.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
+                const wasteTypes = fullDeposit.items?.map(item => item.waste_type?.name).filter(Boolean).join(', ') || 'Sampah';
+
+                const statusLabel = fullDeposit.status === 'confirmed' ? 'Selesai' : 'Pending';
+                const statusColor = fullDeposit.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600';
+
+                // Build items HTML
+                const itemsHTML = fullDeposit.items?.map(item => `
+                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-xl">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="bi bi-recycle text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">${item.waste_type?.name || 'Sampah'}</p>
+                                <p class="text-sm text-gray-500">${item.weight} kg × ${item.points_per_kg || 0} poin/kg</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-green-600">+${(item.points || 0).toLocaleString('id-ID')}</p>
+                            <p class="text-xs text-gray-500">poin</p>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-gray-500 text-center py-4">Tidak ada item</p>';
+
+                showTransactionDetail(
+                    `#${fullDeposit.id}`,
+                    statusLabel,
+                    fullDeposit.branch?.name || 'Bank Sampah',
+                    dateStr.split(',')[0],
+                    date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                    'Admin',
+                    totalWeight,
+                    fullDeposit.total_points || 0,
+                    fullDeposit.total_points || 0,
+                    wasteTypes,
+                    itemsHTML
+                );
+            } catch (error) {
+                console.error('Error fetching deposit detail:', error);
+            }
+        }
+
+        // Load deposits when riwayat tab is opened
+        const riwayatTab = document.getElementById('riwayat-tab');
+        if (riwayatTab) {
+            riwayatTab.addEventListener('click', function() {
+                if (deposits.length === 0) {
+                    fetchDeposits();
+                }
+            });
+        }
     </script>
 
 </body>

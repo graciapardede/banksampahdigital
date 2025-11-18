@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal & Form Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow mb-4">
+            <h1 class="text-2xl font-bold mb-4">Test Modal & Upload Form</h1>
+            <p class="text-gray-600 mb-4">Klik tombol di bawah untuk test modal tambah barang:</p>
+            
+            <button 
+                x-data 
+                x-on:click="$dispatch('open-modal')" 
+                class="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">
+                <i class="bi bi-plus-circle"></i> Tambah Barang
+            </button>
+        </div>
+
+        <!-- Alpine.js Component -->
+        <div x-data="{
+            showAddModal: false,
+            addImagePreview: null,
+            addForm: {
+                name: '',
+                points_cost: '',
+                stock: 0,
+                description: ''
+            },
+            handleAddImageUpload(event) {
+                const file = event.target.files[0];
+                if(file) {
+                    // Validasi ukuran file (2MB)
+                    if(file.size > 2048000) {
+                        alert('File terlalu besar! Maksimal 2MB');
+                        event.target.value = '';
+                        return;
+                    }
+                    
+                    // Validasi tipe file
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                    if(!allowedTypes.includes(file.type)) {
+                        alert('Format file tidak didukung! Gunakan JPG, PNG, atau GIF');
+                        event.target.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.addImagePreview = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+            removeImage() {
+                this.addImagePreview = null;
+                this.$refs.addImageInput.value = '';
+            }
+        }" 
+        x-on:open-modal.window="showAddModal = true">
+
+            <!-- Modal -->
+            <div x-show="showAddModal" 
+                 x-cloak 
+                 class="fixed inset-0 z-50 flex items-center justify-center"
+                 style="display: none;">
+                
+                <!-- Backdrop -->
+                <div x-show="showAddModal" 
+                     x-transition.opacity 
+                     class="fixed inset-0 bg-black bg-opacity-50" 
+                     x-on:click="showAddModal = false"></div>
+                
+                <!-- Modal Content -->
+                <div x-show="showAddModal" 
+                     x-transition 
+                     class="bg-white rounded-xl shadow-2xl w-full max-w-3xl mx-4 z-50 max-h-[90vh] overflow-y-auto">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800">Tambah Barang Baru</h3>
+                        <p class="text-sm text-gray-500 mt-1">Tambahkan barang yang dapat ditukar dengan poin</p>
+
+                        <form id="testAddForm" method="POST" action="http://127.0.0.1:8000/admin/reward-items" enctype="multipart/form-data">
+                            <!-- CSRF Token - ambil dari session Laravel -->
+                            <input type="hidden" name="_token" value="<?php echo $_COOKIE['XSRF-TOKEN'] ?? 'test-token'; ?>">
+                            
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Upload Area -->
+                                <div class="col-span-1">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Gambar</label>
+                                    <div class="w-full h-48 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 hover:border-green-500 transition-colors cursor-pointer" 
+                                         x-on:click="$refs.addImageInput.click()">
+                                        <template x-if="addImagePreview">
+                                            <img :src="addImagePreview" alt="preview" class="object-contain h-full w-full p-2" />
+                                        </template>
+                                        <template x-if="!addImagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-cloud-upload text-6xl text-gray-300"></i>
+                                                <p class="text-xs text-gray-400 mt-2">Klik untuk upload gambar</p>
+                                                <p class="text-xs text-gray-300 mt-1">PNG, JPG, JPEG, GIF (Max 2MB)</p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <input type="file" 
+                                           x-ref="addImageInput" 
+                                           name="image" 
+                                           accept="image/*" 
+                                           class="hidden" 
+                                           x-on:change="handleAddImageUpload($event)" />
+                                    <button type="button" 
+                                            x-show="addImagePreview" 
+                                            x-on:click="removeImage()" 
+                                            class="mt-2 w-full px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200">
+                                        Hapus Gambar
+                                    </button>
+                                </div>
+
+                                <!-- Form Fields -->
+                                <div class="col-span-2">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                Nama Barang <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   name="name" 
+                                                   x-model="addForm.name" 
+                                                   class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                                   placeholder="Contoh: Beras Premium 5kg" 
+                                                   required />
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                                    Poin <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="number" 
+                                                       name="points_cost" 
+                                                       x-model="addForm.points_cost" 
+                                                       min="1" 
+                                                       class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                                       placeholder="200" 
+                                                       required />
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">Stok Awal</label>
+                                                <input type="number" 
+                                                       name="stock" 
+                                                       x-model="addForm.stock" 
+                                                       min="0" 
+                                                       class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                                       placeholder="10" />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                                            <textarea name="description" 
+                                                      x-model="addForm.description" 
+                                                      class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                                      rows="4" 
+                                                      placeholder="Deskripsi singkat tentang barang..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-end gap-3">
+                                <button type="button" 
+                                        class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors" 
+                                        x-on:click="showAddModal = false; addImagePreview = null;">
+                                    Batal
+                                </button>
+                                <button type="submit" 
+                                        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                                    <i class="bi bi-check-circle"></i> Tambahkan Barang
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Info -->
+        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4">
+            <h3 class="font-bold text-yellow-800 mb-2">Instruksi Test:</h3>
+            <ol class="list-decimal ml-5 text-sm text-yellow-700 space-y-1">
+                <li>Pastikan Anda sudah login sebagai admin di tab lain</li>
+                <li>Klik tombol "Tambah Barang" di atas</li>
+                <li>Upload gambar dengan klik area upload</li>
+                <li>Isi semua field (nama, poin, stok, deskripsi)</li>
+                <li>Klik "Tambahkan Barang"</li>
+                <li>Jika berhasil, akan redirect ke halaman admin/reward-items dengan data baru</li>
+            </ol>
+        </div>
+    </div>
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</body>
+</html>
