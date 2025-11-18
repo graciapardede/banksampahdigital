@@ -17,6 +17,13 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.setoran.index')" :active="request()->routeIs('admin.setoran.*')">
+                            {{ __('Setoran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.penukaran.index')" :active="request()->routeIs('admin.penukaran.*')">
+                            {{ __('Penukaran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.reward-items.index')" :active="request()->routeIs('admin.reward-items.*')">
                         <x-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
                             {{ __('Setoran') }}
                         </x-nav-link>
@@ -92,6 +99,13 @@
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.setoran.index')" :active="request()->routeIs('admin.setoran.*')">
+                    {{ __('Setoran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.penukaran.index')" :active="request()->routeIs('admin.penukaran.*')">
+                    {{ __('Penukaran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.reward-items.index')" :active="request()->routeIs('admin.reward-items.*')">
                 <x-responsive-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
                     {{ __('Setoran') }}
                 </x-responsive-nav-link>

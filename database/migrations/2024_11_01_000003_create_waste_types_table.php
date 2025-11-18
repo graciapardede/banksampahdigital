@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('waste_types', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name');
             $table->string('unit')->default('kg'); // e.g., kg, pcs
             $table->float('points_per_unit');

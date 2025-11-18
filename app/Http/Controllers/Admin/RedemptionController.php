@@ -1,0 +1,191 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Redemption;
+use App\Models\RedemptionItem;
+use App\Models\RewardItem;
+use App\Models\PointLedger;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+class RedemptionController extends Controller
+{
+    /**
+     * Tampilkan semua penukaran (dari semua user)
+     */
+    public function index(Request $request)
+    {
+        $query = Redemption::with(['user', 'branch', 'items.rewardItem'])
+            ->latest();
+
+        // Filter by status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date range
+        if ($request->has('date_from') && $request->date_from != '') {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && $request->date_to != '') {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $redemptions = $query->paginate(20);
+
+        return view('admin.penukaran.index', compact('redemptions'));
+    }
+
+    /**
+     * Approve penukaran -> kurangi poin user & stok barang
+     */
+    public function approve(Request $request, $id)
+    {
+        $redemption = Redemption::with('items.rewardItem', 'user')->findOrFail($id);
+
+        if ($redemption->status !== 'pending') {
+            return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
+        }
+
+        // Cek apakah sudah expired (lewat 24 jam)
+        if ($redemption->expires_at && Carbon::now()->isAfter($redemption->expires_at)) {
+            return back()->with('error', 'Penukaran sudah kadaluarsa (lewat 24 jam). Silakan batalkan penukaran ini.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $user = $redemption->user;
+            $totalPoints = $redemption->total_points;
+
+            // Cek saldo poin user
+            if ($user->balance_points < $totalPoints) {
+                DB::rollBack();
+                return back()->with('error', 'Poin user tidak cukup!');
+            }
+
+            // Cek dan kurangi stok untuk setiap item
+            foreach ($redemption->items as $item) {
+                $rewardItem = $item->rewardItem;
+                
+                if ($rewardItem->stock < $item->quantity) {
+                    DB::rollBack();
+                    return back()->with('error', "Stok {$rewardItem->name} tidak mencukupi. Stok tersedia: {$rewardItem->stock}");
+                }
+
+                // Kurangi stok
+                $rewardItem->decrement('stock', $item->quantity);
+            }
+
+            // Kurangi poin user
+            $user->decrement('balance_points', $totalPoints);
+
+            // Update status redemption
+            $redemption->update([
+                'status' => 'approved',
+                'processed_at' => Carbon::now(),
+            ]);
+
+            // Catat di point ledger
+            PointLedger::create([
+                'user_id' => $user->id,
+                'redemption_id' => $redemption->id,
+                'type' => 'debit',
+                'amount' => $totalPoints,
+                'balance_after' => $user->balance_points,
+                'description' => 'Penukaran poin dengan barang',
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', "Penukaran berhasil disetujui! Poin {$user->full_name} telah dikurangi {$totalPoints}.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menyetujui penukaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject penukaran -> kembalikan poin (jika sudah dikurangi) + wajib isi alasan
+     */
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|min:10',
+        ], [
+            'rejection_reason.required' => 'Alasan penolakan wajib diisi!',
+            'rejection_reason.min' => 'Alasan penolakan minimal 10 karakter.',
+        ]);
+
+        $redemption = Redemption::with('user')->findOrFail($id);
+
+        if ($redemption->status !== 'pending') {
+            return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update status redemption dengan alasan
+            $redemption->update([
+                'status' => 'rejected',
+                'rejection_reason' => $request->rejection_reason,
+                'processed_at' => Carbon::now(),
+            ]);
+
+            // Poin tidak dikurangi saat pending, jadi tidak perlu dikembalikan
+            // (Sesuai requirement: poin baru dikurangi saat approve)
+
+            DB::commit();
+
+            return back()->with('success', 'Penukaran berhasil ditolak.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menolak penukaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Batalkan penukaran yang sudah expired (lewat 24 jam)
+     */
+    public function cancel($id)
+    {
+        $redemption = Redemption::with('user')->findOrFail($id);
+
+        if ($redemption->status !== 'pending') {
+            return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update status redemption
+            $redemption->update([
+                'status' => 'cancelled',
+                'rejection_reason' => 'Penukaran dibatalkan karena melewati batas waktu 24 jam.',
+                'processed_at' => Carbon::now(),
+            ]);
+
+            // Poin tidak dikurangi saat pending, jadi tidak perlu dikembalikan
+
+            DB::commit();
+
+            return back()->with('success', 'Penukaran expired berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal membatalkan penukaran: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Tampilkan detail penukaran
+     */
+    public function show($id)
+    {
+        $redemption = Redemption::with(['user', 'branch', 'items.rewardItem'])
+            ->findOrFail($id);
+
+        return view('admin.penukaran.show', compact('redemption'));
+    }
+}

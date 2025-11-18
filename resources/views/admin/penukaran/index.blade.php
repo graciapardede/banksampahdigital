@@ -71,6 +71,16 @@
                         <i class="bi bi-house-door"></i>
                         <span class="truncate">Dashboard</span>
                     </a>
+                    <a href="{{ route('admin.setoran.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="truncate">Setoran</span>
+                    </a>
+                    <a href="{{ route('admin.penukaran.index') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="truncate">Penukaran</span>
+                    </a>
+                    <a href="{{ route('admin.reward-items.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+
                     <a href="{{ route('admin.setoran') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-graph-up"></i>
                         <span class="truncate">Setoran</span>
@@ -80,6 +90,7 @@
                         <span class="truncate">Penukaran</span>
                     </a>
                     <a href="{{ route('admin.tukar-barang') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+
                         <i class="bi bi-gift"></i>
                         <span class="truncate">Tukar Barang</span>
                     </a>
@@ -87,6 +98,9 @@
                         <i class="bi bi-recycle"></i>
                         <span class="truncate">Jenis Sampah</span>
                     </a>
+                    <a href="{{ route('admin.laporan.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span class="truncate">Laporan</span>
                     <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-building"></i>
                         <span class="truncate">Cabang</span>
@@ -120,6 +134,9 @@
 
             {{-- Stats Summary --}}
             @php
+                $pendingCount = $redemptions->where('status', 'pending')->count();
+                $approvedCount = $redemptions->where('status', 'approved')->count();
+                $totalPoints = $redemptions->sum('total_points');
                 $demoRows = [
                     (object)['user'=>'Sari Simanullang','item'=>'Beras Premium 5kg','points'=>100,'date'=>'20 Jan 2025, 14:30','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
                     (object)['user'=>'Binsar Hutabarat','item'=>'Minyak goreng 2L, gula pasir','points'=>250,'date'=>'19 Jan 2025, 16:45','status'=>'Dikonfirmasi','method'=>'Ambil di Cabang (Cabang Lajubet)'],
@@ -158,6 +175,7 @@
                         </div>
                     </div>
                     <div class="text-sm font-medium opacity-90">Dikonfirmasi</div>
+                    <div class="text-3xl font-bold mt-1">{{ $approvedCount }}</div>
                     <div class="text-3xl font-bold mt-1">{{ $confirmedCount }}</div>
                     <div class="text-xs opacity-80 mt-1">Siap diserahkan</div>
                 </div>
@@ -202,6 +220,98 @@
                 </div>
 
                 <div class="p-6">
+                    @if($redemptions->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($redemptions as $redemption)
+                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 {{ $redemption->status === 'pending' ? 'border-yellow-300' : ($redemption->status === 'approved' ? 'border-emerald-200' : 'border-gray-200') }} p-6 hover:shadow-lg transition-all">
+                                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                        <!-- User Info -->
+                                        <div class="flex items-start gap-4 flex-1">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
+                                                {{ substr($redemption->user->name, 0, 1) }}
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                                    <h4 class="font-bold text-gray-800 text-lg">{{ $redemption->user->name }}</h4>
+                                                    @if($redemption->status === 'pending')
+                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
+                                                            <i class="bi bi-clock"></i>
+                                                            Menunggu
+                                                        </span>
+                                                    @elseif($redemption->status === 'approved')
+                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
+                                                            <i class="bi bi-check-circle"></i>
+                                                            Dikonfirmasi
+                                                        </span>
+                                                    @elseif($redemption->status === 'rejected')
+                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm">
+                                                            <i class="bi bi-x-circle"></i>
+                                                            Ditolak
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                                    <div class="flex items-center gap-2 text-sm">
+                                                        <i class="bi bi-gift text-emerald-600"></i>
+                                                        <span class="font-semibold text-gray-700">
+                                                            @foreach($redemption->items as $item)
+                                                                {{ $item->rewardItem->name }}@if(!$loop->last), @endif
+                                                            @endforeach
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 text-sm">
+                                                        <i class="bi bi-calendar text-gray-400"></i>
+                                                        <span class="text-gray-600">{{ $redemption->created_at->format('d M Y, H:i') }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap-2 text-sm mt-2">
+                                                    <i class="bi bi-geo-alt text-gray-400"></i>
+                                                    <span class="text-gray-600">Ambil di Cabang ({{ $redemption->branch ? $redemption->branch->name : 'Belum ditentukan' }})</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Points & Actions -->
+                                        <div class="flex items-center gap-4 lg:flex-shrink-0">
+                                            <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl px-6 py-4 text-white shadow-lg">
+                                                <div class="text-xs font-medium opacity-90">Poin</div>
+                                                <div class="text-3xl font-bold">{{ $redemption->total_points }}</div>
+                                            </div>
+                                            
+                                            <div class="flex flex-col gap-2">
+                                                <a href="{{ route('admin.penukaran.show', $redemption->id) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-xl text-gray-700 font-semibold text-sm shadow-sm hover:shadow-md transition-all" title="Lihat Detail">
+                                                    <i class="bi bi-eye"></i>
+                                                    Detail
+                                                </a>
+                                                
+                                                @if($redemption->status === 'pending')
+                                                    <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui penukaran ini?')">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                            <i class="bi bi-check-circle"></i>
+                                                            Konfirmasi
+                                                        </button>
+                                                    </form>
+                                                @elseif($redemption->status === 'approved')
+                                                    <button onclick="alert('Fitur diserahkan akan segera tersedia')" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                        <i class="bi bi-check-all"></i>
+                                                        Diserahkan
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
+                            <p class="text-gray-500 text-lg font-semibold">Belum ada permintaan penukaran</p>
+                            <p class="text-gray-400 text-sm">Data akan muncul di sini setelah warga mengajukan penukaran poin</p>
+                        </div>
+                    @endif
                     <div class="space-y-4">
 
                         @foreach($rows as $index => $r)

@@ -60,36 +60,33 @@ Route::get('/debug-auth', function () {
 // Protected routes - perlu login
 Route::middleware('auth')->group(function () {
     // Dashboard untuk user biasa
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
-<<<<<<< Updated upstream
-=======
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
->>>>>>> Stashed changes
+
+    // Profil - View (show form) dan API untuk update
+    Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
+
+
     // Profil
     Route::get('/profil', function () {
         return view('profil');
     })->name('profil');
+
     
-    // Setor Sampah
-    Route::get('/setor', function () {
+    // Setor Sampah (read-only untuk user - tampilkan view dengan riwayat)
+    Route::get('/setor', function() {
         return view('setor');
     })->name('setor');
     
-    // Tukar Poin
-    Route::get('/tukar-poin', function () {
-        return view('tukar-poin');
-    })->name('tukar-poin');
+    // Tukar Poin - View (show form/list reward items)
+    Route::get('/tukar-poin', [\App\Http\Controllers\RedemptionController::class, 'create'])->name('tukar-poin');
     
-    // Riwayat Transaksi
-    Route::get('/riwayat', function () {
-        return view('riwayat');
-    })->name('riwayat');
+    // Riwayat Transaksi (Deposits + Redemptions)
+    Route::get('/riwayat', [\App\Http\Controllers\DepositController::class, 'history'])->name('riwayat');
     
     // Notifikasi
     Route::get('/notifikasi', function () {
@@ -97,13 +94,37 @@ Route::middleware('auth')->group(function () {
     })->name('notifikasi');
     
     // Riwayat Penukaran
+    Route::get('/riwayat-tukar', [\App\Http\Controllers\RedemptionController::class, 'index'])->name('riwayat-tukar');
+    
+    // === API Routes untuk User ===
+    
+    // Profile API
+    Route::get('/api/profile', [\App\Http\Controllers\Api\ProfileController::class, 'show']);
+    Route::put('/api/profile', [\App\Http\Controllers\Api\ProfileController::class, 'update']);
+    Route::put('/api/profile/password', [\App\Http\Controllers\Api\ProfileController::class, 'updatePassword']);
+    
+    // Dashboard API
+    Route::get('/api/dashboard', [\App\Http\Controllers\DashboardController::class, 'getData']);
+    
+    // Deposits API (User - read only)
+    Route::get('/api/deposits', [\App\Http\Controllers\DepositController::class, 'index']);
+    Route::get('/api/deposits/{id}', [\App\Http\Controllers\DepositController::class, 'show']);
+    
+    // Redemptions API (User)
+    Route::get('/api/redemptions', [\App\Http\Controllers\RedemptionController::class, 'index']);
+    Route::post('/api/redemptions', [\App\Http\Controllers\RedemptionController::class, 'store']);
+    Route::get('/api/redemptions/{id}', [\App\Http\Controllers\RedemptionController::class, 'show']);
+    Route::post('/api/redemptions/{id}/cancel', [\App\Http\Controllers\RedemptionController::class, 'cancel']);
+    
+    // Reward Items API (untuk list di tukar-poin)
+    Route::get('/api/reward-items', [\App\Http\Controllers\RewardItemController::class, 'index']);
+    Route::get('/api/reward-items/{id}', [\App\Http\Controllers\RewardItemController::class, 'show']);
+    
+    // Branches API (untuk dropdown)
+    Route::get('/api/branches', [\App\Http\Controllers\BranchController::class, 'index']);
     Route::get('/riwayat-tukar', function () {
         return view('riwayat-tukar');
     })->name('riwayat-tukar');
-    
-    // Profile routes
-    Route::get('/profile', [AuthController::class, 'getProfile']);
-    Route::put('/profile', [AuthController::class, 'updateProfile']);
 });
 
 // Admin routes
@@ -115,6 +136,32 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 });
 
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/api/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'getData']);
+
+    // Manajemen Setoran (Deposits)
+    Route::get('/setoran', [\App\Http\Controllers\Admin\DepositController::class, 'index'])->name('setoran.index');
+    Route::get('/setoran/create', [\App\Http\Controllers\Admin\DepositController::class, 'create'])->name('setoran.create');
+    Route::post('/setoran', [\App\Http\Controllers\Admin\DepositController::class, 'store'])->name('setoran.store');
+    Route::get('/setoran/{id}', [\App\Http\Controllers\Admin\DepositController::class, 'show'])->name('setoran.show');
+    Route::post('/setoran/{id}/confirm', [\App\Http\Controllers\Admin\DepositController::class, 'confirm'])->name('setoran.confirm');
+    Route::delete('/setoran/{id}', [\App\Http\Controllers\Admin\DepositController::class, 'destroy'])->name('setoran.destroy');
+
+    // Manajemen Penukaran (Redemptions)
+    Route::get('/penukaran', [\App\Http\Controllers\Admin\RedemptionController::class, 'index'])->name('penukaran.index');
+    Route::get('/penukaran/{id}', [\App\Http\Controllers\Admin\RedemptionController::class, 'show'])->name('penukaran.show');
+    Route::post('/penukaran/{id}/approve', [\App\Http\Controllers\Admin\RedemptionController::class, 'approve'])->name('penukaran.approve');
+    Route::post('/penukaran/{id}/reject', [\App\Http\Controllers\Admin\RedemptionController::class, 'reject'])->name('penukaran.reject');
+    Route::post('/penukaran/{id}/cancel', [\App\Http\Controllers\Admin\RedemptionController::class, 'cancel'])->name('penukaran.cancel');
+
+    // CRUD Reward Items (Barang Penukaran)
+    Route::resource('reward-items', \App\Http\Controllers\Admin\RewardItemController::class);
+    Route::post('/reward-items/{rewardItem}/update-stock', [\App\Http\Controllers\Admin\RewardItemController::class, 'updateStock'])->name('reward-items.update-stock');
+    // Alias route untuk backward compatibility
+    Route::get('/tukar-barang', function () {
+        return redirect()->route('admin.reward-items.index');
+    })->name('tukar-barang');
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
@@ -137,21 +184,24 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     // CRUD Waste Types
     Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
     
-    // CRUD Branches
+    // CRUD Branches (hanya untuk super admin, bukan admin cabang)
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
-<<<<<<< Updated upstream
-=======
+    
+
     
     // Laporan (Report)
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');
     Route::get('/laporan/detail-redemptions', [\App\Http\Controllers\Admin\ReportController::class, 'detailRedemptions'])->name('laporan.detail-redemptions');
     Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'exportPdf'])->name('laporan.export-pdf');
->>>>>>> Stashed changes
+});
+
+// Development routes (optional - untuk testing)
 });
 
 // Temporary dev routes for previewing views without wiring controllers
 Route::view('/_dev/setoran','admin.setoran.index');
+
 Route::view('/_dev/tukar-barang','admin.tukar_barang.index');
 Route::view('/_dev/penukaran','admin.penukaran.index');
 Route::view('/_dev/waste-types','admin.waste_types.index');

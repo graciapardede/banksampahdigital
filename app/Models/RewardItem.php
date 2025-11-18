@@ -10,6 +10,8 @@ class RewardItem extends Model
     protected $fillable = [
         'branch_id',
         'name',
+        'description',
+        'image',
         'stock',
         'points_cost',
     ];

@@ -42,7 +42,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span class="font-bold text-green-700 text-lg">15420 poin</span>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
                         </div>
                     </div>
 
@@ -109,15 +109,65 @@
             <p class="text-gray-600">Semua aktivitas setoran dan penukaran Anda</p>
         </div>
 
-        <!-- Transaction List -->
-        <div id="transactionList" class="space-y-4">
+        <!-- Filter Section -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Filter by Type -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Transaksi</label>
+                    <select id="filter-type" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                        <option value="">Semua</option>
+                        <option value="deposit">Setoran</option>
+                        <option value="redemption">Penukaran</option>
+                    </select>
+                </div>
 
-            <!-- Transaction Item 1 - Setor Plastik PET -->
-            <div onclick="showDetailSetor('TRX-20250210-001', 'Setor Plastik PET', '2024-3-11', '2.5 kg', 'Selesai', 500, 15420, 14920)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <!-- Left: Icon & Info -->
-                    <div class="flex items-center space-x-4 flex-1">
+                <!-- Filter by Status -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                    <select id="filter-status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                        <option value="">Semua Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Selesai</option>
+                        <option value="approved">Disetujui</option>
+                        <option value="rejected">Ditolak</option>
+                        <option value="cancelled">Dibatalkan</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Date Range -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Bulan</label>
+                    <input type="month" id="filter-month" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="mt-4 flex justify-end space-x-2">
+                <button onclick="resetFilters()" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
+                    Reset
+                </button>
+                <button onclick="applyFilters()" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition-colors">
+                    Terapkan Filter
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-transactions" class="flex justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+        </div>
+
+        <!-- Transaction List -->
+        <div id="transactionList" class="space-y-4 hidden">
+            <!-- Data will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-transactions" class="hidden text-center py-12">
+            <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
+            <p class="text-gray-500 font-semibold">Belum ada riwayat transaksi</p>
+            <p class="text-sm text-gray-400 mt-2">Transaksi Anda akan muncul di sini</p>
+        </div>
                         <!-- Icon with Arrow Up (Green) -->
                         <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
                             <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
@@ -799,6 +849,253 @@
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
+
+        // === REALTIME DATA FETCHING ===
+        let allTransactions = [];
+
+        async function fetchTransactions() {
+            try {
+                const [depositsRes, redemptionsRes] = await Promise.all([
+                    fetch('/api/deposits'),
+                    fetch('/api/redemptions')
+                ]);
+
+                const deposits = await depositsRes.json();
+                const redemptions = await redemptionsRes.json();
+
+                allTransactions = [
+                    ...deposits.map(d => ({ ...d, type: 'deposit' })),
+                    ...redemptions.map(r => ({ ...r, type: 'redemption' }))
+                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                renderTransactions();
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+                document.getElementById('loading-transactions').classList.add('hidden');
+                document.getElementById('empty-transactions').classList.remove('hidden');
+            }
+        }
+
+        function renderTransactions(filtered = null) {
+            const container = document.getElementById('transactionList');
+            const loading = document.getElementById('loading-transactions');
+            const empty = document.getElementById('empty-transactions');
+
+            const transactions = filtered || allTransactions;
+
+            loading.classList.add('hidden');
+
+            if (transactions.length === 0) {
+                container.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            container.innerHTML = transactions.map(transaction => {
+                const isDeposit = transaction.type === 'deposit';
+                const date = new Date(transaction.created_at);
+                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                const statusConfig = {
+                    pending: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Pending' },
+                    confirmed: { bg: 'bg-green-100', text: 'text-green-700', label: 'Selesai' },
+                    approved: { bg: 'bg-green-100', text: 'text-green-700', label: 'Disetujui' },
+                    rejected: { bg: 'bg-red-100', text: 'text-red-700', label: 'Ditolak' },
+                    cancelled: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Dibatalkan' }
+                };
+
+                const status = statusConfig[transaction.status] || statusConfig.pending;
+
+                if (isDeposit) {
+                    const totalWeight = transaction.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
+                    const wasteTypes = transaction.items?.map(item => item.waste_type?.name).filter(Boolean).join(', ') || 'Sampah';
+
+                    return `
+                        <div onclick="showDepositDetail(${transaction.id})" 
+                             class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 flex-1">
+                                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
+                                    </div>
+                                    
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
+                                            <i class="bi bi-recycle text-green-600 mr-2"></i>
+                                            Setor ${wasteTypes}
+                                        </h3>
+                                        <div class="flex items-center space-x-3 text-sm text-gray-600">
+                                            <span class="flex items-center">
+                                                <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
+                                                ${dateStr}
+                                            </span>
+                                            <span class="flex items-center">
+                                                <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
+                                                ${totalWeight.toFixed(1)} kg
+                                            </span>
+                                            <span class="px-3 py-1 ${status.bg} ${status.text} rounded-full text-xs font-semibold">
+                                                ${status.label}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-right">
+                                        <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
+                                            + ${(transaction.total_points || 0).toLocaleString('id-ID')}
+                                            <i class="bi bi-coin text-green-500 ml-1"></i>
+                                        </p>
+                                        <p class="text-xs text-gray-500">poin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const itemsCount = transaction.items?.length || 0;
+                    return `
+                        <div onclick="showRedemptionDetail(${transaction.id})" 
+                             class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 flex-1">
+                                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-arrow-down-right text-blue-600 text-2xl font-bold"></i>
+                                    </div>
+                                    
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
+                                            <i class="bi bi-gift text-blue-600 mr-2"></i>
+                                            Tukar Poin (${itemsCount} item)
+                                        </h3>
+                                        <div class="flex items-center space-x-3 text-sm text-gray-600">
+                                            <span class="flex items-center">
+                                                <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
+                                                ${dateStr}
+                                            </span>
+                                            <span class="px-3 py-1 ${status.bg} ${status.text} rounded-full text-xs font-semibold">
+                                                ${status.label}
+                                            </span>
+                                            ${transaction.rejection_reason ? `
+                                                <span class="text-xs text-red-600 italic">
+                                                    <i class="bi bi-exclamation-circle"></i> Lihat alasan
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+
+                                    <div class="text-right">
+                                        <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
+                                            - ${(transaction.total_points || 0).toLocaleString('id-ID')}
+                                            <i class="bi bi-coin text-blue-500 ml-1"></i>
+                                        </p>
+                                        <p class="text-xs text-gray-500">poin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        async function showDepositDetail(id) {
+            try {
+                const response = await fetch(`/api/deposits/${id}`);
+                const deposit = await response.json();
+                
+                const date = new Date(deposit.created_at);
+                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                const totalWeight = deposit.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
+                
+                const statusLabels = {
+                    pending: 'Menunggu Konfirmasi',
+                    confirmed: 'Selesai',
+                    rejected: 'Ditolak'
+                };
+
+                showDetailSetor(
+                    deposit.code || `DEP-${deposit.id}`,
+                    'Setoran Sampah',
+                    dateStr,
+                    totalWeight.toFixed(1) + ' kg',
+                    statusLabels[deposit.status] || 'Pending',
+                    deposit.total_points || 0,
+                    deposit.points_after || 0,
+                    deposit.points_before || 0
+                );
+            } catch (error) {
+                console.error('Error fetching deposit detail:', error);
+            }
+        }
+
+        async function showRedemptionDetail(id) {
+            try {
+                const response = await fetch(`/api/redemptions/${id}`);
+                const redemption = await response.json();
+                
+                const date = new Date(redemption.created_at);
+                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+                const items = redemption.items?.map(item => item.reward_item?.name).filter(Boolean).join(', ') || 'Hadiah';
+                
+                const statusLabels = {
+                    pending: 'Menunggu Pengambilan',
+                    approved: 'Selesai',
+                    rejected: 'Ditolak',
+                    cancelled: 'Dibatalkan'
+                };
+
+                showDetailTukar(
+                    redemption.code || `RED-${redemption.id}`,
+                    'Penukaran Poin',
+                    dateStr,
+                    items,
+                    statusLabels[redemption.status] || 'Pending',
+                    redemption.total_points || 0
+                );
+            } catch (error) {
+                console.error('Error fetching redemption detail:', error);
+            }
+        }
+
+        function applyFilters() {
+            const filterType = document.getElementById('filter-type').value;
+            const filterStatus = document.getElementById('filter-status').value;
+            const filterMonth = document.getElementById('filter-month').value;
+
+            let filtered = allTransactions;
+
+            if (filterType) {
+                filtered = filtered.filter(t => t.type === filterType);
+            }
+
+            if (filterStatus) {
+                filtered = filtered.filter(t => t.status === filterStatus);
+            }
+
+            if (filterMonth) {
+                const [year, month] = filterMonth.split('-');
+                filtered = filtered.filter(t => {
+                    const date = new Date(t.created_at);
+                    return date.getFullYear() == year && (date.getMonth() + 1) == month;
+                });
+            }
+
+            renderTransactions(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-type').value = '';
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-month').value = '';
+            renderTransactions();
+        }
+
+        // Load on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchTransactions();
+        });
 
         // Close modals on outside click
         document.getElementById('modalDetailSetor').addEventListener('click', function(e) {

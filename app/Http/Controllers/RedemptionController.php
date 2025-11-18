@@ -21,6 +21,14 @@ class RedemptionController extends Controller
 
         return response()->json($redemptions);
     }
+    
+    /**
+     * Show the form for creating a new redemption (tukar poin page)
+     */
+    public function create()
+    {
+        return view('tukar-poin');
+    }
 
     // Simpan penukaran poin
     public function store(Request $request)
@@ -39,6 +47,13 @@ class RedemptionController extends Controller
         foreach ($request->items as $item) {
             $reward = RewardItem::findOrFail($item['reward_item_id']);
             $totalPoints += $reward->points_cost * $item['quantity'];
+            
+            // Cek stok
+            if ($reward->stock < $item['quantity']) {
+                return response()->json([
+                    'message' => "Stok {$reward->name} tidak mencukupi. Stok tersedia: {$reward->stock}"
+                ], 400);
+            }
         }
 
         if ($user->balance_points < $totalPoints) {
@@ -50,6 +65,7 @@ class RedemptionController extends Controller
             'branch_id' => $request->branch_id,
             'status' => 'pending',
             'total_points' => $totalPoints,
+            'expires_at' => now()->addHours(24), // Kadaluarsa 24 jam dari sekarang
         ]);
 
         foreach ($request->items as $item) {
@@ -62,8 +78,9 @@ class RedemptionController extends Controller
         }
 
         return response()->json([
-            'message' => 'Penukaran berhasil diajukan. Menunggu konfirmasi admin.',
+            'message' => 'Penukaran berhasil diajukan. Menunggu konfirmasi admin dalam 24 jam.',
             'redemption_id' => $redemption->id,
+            'expires_at' => $redemption->expires_at->format('Y-m-d H:i:s'),
         ], 201);
     }
 
@@ -71,5 +88,29 @@ class RedemptionController extends Controller
     {
         $redemption = Redemption::with('items.rewardItem')->findOrFail($id);
         return response()->json($redemption);
+    }
+    
+    /**
+     * Cancel a redemption (before admin approval)
+     */
+    public function cancel($id)
+    {
+        $redemption = Redemption::where('user_id', Auth::id())
+            ->where('id', $id)
+            ->firstOrFail();
+            
+        if ($redemption->status !== 'pending') {
+            return response()->json([
+                'message' => 'Hanya penukaran dengan status pending yang bisa dibatalkan'
+            ], 400);
+        }
+        
+        $redemption->update([
+            'status' => 'cancelled'
+        ]);
+        
+        return response()->json([
+            'message' => 'Penukaran berhasil dibatalkan'
+        ]);
     }
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <script>
@@ -22,6 +23,7 @@
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
     <!-- Header -->
+    @include('admin.partials.header')
     <header class="bg-white shadow-sm">
         <div class="max-w-6xl mx-auto px-4 py-6">
             <div class="flex justify-between items-center">
@@ -103,6 +105,20 @@
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div class="flex-1">
                     <h2 class="text-2xl font-bold mb-2">Selamat Datang, Administrator!</h2>
+                    <p class="text-green-100 mb-4">Kelola Bank Sampah Digital dengan mudah</p>
+                    <div class="flex flex-wrap items-center gap-4 mt-4">
+                        <div class="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                            <i class="bi bi-shield-check mr-2"></i>Admin Cabang
+                        </div>
+                        @php
+                            $adminBranch = Auth::user()->branch_id ? \App\Models\Branch::find(Auth::user()->branch_id) : null;
+                        @endphp
+                        @if($adminBranch)
+                        <div class="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                            <i class="bi bi-geo-alt-fill mr-2"></i>
+                            {{ $adminBranch->name }}
+                        </div>
+                        @endif
                     <p class="text-green-100 mb-4">Kelola seluruh sistem Bank Sampah Digital dengan mudah</p>
                     <div class="flex flex-wrap items-center gap-4 mt-4">
                         <div class="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
@@ -122,12 +138,73 @@
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Pengguna -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-teal-500">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                        <i class="bi bi-people text-teal-600 text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-gray-500 text-sm mb-1">Total Warga</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ $stats['total_users'] ?? 0 }}</p>
+                <p class="text-xs text-gray-500 mt-1">Pengguna terdaftar</p>
+            </div>
+
             <!-- Total Setoran -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                         <i class="bi bi-graph-up text-green-600 text-2xl"></i>
                     </div>
+                </div>
+                <h3 class="text-gray-500 text-sm mb-1">Total Setoran</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ $stats['total_deposits'] ?? 0 }}</p>
+                <p class="text-xs text-gray-500 mt-1">Semua transaksi setoran</p>
+            </div>
+
+            <!-- Setoran Pending -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                        <i class="bi bi-clock text-yellow-600 text-2xl"></i>
+                    </div>
+                    @if($stats['pending_deposits'] > 0)
+                    <span class="text-yellow-600 text-sm font-semibold">{{ $stats['pending_deposits'] }} Pending</span>
+                    @endif
+                </div>
+                <h3 class="text-gray-500 text-sm mb-1">Setoran Pending</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ $stats['pending_deposits'] ?? 0 }}</p>
+                <p class="text-xs text-gray-500 mt-1">Menunggu konfirmasi</p>
+            </div>
+
+            <!-- Penukaran Pending -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-orange-500">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                        <i class="bi bi-arrow-left-right text-orange-600 text-2xl"></i>
+                    </div>
+                    @if($stats['pending_redemptions'] > 0)
+                    <span class="text-orange-600 text-sm font-semibold">{{ $stats['pending_redemptions'] }} Pending</span>
+                    @endif
+                </div>
+                <h3 class="text-gray-500 text-sm mb-1">Penukaran Pending</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ $stats['pending_redemptions'] ?? 0 }}</p>
+                <p class="text-xs text-gray-500 mt-1">Menunggu approval</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Grafik Setoran -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Grafik Setoran (12 Bulan Terakhir)</h3>
+                <canvas id="depositsChart"></canvas>
+            </div>
+
+            <!-- Grafik Penukaran -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Grafik Penukaran (12 Bulan Terakhir)</h3>
+                <canvas id="redemptionsChart"></canvas>
                     <span class="text-green-600 text-sm font-semibold">+12%</span>
                 </div>
                 <h3 class="text-gray-500 text-sm mb-1">Total Setoran</h3>
@@ -179,6 +256,7 @@
         <div class="bg-white rounded-2xl p-6 mb-8 shadow-sm">
             <h3 class="text-xl font-bold text-gray-800 mb-6">Quick Actions</h3>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="{{ route('admin.setoran.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl hover:shadow-md transition-all group">
                 <a href="{{ route('admin.setoran') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl hover:shadow-md transition-all group">
                     <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
                         <i class="bi bi-graph-up text-white text-2xl"></i>
@@ -186,6 +264,7 @@
                     <span class="text-sm font-semibold text-gray-700 text-center">Laporan Setoran</span>
                 </a>
 
+                <a href="{{ route('admin.penukaran.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl hover:shadow-md transition-all group">
                 <a href="{{ route('admin.penukaran') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl hover:shadow-md transition-all group">
                     <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
                         <i class="bi bi-check-circle text-white text-2xl"></i>
@@ -193,6 +272,7 @@
                     <span class="text-sm font-semibold text-gray-700 text-center">Proses Penukaran</span>
                 </a>
 
+                <a href="{{ route('admin.reward-items.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl hover:shadow-md transition-all group">
                 <a href="{{ route('admin.tukar-barang') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl hover:shadow-md transition-all group">
                     <div class="w-16 h-16 bg-teal-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
                         <i class="bi bi-plus-circle text-white text-2xl"></i>
@@ -302,6 +382,92 @@
             </div>
         </div>
     </footer>
+
+
+    <!-- Chart.js Script -->
+    <script>
+        // Data dari backend
+        const depositsByMonth = @json($depositsByMonth);
+        const redemptionsByMonth = @json($redemptionsByMonth);
+
+        // Extract labels and values
+        const depositsLabels = depositsByMonth.map(item => item.label);
+        const depositsValues = depositsByMonth.map(item => item.value);
+        const redemptionsLabels = redemptionsByMonth.map(item => item.label);
+        const redemptionsValues = redemptionsByMonth.map(item => item.value);
+
+        // Deposits Chart
+        const depositsCtx = document.getElementById('depositsChart').getContext('2d');
+        new Chart(depositsCtx, {
+            type: 'line',
+            data: {
+                labels: depositsLabels,
+                datasets: [{
+                    label: 'Total Setoran',
+                    data: depositsValues,
+                    borderColor: 'rgb(34, 197, 94)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Redemptions Chart
+        const redemptionsCtx = document.getElementById('redemptionsChart').getContext('2d');
+        new Chart(redemptionsCtx, {
+            type: 'bar',
+            data: {
+                labels: redemptionsLabels,
+                datasets: [{
+                    label: 'Total Penukaran',
+                    data: redemptionsValues,
+                    backgroundColor: 'rgba(20, 184, 166, 0.7)',
+                    borderColor: 'rgb(20, 184, 166)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
 
 </body>
 </html>
