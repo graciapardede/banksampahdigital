@@ -24,6 +24,13 @@
                             {{ __('Penukaran') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.reward-items.index')" :active="request()->routeIs('admin.reward-items.*')">
+                        <x-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
+                            {{ __('Setoran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.penukaran')" :active="request()->routeIs('admin.penukaran')">
+                            {{ __('Penukaran') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.tukar-barang')" :active="request()->routeIs('admin.tukar-barang')">
                             {{ __('Tukar Barang') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.waste-types.index')" :active="request()->routeIs('admin.waste-types.*')">
@@ -99,6 +106,13 @@
                     {{ __('Penukaran') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reward-items.index')" :active="request()->routeIs('admin.reward-items.*')">
+                <x-responsive-nav-link :href="route('admin.setoran')" :active="request()->routeIs('admin.setoran')">
+                    {{ __('Setoran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.penukaran')" :active="request()->routeIs('admin.penukaran')">
+                    {{ __('Penukaran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.tukar-barang')" :active="request()->routeIs('admin.tukar-barang')">
                     {{ __('Tukar Barang') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.waste-types.index')" :active="request()->routeIs('admin.waste-types.*')">

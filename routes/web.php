@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
     // Profil - View (show form) dan API untuk update
     Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
 
+
     // Profil
     Route::get('/profil', function () {
         return view('profil');
@@ -161,6 +162,24 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::get('/tukar-barang', function () {
         return redirect()->route('admin.reward-items.index');
     })->name('tukar-barang');
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    // Manajemen Setoran
+    Route::get('/setoran', function () {
+        return view('admin.setoran.index');
+    })->name('setoran');
+
+    // Manajemen Tukar Barang
+    Route::get('/tukar-barang', function () {
+        return view('admin.tukar_barang.index');
+    })->name('tukar-barang');
+
+    // Daftar Permintaan Penukaran
+    Route::get('/penukaran', function () {
+        return view('admin.penukaran.index');
+    })->name('penukaran');
 
     // CRUD Waste Types
     Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
@@ -169,6 +188,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
     
 
+    
     // Laporan (Report)
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');
@@ -177,6 +197,11 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 });
 
 // Development routes (optional - untuk testing)
+});
+
+// Temporary dev routes for previewing views without wiring controllers
+Route::view('/_dev/setoran','admin.setoran.index');
+
 Route::view('/_dev/tukar-barang','admin.tukar_barang.index');
 Route::view('/_dev/penukaran','admin.penukaran.index');
 Route::view('/_dev/waste-types','admin.waste_types.index');

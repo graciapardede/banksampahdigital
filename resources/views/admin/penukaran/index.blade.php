@@ -80,6 +80,17 @@
                         <span class="truncate">Penukaran</span>
                     </a>
                     <a href="{{ route('admin.reward-items.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+
+                    <a href="{{ route('admin.setoran') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-graph-up"></i>
+                        <span class="truncate">Setoran</span>
+                    </a>
+                    <a href="{{ route('admin.penukaran') }}" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-arrow-left-right"></i>
+                        <span class="truncate">Penukaran</span>
+                    </a>
+                    <a href="{{ route('admin.tukar-barang') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+
                         <i class="bi bi-gift"></i>
                         <span class="truncate">Tukar Barang</span>
                     </a>
@@ -90,6 +101,9 @@
                     <a href="{{ route('admin.laporan.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-file-earmark-text"></i>
                         <span class="truncate">Laporan</span>
+                    <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
+                        <i class="bi bi-building"></i>
+                        <span class="truncate">Cabang</span>
                     </a>
                 </div>
             </div>
@@ -123,6 +137,16 @@
                 $pendingCount = $redemptions->where('status', 'pending')->count();
                 $approvedCount = $redemptions->where('status', 'approved')->count();
                 $totalPoints = $redemptions->sum('total_points');
+                $demoRows = [
+                    (object)['user'=>'Sari Simanullang','item'=>'Beras Premium 5kg','points'=>100,'date'=>'20 Jan 2025, 14:30','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
+                    (object)['user'=>'Binsar Hutabarat','item'=>'Minyak goreng 2L, gula pasir','points'=>250,'date'=>'19 Jan 2025, 16:45','status'=>'Dikonfirmasi','method'=>'Ambil di Cabang (Cabang Lajubet)'],
+                    (object)['user'=>'Maria Situmorang','item'=>'Kertas','points'=>50,'date'=>'18 Jan 2025, 10:20','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
+                    (object)['user'=>'Toba Siahaan','item'=>'Plastik','points'=>80,'date'=>'17 Jan 2025, 13:15','status'=>'Menunggu','method'=>'Ambil di Cabang (Cabang Sitoluama)'],
+                ];
+                $rows = isset($requests) && count($requests) ? $requests : $demoRows;
+                $pendingCount = collect($rows)->filter(fn($r) => strtolower($r->status) === 'menunggu')->count();
+                $confirmedCount = collect($rows)->filter(fn($r) => strtolower($r->status) === 'dikonfirmasi')->count();
+                $totalPoints = collect($rows)->sum('points');
             @endphp
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -152,6 +176,7 @@
                     </div>
                     <div class="text-sm font-medium opacity-90">Dikonfirmasi</div>
                     <div class="text-3xl font-bold mt-1">{{ $approvedCount }}</div>
+                    <div class="text-3xl font-bold mt-1">{{ $confirmedCount }}</div>
                     <div class="text-xs opacity-80 mt-1">Siap diserahkan</div>
                 </div>
 
@@ -287,6 +312,99 @@
                             <p class="text-gray-400 text-sm">Data akan muncul di sini setelah warga mengajukan penukaran poin</p>
                         </div>
                     @endif
+                    <div class="space-y-4">
+
+                        @foreach($rows as $index => $r)
+                            <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 {{ strtolower($r->status) === 'menunggu' ? 'border-yellow-300' : 'border-emerald-200' }} p-6 hover:shadow-lg transition-all">
+                                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                    <!-- User Info -->
+                                    <div class="flex items-start gap-4 flex-1">
+                                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
+                                            {{ substr($r->user, 0, 1) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <h4 class="font-bold text-gray-800 text-lg">{{ $r->user }}</h4>
+                                                @if(strtolower($r->status) === 'menunggu')
+                                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Menunggu
+                                                    </span>
+                                                @elseif(strtolower($r->status) === 'dikonfirmasi')
+                                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Dikonfirmasi
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                    </svg>
+                                                    <span class="font-semibold text-gray-700">{{ $r->item }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                    <span class="text-gray-600">{{ $r->date }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-sm mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span class="text-gray-600">{{ $r->method }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Points & Actions -->
+                                    <div class="flex items-center gap-4 lg:flex-shrink-0">
+                                        <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl px-6 py-4 text-white shadow-lg">
+                                            <div class="text-xs font-medium opacity-90">Poin</div>
+                                            <div class="text-3xl font-bold">{{ $r->points }}</div>
+                                        </div>
+                                        
+                                        <div class="flex flex-col gap-2">
+                                            <button class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-xl text-gray-700 font-semibold text-sm shadow-sm hover:shadow-md transition-all" title="Lihat Detail">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                                </svg>
+                                                Detail
+                                            </button>
+                                            
+                                            @if(strtolower($r->status) === 'menunggu')
+                                                <form action="#" method="POST" class="inline-block" onsubmit="event.preventDefault(); alert('Konfirmasi action (demo)')">
+                                                    @csrf
+                                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Konfirmasi
+                                                    </button>
+                                                </form>
+                                            @elseif(strtolower($r->status) === 'dikonfirmasi')
+                                                <button class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    Diserahkan
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
 
                     @if($pendingCount > 0)
                         <div class="mt-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 rounded-xl p-4 shadow-sm">

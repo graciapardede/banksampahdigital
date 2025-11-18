@@ -180,10 +180,12 @@
                         <i class="bi bi-recycle"></i>
                         <span class="truncate">Jenis Sampah</span>
                     </a>
+                    @if(auth()->user()->isSuperAdmin())
                     <a href="{{ route('admin.branches.index') }}" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full">
                         <i class="bi bi-building"></i>
                         <span class="truncate">Cabang</span>
                     </a>
+                    @endif
                 </div>
             </div>
         </div>
