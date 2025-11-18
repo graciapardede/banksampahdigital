@@ -62,15 +62,19 @@ Route::middleware('auth')->group(function () {
     // Dashboard untuk user biasa
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     
-<<<<<<< HEAD
-=======
     // Profile routes
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
->>>>>>> cddc942861797fc86d7951fc19fde40adafdf668
+
     // Profil - View (show form) dan API untuk update
     Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
+
+    // Profil
+    Route::get('/profil', function () {
+        return view('profil');
+    })->name('profil');
+
     
     // Setor Sampah (read-only untuk user - tampilkan view dengan riwayat)
     Route::get('/setor', function() {
@@ -117,6 +121,9 @@ Route::middleware('auth')->group(function () {
     
     // Branches API (untuk dropdown)
     Route::get('/api/branches', [\App\Http\Controllers\BranchController::class, 'index']);
+    Route::get('/riwayat-tukar', function () {
+        return view('riwayat-tukar');
+    })->name('riwayat-tukar');
 });
 
 // Admin routes
@@ -158,12 +165,10 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     // CRUD Waste Types
     Route::resource('waste-types', \App\Http\Controllers\Admin\WasteTypeController::class);
     
-<<<<<<< HEAD
-=======
     // CRUD Branches (hanya untuk super admin, bukan admin cabang)
     Route::resource('branches', \App\Http\Controllers\Admin\BranchController::class);
     
->>>>>>> cddc942861797fc86d7951fc19fde40adafdf668
+
     // Laporan (Report)
     Route::get('/laporan', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/detail-deposits', [\App\Http\Controllers\Admin\ReportController::class, 'detailDeposits'])->name('laporan.detail-deposits');
@@ -171,8 +176,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::get('/laporan/export-pdf', [\App\Http\Controllers\Admin\ReportController::class, 'exportPdf'])->name('laporan.export-pdf');
 });
 
-// Temporary dev routes for previewing views without wiring controllers
-Route::view('/_dev/setoran','admin.setoran.index');
+// Development routes (optional - untuk testing)
 Route::view('/_dev/tukar-barang','admin.tukar_barang.index');
 Route::view('/_dev/penukaran','admin.penukaran.index');
 Route::view('/_dev/waste-types','admin.waste_types.index');
