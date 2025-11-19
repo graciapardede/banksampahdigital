@@ -304,9 +304,11 @@
                 });
 
                 const statusConfig = {
-                    pending: { bg: 'bg-yellow-200', text: 'text-yellow-800', label: 'Pending' },
-                    confirmed: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
-                    approved: { bg: 'bg-green-200', text: 'text-green-800', label: 'Berhasil' },
+                    pending: { bg: 'bg-yellow-200', text: 'text-yellow-800', label: 'Menunggu' },
+                    verified: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
+                    confirmed: { bg: 'bg-blue-200', text: 'text-blue-800', label: 'Siap Ambil' },
+                    completed: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
+                    approved: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
                     rejected: { bg: 'bg-red-200', text: 'text-red-800', label: 'Ditolak' },
                     cancelled: { bg: 'bg-gray-200', text: 'text-gray-800', label: 'Dibatalkan' }
                 };
@@ -422,7 +424,9 @@
             
             const statusConfig = {
                 pending: { bg: 'bg-yellow-100', border: 'border-yellow-500', text: 'text-yellow-800', label: 'Menunggu Konfirmasi' },
-                confirmed: { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-800', label: 'Selesai' }
+                verified: { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-800', label: 'Selesai' },
+                confirmed: { bg: 'bg-blue-100', border: 'border-blue-500', text: 'text-blue-800', label: 'Siap Ambil' },
+                completed: { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-800', label: 'Selesai' }
             };
 
             const status = statusConfig[data.status] || statusConfig.pending;
@@ -496,6 +500,8 @@
             
             const statusConfig = {
                 pending: { bg: 'bg-yellow-100', border: 'border-yellow-500', text: 'text-yellow-800', label: 'Menunggu Persetujuan' },
+                confirmed: { bg: 'bg-blue-100', border: 'border-blue-500', text: 'text-blue-800', label: 'Siap Ambil' },
+                completed: { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-800', label: 'Selesai' },
                 approved: { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-800', label: 'Disetujui' },
                 rejected: { bg: 'bg-red-100', border: 'border-red-500', text: 'text-red-800', label: 'Ditolak' },
                 cancelled: { bg: 'bg-gray-100', border: 'border-gray-500', text: 'text-gray-800', label: 'Dibatalkan' }

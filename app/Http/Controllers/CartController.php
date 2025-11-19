@@ -219,7 +219,7 @@ class CartController extends Controller
             ]);
 
             // ============================================================
-            // STEP 3: CREATE REDEMPTION ITEMS & KURANGI STOK
+            // STEP 3: CREATE REDEMPTION ITEMS (JANGAN KURANGI STOK DULU)
             // ============================================================
             foreach ($items as $item) {
                 // Create redemption item
@@ -230,27 +230,20 @@ class CartController extends Controller
                     'points' => $item['rewardItem']->points_cost,
                 ]);
 
-                // Kurangi stok
-                $item['rewardItem']->decrement('stock', $item['quantity']);
+                // STOK TIDAK DIKURANGI DI SINI
+                // Stok akan dikurangi saat admin approve/confirm
             }
 
             // ============================================================
-            // STEP 4: DEDUCT POIN DARI USER
+            // STEP 4: JANGAN KURANGI POIN DULU (pending approval)
             // ============================================================
-            $user->decrement('balance_points', $totalPoints);
-            $user->refresh();
+            // Poin TIDAK dikurangi di sini
+            // Poin akan dikurangi saat admin approve/confirm
 
             // ============================================================
-            // STEP 5: CREATE POINT LEDGER (AUDIT TRAIL)
+            // STEP 5: TIDAK BUAT POINT LEDGER DULU
             // ============================================================
-            PointLedger::create([
-                'user_id' => $user->id,
-                'redemption_id' => $redemption->id,
-                'type' => 'debit', // Pengurangan poin
-                'amount' => $totalPoints,
-                'balance_after' => $user->balance_points,
-                'description' => 'Penukaran poin untuk ' . count($items) . ' item barang',
-            ]);
+            // Point ledger akan dibuat saat admin approve/confirm
 
             // ============================================================
             // STEP 6: CLEAR CART
@@ -260,19 +253,25 @@ class CartController extends Controller
             // ============================================================
             // STEP 7: KIRIM NOTIFIKASI KE ADMIN CABANG
             // ============================================================
-            // Cari admin yang branch_id-nya sama dengan user
-            $admins = User::where('role', 'admin')
-                ->where('branch_id', $user->branch_id)
-                ->get();
+            // Ambil branch_id dari reward item yang ditukar (item pertama)
+            $firstItem = $redemption->items()->with('rewardItem')->first();
+            $branchId = $firstItem->rewardItem->branch_id ?? null;
             
-            foreach ($admins as $admin) {
-                $admin->notify(new NewRedemptionRequest($redemption));
+            if ($branchId) {
+                // Cari admin yang branch_id-nya sama dengan barang yang ditukar
+                $admins = User::where('role', 'admin')
+                    ->where('branch_id', $branchId)
+                    ->get();
+                
+                foreach ($admins as $admin) {
+                    $admin->notify(new NewRedemptionRequest($redemption));
+                }
             }
 
             DB::commit();
 
             return redirect()->route('riwayat-tukar')
-                ->with('success', "✅ Penukaran berhasil! Total {$totalPoints} poin telah ditukarkan. Menunggu persetujuan admin.");
+                ->with('success', "✅ Permintaan penukaran berhasil dikirim! Total {$totalPoints} poin akan dikurangi setelah admin menyetujui.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -344,7 +343,7 @@ class CartController extends Controller
             ]);
 
             // ============================================================
-            // STEP 4: CREATE REDEMPTION ITEM & KURANGI STOK
+            // STEP 4: CREATE REDEMPTION ITEM (JANGAN KURANGI STOK DULU)
             // ============================================================
             RedemptionItem::create([
                 'redemption_id' => $redemption->id,
@@ -353,38 +352,36 @@ class CartController extends Controller
                 'points' => $rewardItem->points_cost,
             ]);
 
-            // Kurangi stok
-            $rewardItem->decrement('stock', $quantity);
+            // STOK TIDAK DIKURANGI DI SINI
+            // Stok akan dikurangi saat admin approve/confirm
 
             // ============================================================
-            // STEP 5: DEDUCT POIN DARI USER
+            // STEP 5: JANGAN KURANGI POIN DULU (pending approval)
             // ============================================================
-            $user->decrement('balance_points', $totalPoints);
-            $user->refresh();
+            // Poin TIDAK dikurangi di sini
+            // Poin akan dikurangi saat admin approve/confirm
 
             // ============================================================
-            // STEP 6: CREATE POINT LEDGER (AUDIT TRAIL)
+            // STEP 6: TIDAK BUAT POINT LEDGER DULU
             // ============================================================
-            PointLedger::create([
-                'user_id' => $user->id,
-                'redemption_id' => $redemption->id,
-                'type' => 'debit', // Pengurangan poin
-                'amount' => $totalPoints,
-                'balance_after' => $user->balance_points,
-                'description' => "Instant Redeem: {$rewardItem->name} ({$quantity}x)",
-            ]);
+            // Point ledger akan dibuat saat admin approve/confirm
 
 
             // ============================================================
             // STEP 7: KIRIM NOTIFIKASI KE ADMIN CABANG
             // ============================================================
-            // Cari admin yang branch_id-nya sama dengan user
-            $admins = User::where('role', 'admin')
-                ->where('branch_id', $user->branch_id)
-                ->get();
+            // Ambil branch_id dari reward item yang ditukar
+            $branchId = $rewardItem->branch_id ?? null;
             
-            foreach ($admins as $admin) {
-                $admin->notify(new NewRedemptionRequest($redemption));
+            if ($branchId) {
+                // Cari admin yang branch_id-nya sama dengan barang yang ditukar
+                $admins = User::where('role', 'admin')
+                    ->where('branch_id', $branchId)
+                    ->get();
+                
+                foreach ($admins as $admin) {
+                    $admin->notify(new NewRedemptionRequest($redemption));
+                }
             }
 
             DB::commit();
@@ -392,11 +389,11 @@ class CartController extends Controller
             // Return JSON response untuk AJAX
             return response()->json([
                 'success' => true,
-                'message' => "✅ Penukaran berhasil! {$quantity}x {$rewardItem->name} telah ditukar dengan {$totalPoints} poin. Menunggu persetujuan admin.",
+                'message' => "✅ Permintaan penukaran {$quantity}x {$rewardItem->name} berhasil dikirim! Poin ({$totalPoints}) akan dikurangi setelah admin menyetujui.",
                 'data' => [
                     'redemption_id' => $redemption->id,
                     'total_points' => $totalPoints,
-                    'balance_after' => $user->balance_points,
+                    'balance_after' => $user->balance_points, // Masih balance awal karena belum dikurangi
                 ]
             ], 200);
 

@@ -12,11 +12,17 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = Auth::user()
-            ->notifications()
+        $user = Auth::user();
+        $notifications = $user->notifications()
             ->latest()
             ->get();
 
+        // Jika admin, gunakan view admin
+        if ($user->role === 'admin') {
+            return view('admin.notifikasi', compact('notifications'));
+        }
+
+        // Jika user biasa, gunakan view user
         return view('notifikasi', compact('notifications'));
     }
 

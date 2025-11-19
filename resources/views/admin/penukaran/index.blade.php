@@ -180,7 +180,7 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button class="px-4 py-2 bg-white border-2 border-emerald-300 text-emerald-600 rounded-xl font-semibold hover:bg-emerald-50 transition-all">
+                            <button onclick="toggleFilter()" id="filterBtn" class="px-4 py-2 bg-white border-2 border-emerald-300 text-emerald-600 rounded-xl font-semibold hover:bg-emerald-50 transition-all">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                                 </svg>
@@ -190,11 +190,69 @@
                     </div>
                 </div>
 
+                <!-- Filter Form (Toggle Show/Hide) -->
+                <div id="filterForm" class="hidden bg-gradient-to-br from-emerald-50 to-teal-50 px-6 py-4 border-b-2 border-emerald-200">
+                    <form method="GET" action="{{ route('admin.penukaran.index') }}" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Filter Status -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="bi bi-funnel mr-1"></i>Status
+                                </label>
+                                <select name="status" class="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                    <option value="semua" {{ request('status') == 'semua' ? 'selected' : '' }}>Semua Status</option>
+                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                                    <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Dikonfirmasi</option>
+                                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                                </select>
+                            </div>
+
+                            <!-- Filter Bulan -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="bi bi-calendar-month mr-1"></i>Bulan
+                                </label>
+                                <input type="month" name="bulan" value="{{ request('bulan') }}" 
+                                       class="w-full px-4 py-2 border-2 border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex items-end gap-2">
+                                <button type="submit" class="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md">
+                                    <i class="bi bi-check-circle mr-1"></i>Terapkan Filter
+                                </button>
+                                <a href="{{ route('admin.penukaran.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-all">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Active Filters Info -->
+                        @if(request('status') && request('status') != 'semua' || request('bulan'))
+                        <div class="flex items-center gap-2 text-sm">
+                            <i class="bi bi-info-circle text-emerald-600"></i>
+                            <span class="text-gray-700 font-medium">Filter aktif:</span>
+                            @if(request('status') && request('status') != 'semua')
+                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">
+                                    Status: {{ ucfirst(request('status')) }}
+                                </span>
+                            @endif
+                            @if(request('bulan'))
+                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">
+                                    Bulan: {{ \Carbon\Carbon::parse(request('bulan'))->format('F Y') }}
+                                </span>
+                            @endif
+                        </div>
+                        @endif
+                    </form>
+                </div>
+
                 <div class="p-6">
                     @if($redemptions->count() > 0)
                         <div class="space-y-4">
                             @foreach($redemptions as $redemption)
-                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 {{ $redemption->status === 'pending' ? 'border-yellow-300' : ($redemption->status === 'approved' ? 'border-emerald-200' : 'border-gray-200') }} p-6 hover:shadow-lg transition-all">
+                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 {{ $redemption->status === 'pending' ? 'border-yellow-300' : ($redemption->status === 'confirmed' ? 'border-emerald-200' : 'border-gray-200') }} p-6 hover:shadow-lg transition-all">
                                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                                         <!-- User Info -->
                                         <div class="flex items-start gap-4 flex-1">
@@ -209,7 +267,7 @@
                                                             <i class="bi bi-clock"></i>
                                                             Menunggu
                                                         </span>
-                                                    @elseif($redemption->status === 'approved')
+                                                    @elseif($redemption->status === 'confirmed')
                                                         <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
                                                             <i class="bi bi-check-circle"></i>
                                                             Dikonfirmasi
@@ -264,7 +322,7 @@
                                                             Konfirmasi
                                                         </button>
                                                     </form>
-                                                @elseif($redemption->status === 'approved')
+                                                @elseif($redemption->status === 'confirmed')
                                                     <form action="{{ route('admin.penukaran.complete', $redemption->id) }}" method="POST">
                                                         @csrf
                                                         <button type="button" onclick="confirmComplete(this)" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
@@ -325,6 +383,12 @@
 
 
     <script>
+        // Toggle Filter Form
+        function toggleFilter() {
+            const filterForm = document.getElementById('filterForm');
+            filterForm.classList.toggle('hidden');
+        }
+
         // Fungsi konfirmasi untuk tombol "Konfirmasi" (Approve)
         function confirmApprove(button) {
             const form = button.closest('form');

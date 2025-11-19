@@ -27,52 +27,62 @@ class RedemptionController extends Controller
         $query = Redemption::with(['user', 'branch', 'redemptionItems.rewardItem'])
             ->when($branchId, function($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
-            })
-            ->latest();
+            });
 
-        // Filter by status
-        if ($request->has('status') && $request->status != '') {
+        // Filter by status - jangan filter jika 'semua' atau kosong
+        if ($request->has('status') && $request->status != '' && $request->status != 'semua') {
             $query->where('status', $request->status);
         }
 
-        // Filter by date range
-        if ($request->has('date_from') && $request->date_from != '') {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->has('date_to') && $request->date_to != '') {
-            $query->whereDate('created_at', '<=', $request->date_to);
+        // Filter by month (format: Y-m, contoh: 2025-11)
+        if ($request->has('bulan') && $request->bulan != '') {
+            $bulanData = explode('-', $request->bulan); // ['2025', '11']
+            if (count($bulanData) == 2) {
+                $tahun = $bulanData[0];
+                $bulan = $bulanData[1];
+                $query->whereYear('created_at', $tahun)
+                      ->whereMonth('created_at', $bulan);
+            }
         }
 
-        $redemptions = $query->paginate(20);
+        // Apply sorting and pagination
+        $redemptions = $query->latest()->paginate(10)->appends($request->all());
+
+        // Current month and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
 
         // Calculate statistics for current month with branch filter
-        $pending = Redemption::when($branchId, function($q) use ($branchId) {
+        // 1. Pending Count - transaksi menunggu konfirmasi
+        $pendingCount = Redemption::when($branchId, function($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             })
             ->where('status', 'pending')
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
             ->count();
 
-        $confirmed = Redemption::when($branchId, function($q) use ($branchId) {
+        // 2. Confirmed Count - transaksi sudah dikonfirmasi, siap diambil
+        $confirmedCount = Redemption::when($branchId, function($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             })
-            ->where('status', 'approved')
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->where('status', 'confirmed')
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
             ->count();
 
+        // 3. Total Points - hanya transaksi yang sudah selesai (completed)
         $totalPoints = Redemption::when($branchId, function($q) use ($branchId) {
                 $q->where('branch_id', $branchId);
             })
-            ->where('status', 'approved')
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->where('status', 'completed')
+            ->whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
             ->sum('total_points');
 
-        // Add pendingCount and confirmedCount for view compatibility
-        $pendingCount = $pending;
-        $confirmedCount = $confirmed;
+        // Backward compatibility variables
+        $pending = $pendingCount;
+        $confirmed = $confirmedCount;
 
         return view('admin.penukaran.index', compact('redemptions', 'pending', 'confirmed', 'totalPoints', 'pendingCount', 'confirmedCount'));
     }
@@ -120,9 +130,9 @@ class RedemptionController extends Controller
             // Kurangi poin user
             $user->decrement('balance_points', $totalPoints);
 
-            // Update status redemption
+            // Update status redemption ke 'confirmed' (barang siap diambil)
             $redemption->update([
-                'status' => 'approved',
+                'status' => 'confirmed',
                 'processed_at' => Carbon::now(),
             ]);
 
@@ -138,7 +148,7 @@ class RedemptionController extends Controller
 
             DB::commit();
 
-            return back()->with('success', "Penukaran berhasil disetujui! Poin {$user->full_name} telah dikurangi {$totalPoints}.");
+            return back()->with('success', "Penukaran berhasil dikonfirmasi! Barang siap diambil. Poin {$user->full_name} telah dikurangi {$totalPoints}.");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menyetujui penukaran: ' . $e->getMessage());
@@ -232,7 +242,7 @@ class RedemptionController extends Controller
     {
         $redemption = Redemption::with('user', 'items')->findOrFail($id);
 
-        if ($redemption->status !== 'approved') {
+        if ($redemption->status !== 'confirmed') {
             return back()->with('error', 'Hanya penukaran dengan status "Dikonfirmasi" yang bisa diserahkan.');
         }
 

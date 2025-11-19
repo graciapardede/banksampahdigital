@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -22,8 +23,8 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
-    <!-- Header -->
-    @include('admin.partials.header')
+    <!-- Header dengan Notifikasi -->
+    <x-admin-header activePage="dashboard" />
 
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-8">

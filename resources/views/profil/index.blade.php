@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Profil - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -73,38 +74,62 @@
                     </div>
                 </div>
 
-                <!-- User Info -->
+                <!-- Points & Actions -->
                 <div class="flex items-center space-x-4">
-                    <div class="text-right hidden md:block">
-                        <p class="text-sm text-gray-600">Saldo Poin</p>
-                        <p class="text-xl font-bold text-green-600">{{ number_format($saldoPoin, 0, ',', '.') }}</p>
+                    <!-- Points Display -->
+                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                        <div class="flex items-center space-x-2">
+                            <i class="bi bi-coin text-green-600 text-xl"></i>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ number_format($saldoPoin, 0, ',', '.') }} poin</span>
+                        </div>
                     </div>
-                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <i class="bi bi-person text-green-600 text-xl"></i>
-                    </div>
+
+                    <!-- Notification Bell -->
+                    <a href="/notifikasi" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                    </a>
+
+                    <!-- Profile Button -->
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
+                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    </a>
+
+                    <!-- Logout Button -->
+                    <form method="POST" action="/logout" class="inline">
+                        @csrf
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
+        </div>
 
-            <!-- Navigation Tabs -->
-            <div class="mt-6">
-                <div class="flex flex-wrap gap-2 lg:gap-3">
-                    <a href="/profil" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-lg flex items-center justify-center space-x-2 w-full sm:w-auto cursor-pointer">
-                        <i class="bi bi-person-circle pointer-events-none"></i>
+        <!-- Navigation Tabs -->
+        <div class="bg-green-100 px-4 py-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
+                        <i class="bi bi-house-door pointer-events-none"></i>
+                        <span class="truncate pointer-events-none">Dashboard</span>
+                    </a>
+                    <a href="/profil" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full cursor-default">
+                        <i class="bi bi-person pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full sm:w-auto cursor-pointer">
+                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-recycle pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full sm:w-auto cursor-pointer">
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-gift pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Tukar Poin</span>
                     </a>
-                    <a href="/riwayat" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full sm:w-auto cursor-pointer">
+                    <a href="/riwayat" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-clock-history pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Riwayat</span>
                     </a>
-                    <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full sm:w-auto cursor-pointer">
+                    <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-bell pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Notifikasi</span>
                     </a>
@@ -114,12 +139,12 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-8">
+    <main class="max-w-6xl mx-auto px-4 py-8">
         
         <!-- Profile Card -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <!-- Header Card -->
-            <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-8 text-white">
+            <div class="bg-green-600 px-6 py-8 text-white">
                 <div class="flex items-center gap-4">
                     <div class="relative">
                         <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/30">
@@ -234,22 +259,6 @@
         </div>
 
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex flex-col items-center gap-4">
-                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <i class="bi bi-recycle text-white text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-green-600">Green Saving</h3>
-                <p class="text-sm text-gray-600 text-center">
-                    Bersama menjaga lingkungan untuk masa depan lebih baik
-                </p>
-                <p class="text-sm text-gray-500">© 2025 Green Saving. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
 </body>
 </html>

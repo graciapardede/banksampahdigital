@@ -135,4 +135,29 @@ class DepositController extends Controller
             'userBalance' => $user->balance_points ?? 0,
         ]);
     }
+
+    /**
+     * Tampilkan detail transaksi (deposit atau redemption)
+     */
+    public function showDetail($id, $type)
+    {
+        $user = Auth::user();
+
+        if ($type === 'deposit') {
+            $transaction = Deposit::with(['depositItems.wasteType', 'branch', 'user'])
+                ->where('user_id', $user->id)
+                ->findOrFail($id);
+        } elseif ($type === 'redemption') {
+            $transaction = \App\Models\Redemption::with(['redemptionItems.rewardItem', 'branch', 'user'])
+                ->where('user_id', $user->id)
+                ->findOrFail($id);
+        } else {
+            abort(404);
+        }
+
+        return view('riwayat-detail', [
+            'transaction' => $transaction,
+            'type' => $type,
+        ]);
+    }
 }

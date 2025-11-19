@@ -114,14 +114,21 @@ Route::middleware('auth')->group(function () {
         ->name('riwayat')
         ->middleware('no.cache'); // Always show latest transaction status
     
+    // Detail Transaksi (Deposit atau Redemption)
+    Route::get('/riwayat/{id}/{type}', [\App\Http\Controllers\DepositController::class, 'showDetail'])
+        ->name('riwayat.detail')
+        ->middleware('no.cache');
+    
     // Notifikasi
     Route::get('/notifikasi', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifikasi');
     Route::post('/notifikasi/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifikasi.read');
     Route::post('/notifikasi/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifikasi.read-all');
     Route::get('/api/notifikasi/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifikasi.unread-count');
     
-    // Riwayat Penukaran
-    Route::get('/riwayat-tukar', [\App\Http\Controllers\RedemptionController::class, 'index'])->name('riwayat-tukar');
+    // Riwayat Penukaran (redirect to riwayat page)
+    Route::get('/riwayat-tukar', function () {
+        return redirect()->route('riwayat');
+    })->name('riwayat-tukar');
     
     // === API Routes untuk User ===
     
@@ -149,9 +156,6 @@ Route::middleware('auth')->group(function () {
     
     // Branches API (untuk dropdown)
     Route::get('/api/branches', [\App\Http\Controllers\BranchController::class, 'index']);
-    Route::get('/riwayat-tukar', function () {
-        return view('riwayat-tukar');
-    })->name('riwayat-tukar');
 });
 
 // Admin routes

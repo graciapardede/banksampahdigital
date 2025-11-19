@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             ['Sondang Nainggolan', 'sondang@gmail.com', 1500, '0812-3001-0010']
         ];
         foreach ($wargaSitoluama as $w) {
-            User::create(['name' => $w[0], 'email' => $w[1], 'password' => Hash::make('password'), 'role' => 'warga', 'branch_id' => $sitoluama->id, 'balance_points' => $w[2], 'phone' => $w[3], 'address' => 'Sitoluama, Toba']);
+            User::create(['name' => $w[0], 'email' => $w[1], 'password' => Hash::make('password'), 'role' => 'warga', 'branch_id' => null, 'balance_points' => $w[2], 'phone' => $w[3], 'address' => 'Sitoluama, Toba']);
         }
 
         $wargaBalige = [
@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             ['Mertua Pasaribu', 'mertua@gmail.com', 1800, '0813-4001-0010']
         ];
         foreach ($wargaBalige as $w) {
-            User::create(['name' => $w[0], 'email' => $w[1], 'password' => Hash::make('password'), 'role' => 'warga', 'branch_id' => $balige->id, 'balance_points' => $w[2], 'phone' => $w[3], 'address' => 'Balige, Toba']);
+            User::create(['name' => $w[0], 'email' => $w[1], 'password' => Hash::make('password'), 'role' => 'warga', 'branch_id' => null, 'balance_points' => $w[2], 'phone' => $w[3], 'address' => 'Balige, Toba']);
         }
 
         $wasteTypes = [

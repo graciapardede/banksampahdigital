@@ -34,4 +34,12 @@ class Deposit extends Model
     {
         return $this->hasMany(DepositItem::class);
     }
+
+    /**
+     * Accessor untuk total berat dari semua deposit items
+     */
+    public function getTotalWeightAttribute()
+    {
+        return $this->depositItems->sum('weight');
+    }
 }

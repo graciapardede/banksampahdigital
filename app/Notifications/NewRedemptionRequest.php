@@ -3,20 +3,21 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\Redemption;
 
 class NewRedemptionRequest extends Notification
 {
     use Queueable;
 
+    protected $redemption;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(Redemption $redemption)
     {
-        //
+        $this->redemption = $redemption;
     }
 
     /**
@@ -26,18 +27,7 @@ class NewRedemptionRequest extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+        return ['database'];
     }
 
     /**
@@ -47,8 +37,29 @@ class NewRedemptionRequest extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        // Load redemptionItems dengan rewardItem dan user
+        $this->redemption->load('items.rewardItem', 'user');
+        
+        // Ambil ringkasan item yang ditukar
+        $itemsDescription = $this->redemption->items->map(function ($item) {
+            return $item->rewardItem->name . ' (x' . $item->quantity . ')';
+        })->take(2)->join(', ');
+        
+        // Tambahkan "..." jika lebih dari 2 item
+        if ($this->redemption->items->count() > 2) {
+            $itemsDescription .= ', ...';
+        }
+
         return [
-            //
+            'title' => 'Permintaan Penukaran Baru',
+            'message' => "{$this->redemption->user->name} mengajukan penukaran: {$itemsDescription}. Total {$this->redemption->total_points} poin.",
+            'type' => 'info',
+            'icon' => 'gift',
+            'link' => route('admin.penukaran.show', $this->redemption->id),
+            'redemption_id' => $this->redemption->id,
+            'user_name' => $this->redemption->user->name,
+            'total_points' => $this->redemption->total_points,
+            'items_count' => $this->redemption->items->count(),
         ];
     }
 }

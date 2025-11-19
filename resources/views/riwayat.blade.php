@@ -181,7 +181,7 @@
             <!-- Transaction List -->
             <div class="space-y-4">
                 @foreach($transactions as $transaction)
-                <div class="bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-300 transition-all duration-300">
+                <a href="{{ route('riwayat.detail', ['id' => $transaction['id'], 'type' => $transaction['type']]) }}" class="block bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-300 transition-all duration-300 cursor-pointer">
                     <div class="flex items-center justify-between">
                         <!-- Left: Icon and Details -->
                         <div class="flex items-center space-x-4 flex-1">
@@ -214,19 +214,36 @@
                                     @endif
                                     
                                     <!-- Status Badge -->
-                                    @php
-                                        $statusConfig = [
-                                            'pending' => ['bg' => 'yellow', 'text' => 'Pending'],
-                                            'confirmed' => ['bg' => 'green', 'text' => 'Selesai'],
-                                            'approved' => ['bg' => 'green', 'text' => 'Disetujui'],
-                                            'rejected' => ['bg' => 'red', 'text' => 'Ditolak'],
-                                            'cancelled' => ['bg' => 'gray', 'text' => 'Dibatalkan'],
-                                        ];
-                                        $status = $statusConfig[$transaction['status']] ?? ['bg' => 'gray', 'text' => 'Unknown'];
-                                    @endphp
-                                    <span class="px-3 py-1 bg-{{ $status['bg'] }}-100 text-{{ $status['bg'] }}-700 rounded-full text-xs font-semibold">
-                                        {{ $status['text'] }}
-                                    </span>
+                                    @if($transaction['status'] === 'verified' || $transaction['status'] === 'completed')
+                                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Selesai
+                                        </span>
+                                    @elseif($transaction['status'] === 'confirmed')
+                                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                            <i class="bi bi-check-circle"></i>
+                                            Siap Ambil
+                                        </span>
+                                    @elseif($transaction['status'] === 'pending')
+                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                            <i class="bi bi-clock"></i>
+                                            Menunggu
+                                        </span>
+                                    @elseif($transaction['status'] === 'rejected')
+                                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                            <i class="bi bi-x-circle"></i>
+                                            Ditolak
+                                        </span>
+                                    @elseif($transaction['status'] === 'cancelled')
+                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                            <i class="bi bi-slash-circle"></i>
+                                            Dibatalkan
+                                        </span>
+                                    @else
+                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                                            Unknown
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -239,7 +256,7 @@
                             </p>
                         </div>
                     </div>
-                </div>
+                </a>
                 @endforeach
             </div>
 
