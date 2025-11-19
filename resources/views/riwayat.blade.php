@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         tailwind.config = {
             theme: {
@@ -32,7 +33,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'Budi Santoso' }}</p>
+                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'Warga' }}</p>
                     </div>
                 </div>
 
@@ -42,7 +43,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
+                            <span class="font-bold text-green-700 text-lg">{{ number_format($userBalance ?? 0, 0, ',', '.') }} poin</span>
                         </div>
                     </div>
 
@@ -71,29 +72,29 @@
         <div class="bg-green-100 px-4 py-4">
             <div class="max-w-6xl mx-auto">
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-house-door pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Dashboard</span>
+                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                        <i class="bi bi-house-door"></i>
+                        <span class="truncate">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-person pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Profil</span>
+                    <a href="/profil" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                        <i class="bi bi-person"></i>
+                        <span class="truncate">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-recycle pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Setor</span>
+                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                        <i class="bi bi-recycle"></i>
+                        <span class="truncate">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-gift pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Tukar Poin</span>
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                        <i class="bi bi-gift"></i>
+                        <span class="truncate">Tukar Poin</span>
                     </a>
-                    <a href="/riwayat" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full cursor-default">
-                        <i class="bi bi-clock-history pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Riwayat</span>
+                    <a href="/riwayat" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2">
+                        <i class="bi bi-clock-history"></i>
+                        <span class="truncate">Riwayat</span>
                     </a>
-                    <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-bell pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Notifikasi</span>
+                    <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                        <i class="bi bi-bell"></i>
+                        <span class="truncate">Notifikasi</span>
                     </a>
                 </div>
             </div>
@@ -111,467 +112,147 @@
 
         <!-- Filter Section -->
         <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Filter by Type -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Transaksi</label>
-                    <select id="filter-type" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                        <option value="">Semua</option>
-                        <option value="deposit">Setoran</option>
-                        <option value="redemption">Penukaran</option>
-                    </select>
+            <form method="GET" action="{{ route('riwayat') }}">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Filter by Type -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Transaksi</label>
+                        <select name="type" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                            <option value="">Semua</option>
+                            <option value="deposit" {{ request('type') === 'deposit' ? 'selected' : '' }}>Setoran</option>
+                            <option value="redemption" {{ request('type') === 'redemption' ? 'selected' : '' }}>Penukaran</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter by Status -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                        <select name="status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                            <option value="">Semua Status</option>
+                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Selesai</option>
+                            <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
+                            <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter by Date Range -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Bulan</label>
+                        <input type="month" name="month" value="{{ request('month') }}" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                    </div>
                 </div>
 
-                <!-- Filter by Status -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                    <select id="filter-status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                        <option value="">Semua Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Selesai</option>
-                        <option value="approved">Disetujui</option>
-                        <option value="rejected">Ditolak</option>
-                        <option value="cancelled">Dibatalkan</option>
-                    </select>
+                <div class="mt-4 flex justify-end space-x-2">
+                    <a href="{{ route('riwayat') }}" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
+                        Reset
+                    </a>
+                    <button type="submit" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition-colors">
+                        Terapkan Filter
+                    </button>
                 </div>
+            </form>
+        </div>
 
-                <!-- Filter by Date Range -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Bulan</label>
-                    <input type="month" id="filter-month" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+        <!-- Empty State or Transaction List -->
+        @if($transactions->isEmpty())
+            <!-- Empty State -->
+            <div class="flex flex-col items-center justify-center py-16 min-h-[400px]">
+                <div class="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                    <i class="bi bi-inbox text-gray-300 text-6xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-2">Belum ada riwayat transaksi</h3>
+                <p class="text-gray-500 text-center max-w-md mb-6">
+                    Transaksi setoran dan penukaran poin Anda akan muncul di sini
+                </p>
+                <div class="flex space-x-3">
+                    <a href="/setor" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors flex items-center space-x-2">
+                        <i class="bi bi-recycle"></i>
+                        <span>Setor Sampah</span>
+                    </a>
+                    <a href="/tukar-poin" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-colors flex items-center space-x-2">
+                        <i class="bi bi-gift"></i>
+                        <span>Tukar Poin</span>
+                    </a>
                 </div>
             </div>
-
-            <div class="mt-4 flex justify-end space-x-2">
-                <button onclick="resetFilters()" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
-                    Reset
-                </button>
-                <button onclick="applyFilters()" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition-colors">
-                    Terapkan Filter
-                </button>
-            </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loading-transactions" class="flex justify-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-        </div>
-
-        <!-- Transaction List -->
-        <div id="transactionList" class="space-y-4 hidden">
-            <!-- Data will be loaded here -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="empty-transactions" class="hidden text-center py-12">
-            <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
-            <p class="text-gray-500 font-semibold">Belum ada riwayat transaksi</p>
-            <p class="text-sm text-gray-400 mt-2">Transaksi Anda akan muncul di sini</p>
-        </div>
-                        <!-- Icon with Arrow Up (Green) -->
-                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                        </div>
-                        
-                        <!-- Transaction Details -->
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-recycle text-green-600 mr-2"></i>
-                                Setor Plastik PET
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 11
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
-                                    2.5 kg
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
+        @else
+            <!-- Transaction List -->
+            <div class="space-y-4">
+                @foreach($transactions as $transaction)
+                <div class="bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-300 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <!-- Left: Icon and Details -->
+                        <div class="flex items-center space-x-4 flex-1">
+                            <!-- Icon with Direction -->
+                            <div class="w-14 h-14 bg-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                @if($transaction['type'] === 'deposit')
+                                    <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
+                                @else
+                                    <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
+                                @endif
+                            </div>
+                            
+                            <!-- Transaction Details -->
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
+                                    <i class="bi bi-{{ $transaction['type'] === 'deposit' ? 'recycle' : 'gift' }} text-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-600 mr-2"></i>
+                                    {{ $transaction['title'] }}
+                                </h3>
+                                <p class="text-sm text-gray-600 mb-2">{{ $transaction['description'] }}</p>
+                                <div class="flex items-center space-x-3 text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <i class="bi bi-calendar3 mr-1 text-xs"></i>
+                                        {{ $transaction['date']->format('d M Y, H:i') }}
+                                    </span>
+                                    @if(isset($transaction['weight']))
+                                    <span class="flex items-center">
+                                        <i class="bi bi-box-seam mr-1 text-xs"></i>
+                                        {{ $transaction['weight'] }} kg
+                                    </span>
+                                    @endif
+                                    
+                                    <!-- Status Badge -->
+                                    @php
+                                        $statusConfig = [
+                                            'pending' => ['bg' => 'yellow', 'text' => 'Pending'],
+                                            'confirmed' => ['bg' => 'green', 'text' => 'Selesai'],
+                                            'approved' => ['bg' => 'green', 'text' => 'Disetujui'],
+                                            'rejected' => ['bg' => 'red', 'text' => 'Ditolak'],
+                                            'cancelled' => ['bg' => 'gray', 'text' => 'Dibatalkan'],
+                                        ];
+                                        $status = $statusConfig[$transaction['status']] ?? ['bg' => 'gray', 'text' => 'Unknown'];
+                                    @endphp
+                                    <span class="px-3 py-1 bg-{{ $status['bg'] }}-100 text-{{ $status['bg'] }}-700 rounded-full text-xs font-semibold">
+                                        {{ $status['text'] }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Right: Points -->
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
-                                + 500
-                                <i class="bi bi-coin text-green-500 ml-1 text-lg"></i>
+                        <div class="text-right ml-4">
+                            <p class="text-xl font-bold {{ $transaction['points'] > 0 ? 'text-green-600' : 'text-red-600' }} flex items-center justify-end mb-1">
+                                {{ $transaction['points'] > 0 ? '+' : '' }}{{ number_format($transaction['points'], 0, ',', '.') }}
+                                <i class="bi bi-coin text-{{ $transaction['points'] > 0 ? 'green' : 'red' }}-500 ml-1 text-lg"></i>
                             </p>
-                            <button class="text-xs text-gray-500 hover:text-green-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
 
-            <!-- Transaction Item 2 - Tukar Point 1000 -->
-            <div onclick="showDetailTukar('TRX-20250310-002', 'Tukar Point 1000', '2024-3-11', 'Minyak Goreng 1L', 'Menunggu Pengambilan', 500)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-gift text-blue-600 mr-2"></i>
-                                Tukar Point 1000
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 11
-                                </span>
-                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
-                                    Menunggu Pengambilan
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
-                                - 500
-                                <i class="bi bi-coin text-blue-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-blue-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <!-- Load More Button -->
+            @if($transactions->count() >= 50)
+            <div class="mt-8 text-center">
+                <button onclick="loadMore()" class="px-8 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-semibold border-2 border-gray-200 hover:border-green-500 transition-all inline-flex items-center space-x-2">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>Muat Lebih Banyak</span>
+                </button>
             </div>
-
-            <!-- Transaction Item 3 - Setor Plastik PET -->
-            <div onclick="showDetailSetor('TRX-20250308-003', 'Setor Plastik PET', '2024-3-11', '2.5 kg', 'Selesai', 500, 14920, 14420)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-recycle text-green-600 mr-2"></i>
-                                Setor Plastik PET
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 11
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
-                                    2.5 kg
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
-                                + 500
-                                <i class="bi bi-coin text-green-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-green-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transaction Item 4 - Tukar Point 1000 -->
-            <div onclick="showDetailTukar('TRX-20250307-004', 'Tukar Point 1000', '2024-3-11', 'Beras 5kg', 'Selesai', 500)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-gift text-blue-600 mr-2"></i>
-                                Tukar Point 1000
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 11
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
-                                - 500
-                                <i class="bi bi-coin text-blue-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-blue-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Hidden Additional Transactions -->
-        <div id="moreTransactions" class="hidden space-y-4 mt-4">
-            
-            <!-- Transaction Item 5 - Setor Kardus -->
-            <div onclick="showDetailSetor('TRX-20250306-005', 'Setor Kardus', '2024-3-6', '3.0 kg', 'Selesai', 450, 14420, 13970)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-recycle text-green-600 mr-2"></i>
-                                Setor Kardus
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 6
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
-                                    3.0 kg
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
-                                + 450
-                                <i class="bi bi-coin text-green-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-green-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transaction Item 6 - Tukar Point Gula -->
-            <div onclick="showDetailTukar('TRX-20250305-006', 'Tukar Point 800', '2024-3-5', 'Gula 1kg', 'Selesai', 800)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-gift text-blue-600 mr-2"></i>
-                                Tukar Point 800
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 5
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
-                                - 800
-                                <i class="bi bi-coin text-blue-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-blue-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transaction Item 7 - Setor Aluminium -->
-            <div onclick="showDetailSetor('TRX-20250304-007', 'Setor Aluminium', '2024-3-4', '1.8 kg', 'Selesai', 600, 13970, 13370)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-recycle text-green-600 mr-2"></i>
-                                Setor Aluminium
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 4
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
-                                    1.8 kg
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
-                                + 600
-                                <i class="bi bi-coin text-green-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-green-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transaction Item 8 - Tukar Point Sabun -->
-            <div onclick="showDetailTukar('TRX-20250303-008', 'Tukar Point 600', '2024-3-3', 'Sabun Cuci 1kg', 'Selesai', 600)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-gift text-blue-600 mr-2"></i>
-                                Tukar Point 600
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 3
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
-                                - 600
-                                <i class="bi bi-coin text-blue-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-blue-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transaction Item 9 - Setor Kaca -->
-            <div onclick="showDetailSetor('TRX-20250302-009', 'Setor Kaca', '2024-3-2', '2.2 kg', 'Selesai', 550, 13370, 12820)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-recycle text-green-600 mr-2"></i>
-                                Setor Kaca
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 2
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
-                                    2.2 kg
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
-                                + 550
-                                <i class="bi bi-coin text-green-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-green-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transaction Item 10 - Tukar Point Tepung -->
-            <div onclick="showDetailTukar('TRX-20250301-010', 'Tukar Point 700', '2024-3-1', 'Tepung Terigu 1kg', 'Selesai', 700)" 
-                 class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 flex-1">
-                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                <i class="bi bi-gift text-blue-600 mr-2"></i>
-                                Tukar Point 700
-                            </h3>
-                            <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                    2024 - 3 - 1
-                                </span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                    Selesai
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
-                                - 700
-                                <i class="bi bi-coin text-blue-500 ml-1 text-lg"></i>
-                            </p>
-                            <button class="text-xs text-gray-500 hover:text-blue-600 flex items-center">
-                                <i class="bi bi-eye mr-1"></i>
-                                Lihat
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Load More Button -->
-        <div class="mt-8 flex justify-center">
-            <button onclick="loadMoreTransactions()" id="loadMoreBtn" class="bg-white hover:bg-green-50 text-gray-700 font-semibold py-4 px-8 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center space-x-3 border-2 border-gray-200 hover:border-green-400">
-                <i class="bi bi-arrow-clockwise text-xl text-green-600"></i>
-                <span>Muat Lebih Banyak Riwayat</span>
-            </button>
-        </div>
+            @endif
+        @endif
 
     </main>
 
@@ -598,521 +279,11 @@
         </div>
     </footer>
 
-    <!-- Modal Detail Setor Sampah -->
-    <div id="modalDetailSetor" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-t-3xl p-6 sticky top-0 z-10">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-                            <i class="bi bi-arrow-up-right text-green-600 text-3xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold text-white">Detail Setoran</h2>
-                            <p class="text-green-50 text-sm">Riwayat Setoran Sampah</p>
-                        </div>
-                    </div>
-                    <button onclick="closeModalSetor()" class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-x-lg text-white text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="p-6">
-                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 mb-6">
-                    <div class="grid grid-cols-2 gap-x-8 gap-y-4">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1 flex items-center">
-                                <i class="bi bi-hash text-gray-400 mr-2"></i>
-                                Kode Transaksi
-                            </p>
-                            <p id="setorKode" class="font-bold text-gray-800 text-lg">-</p>
-                        </div>
-                        <div class="text-right">
-                            <span id="setorStatusBadge" class="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                                Selesai
-                            </span>
-                        </div>
-                        
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1 flex items-center">
-                                <i class="bi bi-calendar-event text-gray-400 mr-2"></i>
-                                Tanggal
-                            </p>
-                            <p id="setorTanggal" class="font-semibold text-gray-800">-</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1 flex items-center">
-                                <i class="bi bi-box-seam text-gray-400 mr-2"></i>
-                                Berat
-                            </p>
-                            <p id="setorBerat" class="font-semibold text-gray-800">-</p>
-                        </div>
-
-                        <div class="col-span-2 border-t border-green-200 pt-4 mt-2">
-                            <div class="grid grid-cols-3 gap-4">
-                                <div class="bg-white rounded-xl p-4 shadow-sm">
-                                    <p class="text-xs text-gray-500 mb-2">Poin Diperoleh</p>
-                                    <p id="setorPoin" class="font-bold text-green-600 text-2xl">
-                                        <i class="bi bi-coin text-green-500 mr-1"></i>
-                                        500 poin
-                                    </p>
-                                </div>
-                                <div class="bg-white rounded-xl p-4 shadow-sm">
-                                    <p class="text-xs text-gray-500 mb-2">Poin Sebelum</p>
-                                    <p id="setorPoinSebelum" class="font-semibold text-gray-800 text-lg">-</p>
-                                </div>
-                                <div class="bg-white rounded-xl p-4 shadow-sm">
-                                    <p class="text-xs text-gray-500 mb-2">Poin Setelah</p>
-                                    <p id="setorPoinSetelah" class="font-semibold text-gray-800 text-lg">-</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex gap-3">
-                    <button onclick="closeModalSetor()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 rounded-xl transition-all">
-                        <i class="bi bi-x-circle mr-2"></i>
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Detail Tukar Poin -->
-    <div id="modalDetailTukar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-3xl p-6 sticky top-0 z-10">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-                            <i class="bi bi-arrow-down-left text-blue-600 text-3xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold text-white">Detail Penukaran</h2>
-                            <p class="text-blue-50 text-sm">Riwayat Tukar Poin</p>
-                        </div>
-                    </div>
-                    <button onclick="closeModalTukar()" class="w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-x-lg text-white text-xl"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="p-6">
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6">
-                    <div class="grid grid-cols-2 gap-x-8 gap-y-4">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1 flex items-center">
-                                <i class="bi bi-hash text-gray-400 mr-2"></i>
-                                Kode Transaksi
-                            </p>
-                            <p id="tukarKode" class="font-bold text-gray-800 text-lg">-</p>
-                        </div>
-                        <div class="text-right">
-                            <span id="tukarStatusBadge" class="inline-block px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">
-                                Menunggu
-                            </span>
-                        </div>
-                        
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1 flex items-center">
-                                <i class="bi bi-calendar-event text-gray-400 mr-2"></i>
-                                Tanggal
-                            </p>
-                            <p id="tukarTanggal" class="font-semibold text-gray-800">-</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1 flex items-center">
-                                <i class="bi bi-gift text-gray-400 mr-2"></i>
-                                Hadiah
-                            </p>
-                            <p id="tukarHadiah" class="font-semibold text-gray-800">-</p>
-                        </div>
-
-                        <div class="col-span-2 border-t border-blue-200 pt-4 mt-2">
-                            <div class="bg-white rounded-xl p-4 shadow-sm">
-                                <p class="text-xs text-gray-500 mb-2">Poin Digunakan</p>
-                                <p id="tukarPoin" class="font-bold text-blue-600 text-2xl">
-                                    <i class="bi bi-coin text-blue-500 mr-1"></i>
-                                    - 500 poin
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex gap-3">
-                    <button onclick="closeModalTukar()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-4 rounded-xl transition-all">
-                        <i class="bi bi-x-circle mr-2"></i>
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Load More Transactions
-        function loadMoreTransactions() {
-            const moreTransactions = document.getElementById('moreTransactions');
-            const btn = document.getElementById('loadMoreBtn');
-            
-            if (moreTransactions.classList.contains('hidden')) {
-                // Show loading state
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="bi bi-arrow-clockwise text-xl text-green-600 animate-spin"></i><span>Memuat...</span>';
-                btn.disabled = true;
-                
-                // Simulate loading
-                setTimeout(() => {
-                    // Show hidden transactions
-                    moreTransactions.classList.remove('hidden');
-                    
-                    // Change button text
-                    btn.innerHTML = '<i class="bi bi-arrow-up text-xl text-green-600"></i><span>Sembunyikan Riwayat</span>';
-                    btn.disabled = false;
-                    
-                    // Smooth scroll to new content
-                    setTimeout(() => {
-                        moreTransactions.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 100);
-                }, 800);
-            } else {
-                // Hide transactions
-                moreTransactions.classList.add('hidden');
-                
-                // Change button back
-                btn.innerHTML = '<i class="bi bi-arrow-clockwise text-xl text-green-600"></i><span>Muat Lebih Banyak Riwayat</span>';
-                
-                // Scroll back up
-                document.getElementById('transactionList').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+        function loadMore() {
+            // Implement pagination logic here
+            alert('Fitur pagination akan segera ditambahkan');
         }
-
-        // Modal Setor
-        function showDetailSetor(kode, judul, tanggal, berat, status, poin, poinSetelah, poinSebelum) {
-            document.getElementById('setorKode').textContent = kode;
-            document.getElementById('setorTanggal').textContent = tanggal;
-            document.getElementById('setorBerat').textContent = berat;
-            document.getElementById('setorPoin').innerHTML = '<i class="bi bi-coin text-green-500 mr-1"></i>' + poin + ' poin';
-            document.getElementById('setorPoinSebelum').textContent = poinSebelum + ' poin';
-            document.getElementById('setorPoinSetelah').textContent = poinSetelah + ' poin';
-            
-            const badge = document.getElementById('setorStatusBadge');
-            badge.textContent = status;
-            
-            const modal = document.getElementById('modalDetailSetor');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModalSetor() {
-            const modal = document.getElementById('modalDetailSetor');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Modal Tukar
-        function showDetailTukar(kode, judul, tanggal, hadiah, status, poin) {
-            document.getElementById('tukarKode').textContent = kode;
-            document.getElementById('tukarTanggal').textContent = tanggal;
-            document.getElementById('tukarHadiah').textContent = hadiah;
-            document.getElementById('tukarPoin').innerHTML = '<i class="bi bi-coin text-blue-500 mr-1"></i>- ' + poin + ' poin';
-            
-            const badge = document.getElementById('tukarStatusBadge');
-            if (status === 'Selesai') {
-                badge.className = 'inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold';
-                badge.innerHTML = '<i class="bi bi-check-circle-fill mr-1"></i>Selesai';
-            } else {
-                badge.className = 'inline-block px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold';
-                badge.innerHTML = '<i class="bi bi-clock-fill mr-1"></i>Menunggu Pengambilan';
-            }
-            
-            const modal = document.getElementById('modalDetailTukar');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModalTukar() {
-            const modal = document.getElementById('modalDetailTukar');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }
-
-        // === REALTIME DATA FETCHING ===
-        let allTransactions = [];
-
-        async function fetchTransactions() {
-            try {
-                const [depositsRes, redemptionsRes] = await Promise.all([
-                    fetch('/api/deposits'),
-                    fetch('/api/redemptions')
-                ]);
-
-                const deposits = await depositsRes.json();
-                const redemptions = await redemptionsRes.json();
-
-                allTransactions = [
-                    ...deposits.map(d => ({ ...d, type: 'deposit' })),
-                    ...redemptions.map(r => ({ ...r, type: 'redemption' }))
-                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-                renderTransactions();
-            } catch (error) {
-                console.error('Error fetching transactions:', error);
-                document.getElementById('loading-transactions').classList.add('hidden');
-                document.getElementById('empty-transactions').classList.remove('hidden');
-            }
-        }
-
-        function renderTransactions(filtered = null) {
-            const container = document.getElementById('transactionList');
-            const loading = document.getElementById('loading-transactions');
-            const empty = document.getElementById('empty-transactions');
-
-            const transactions = filtered || allTransactions;
-
-            loading.classList.add('hidden');
-
-            if (transactions.length === 0) {
-                container.classList.add('hidden');
-                empty.classList.remove('hidden');
-                return;
-            }
-
-            empty.classList.add('hidden');
-            container.classList.remove('hidden');
-
-            container.innerHTML = transactions.map(transaction => {
-                const isDeposit = transaction.type === 'deposit';
-                const date = new Date(transaction.created_at);
-                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-                
-                const statusConfig = {
-                    pending: { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Pending' },
-                    confirmed: { bg: 'bg-green-100', text: 'text-green-700', label: 'Selesai' },
-                    approved: { bg: 'bg-green-100', text: 'text-green-700', label: 'Disetujui' },
-                    rejected: { bg: 'bg-red-100', text: 'text-red-700', label: 'Ditolak' },
-                    cancelled: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Dibatalkan' }
-                };
-
-                const status = statusConfig[transaction.status] || statusConfig.pending;
-
-                if (isDeposit) {
-                    const totalWeight = transaction.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
-                    const wasteTypes = transaction.items?.map(item => item.waste_type?.name).filter(Boolean).join(', ') || 'Sampah';
-
-                    return `
-                        <div onclick="showDepositDetail(${transaction.id})" 
-                             class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-green-400 transition-all duration-300 cursor-pointer">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4 flex-1">
-                                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                        <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                                    </div>
-                                    
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                            <i class="bi bi-recycle text-green-600 mr-2"></i>
-                                            Setor ${wasteTypes}
-                                        </h3>
-                                        <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                            <span class="flex items-center">
-                                                <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                                ${dateStr}
-                                            </span>
-                                            <span class="flex items-center">
-                                                <i class="bi bi-box-seam mr-1 text-gray-400 text-xs"></i>
-                                                ${totalWeight.toFixed(1)} kg
-                                            </span>
-                                            <span class="px-3 py-1 ${status.bg} ${status.text} rounded-full text-xs font-semibold">
-                                                ${status.label}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="text-right">
-                                        <p class="text-xl font-bold text-green-600 flex items-center justify-end mb-1">
-                                            + ${(transaction.total_points || 0).toLocaleString('id-ID')}
-                                            <i class="bi bi-coin text-green-500 ml-1"></i>
-                                        </p>
-                                        <p class="text-xs text-gray-500">poin</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    const itemsCount = transaction.items?.length || 0;
-                    return `
-                        <div onclick="showRedemptionDetail(${transaction.id})" 
-                             class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-pointer">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4 flex-1">
-                                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                        <i class="bi bi-arrow-down-right text-blue-600 text-2xl font-bold"></i>
-                                    </div>
-                                    
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                            <i class="bi bi-gift text-blue-600 mr-2"></i>
-                                            Tukar Poin (${itemsCount} item)
-                                        </h3>
-                                        <div class="flex items-center space-x-3 text-sm text-gray-600">
-                                            <span class="flex items-center">
-                                                <i class="bi bi-calendar3 mr-1 text-gray-400 text-xs"></i>
-                                                ${dateStr}
-                                            </span>
-                                            <span class="px-3 py-1 ${status.bg} ${status.text} rounded-full text-xs font-semibold">
-                                                ${status.label}
-                                            </span>
-                                            ${transaction.rejection_reason ? `
-                                                <span class="text-xs text-red-600 italic">
-                                                    <i class="bi bi-exclamation-circle"></i> Lihat alasan
-                                                </span>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-
-                                    <div class="text-right">
-                                        <p class="text-xl font-bold text-blue-600 flex items-center justify-end mb-1">
-                                            - ${(transaction.total_points || 0).toLocaleString('id-ID')}
-                                            <i class="bi bi-coin text-blue-500 ml-1"></i>
-                                        </p>
-                                        <p class="text-xs text-gray-500">poin</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }).join('');
-        }
-
-        async function showDepositDetail(id) {
-            try {
-                const response = await fetch(`/api/deposits/${id}`);
-                const deposit = await response.json();
-                
-                const date = new Date(deposit.created_at);
-                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-                const totalWeight = deposit.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
-                
-                const statusLabels = {
-                    pending: 'Menunggu Konfirmasi',
-                    confirmed: 'Selesai',
-                    rejected: 'Ditolak'
-                };
-
-                showDetailSetor(
-                    deposit.code || `DEP-${deposit.id}`,
-                    'Setoran Sampah',
-                    dateStr,
-                    totalWeight.toFixed(1) + ' kg',
-                    statusLabels[deposit.status] || 'Pending',
-                    deposit.total_points || 0,
-                    deposit.points_after || 0,
-                    deposit.points_before || 0
-                );
-            } catch (error) {
-                console.error('Error fetching deposit detail:', error);
-            }
-        }
-
-        async function showRedemptionDetail(id) {
-            try {
-                const response = await fetch(`/api/redemptions/${id}`);
-                const redemption = await response.json();
-                
-                const date = new Date(redemption.created_at);
-                const dateStr = date.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
-                const items = redemption.items?.map(item => item.reward_item?.name).filter(Boolean).join(', ') || 'Hadiah';
-                
-                const statusLabels = {
-                    pending: 'Menunggu Pengambilan',
-                    approved: 'Selesai',
-                    rejected: 'Ditolak',
-                    cancelled: 'Dibatalkan'
-                };
-
-                showDetailTukar(
-                    redemption.code || `RED-${redemption.id}`,
-                    'Penukaran Poin',
-                    dateStr,
-                    items,
-                    statusLabels[redemption.status] || 'Pending',
-                    redemption.total_points || 0
-                );
-            } catch (error) {
-                console.error('Error fetching redemption detail:', error);
-            }
-        }
-
-        function applyFilters() {
-            const filterType = document.getElementById('filter-type').value;
-            const filterStatus = document.getElementById('filter-status').value;
-            const filterMonth = document.getElementById('filter-month').value;
-
-            let filtered = allTransactions;
-
-            if (filterType) {
-                filtered = filtered.filter(t => t.type === filterType);
-            }
-
-            if (filterStatus) {
-                filtered = filtered.filter(t => t.status === filterStatus);
-            }
-
-            if (filterMonth) {
-                const [year, month] = filterMonth.split('-');
-                filtered = filtered.filter(t => {
-                    const date = new Date(t.created_at);
-                    return date.getFullYear() == year && (date.getMonth() + 1) == month;
-                });
-            }
-
-            renderTransactions(filtered);
-        }
-
-        function resetFilters() {
-            document.getElementById('filter-type').value = '';
-            document.getElementById('filter-status').value = '';
-            document.getElementById('filter-month').value = '';
-            renderTransactions();
-        }
-
-        // Load on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchTransactions();
-        });
-
-        // Close modals on outside click
-        document.getElementById('modalDetailSetor').addEventListener('click', function(e) {
-            if (e.target === this) closeModalSetor();
-        });
-
-        document.getElementById('modalDetailTukar').addEventListener('click', function(e) {
-            if (e.target === this) closeModalTukar();
-        });
-
-        // Close modals with ESC key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModalSetor();
-                closeModalTukar();
-            }
-        });
     </script>
 
 </body>

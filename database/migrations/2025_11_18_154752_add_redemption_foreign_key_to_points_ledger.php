@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('redemptions', function (Blueprint $table) {
-            $table->foreignId('branch_id')->nullable()->after('user_id')->constrained()->nullOnDelete();
+        Schema::table('points_ledger', function (Blueprint $table) {
+            $table->foreign('redemption_id')->references('id')->on('redemptions')->nullOnDelete();
         });
     }
 
@@ -21,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('redemptions', function (Blueprint $table) {
-            $table->dropForeign(['branch_id']);
-            $table->dropColumn('branch_id');
+        Schema::table('points_ledger', function (Blueprint $table) {
+            $table->dropForeign(['redemption_id']);
         });
     }
 };

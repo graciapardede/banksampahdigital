@@ -29,4 +29,9 @@ class Deposit extends Model
     {
         return $this->hasMany(DepositItem::class);
     }
+
+    public function items()
+    {
+        return $this->hasMany(DepositItem::class);
+    }
 }

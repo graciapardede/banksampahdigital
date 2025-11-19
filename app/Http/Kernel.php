@@ -38,5 +38,6 @@ class Kernel extends HttpKernel
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'role' => \App\Http\Middleware\EnsureRole::class,
         'isAdmin' => \App\Http\Middleware\IsAdmin::class,
+        'no.cache' => \App\Http\Middleware\NoBrowserCache::class, // Prevent browser caching for real-time data
     ];
 }

@@ -15,16 +15,29 @@ class WasteTypeController extends Controller
         return view('admin.waste_types.index', compact('wasteTypes'));
     }
 
+    // Form tambah data
+    public function create()
+    {
+        return view('admin.waste_types.create');
+    }
+
     // Simpan data baru
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:255',
-            'unit' => 'required|string|max:50',
-            'points_per_unit' => 'required|numeric|min:0',
+            'category' => 'required|string|in:Plastik,Kertas,Logam,Kaca,Elektronik,Lainnya',
+            'unit' => 'required|string|in:kg,liter,pcs',
+            'points_per_unit' => 'required|numeric|min:1',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
+        ], [
+            'name.required' => 'Nama jenis sampah wajib diisi',
+            'category.required' => 'Kategori wajib dipilih',
+            'category.in' => 'Kategori tidak valid',
+            'unit.required' => 'Satuan wajib dipilih',
+            'points_per_unit.required' => 'Harga poin wajib diisi',
+            'points_per_unit.min' => 'Harga poin minimal 1',
         ]);
 
         // Set branch_id if admin has one
@@ -43,7 +56,13 @@ class WasteTypeController extends Controller
         WasteType::create($validated);
 
         return redirect()->route('admin.waste-types.index')
-            ->with('success', 'Jenis sampah berhasil ditambahkan!');
+            ->with('success', 'Berhasil menambahkan jenis sampah');
+    }
+
+    // Form edit data
+    public function edit(WasteType $wasteType)
+    {
+        return view('admin.waste_types.edit', compact('wasteType'));
     }
 
     // Update data
@@ -51,11 +70,18 @@ class WasteTypeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:255',
-            'unit' => 'required|string|max:50',
-            'points_per_unit' => 'required|numeric|min:0',
+            'category' => 'required|string|in:Plastik,Kertas,Logam,Kaca,Elektronik,Lainnya',
+            'unit' => 'required|string|in:kg,liter,pcs',
+            'points_per_unit' => 'required|numeric|min:1',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
+        ], [
+            'name.required' => 'Nama jenis sampah wajib diisi',
+            'category.required' => 'Kategori wajib dipilih',
+            'category.in' => 'Kategori tidak valid',
+            'unit.required' => 'Satuan wajib dipilih',
+            'points_per_unit.required' => 'Harga poin wajib diisi',
+            'points_per_unit.min' => 'Harga poin minimal 1',
         ]);
 
         // Handle image upload

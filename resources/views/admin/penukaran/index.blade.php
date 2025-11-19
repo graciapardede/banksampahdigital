@@ -8,6 +8,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -118,13 +120,7 @@
                 </div>
             @endif
 
-            {{-- Stats Summary --}}
-            @php
-                $pendingCount = $redemptions->where('status', 'pending')->count();
-                $approvedCount = $redemptions->where('status', 'approved')->count();
-                $totalPoints = $redemptions->sum('total_points');
-            @endphp
-
+            {{-- Stats Summary - Bulan Ini --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-white shadow-lg">
                     <div class="flex items-center justify-between mb-3">
@@ -133,13 +129,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        @if($pendingCount > 0)
-                            <span class="w-6 h-6 bg-white text-orange-600 rounded-full flex items-center justify-center text-xs font-bold animate-pulse">{{ $pendingCount }}</span>
+                        @if($pending > 0)
+                            <span class="w-6 h-6 bg-white text-orange-600 rounded-full flex items-center justify-center text-xs font-bold animate-pulse">{{ $pending }}</span>
                         @endif
                     </div>
                     <div class="text-sm font-medium opacity-90">Menunggu</div>
-                    <div class="text-3xl font-bold mt-1">{{ $pendingCount }}</div>
-                    <div class="text-xs opacity-80 mt-1">Perlu konfirmasi</div>
+                    <div class="text-3xl font-bold mt-1">{{ $pending }}</div>
+                    <div class="text-xs opacity-80 mt-1">Bulan {{ now()->format('F Y') }}</div>
                 </div>
 
                 <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg">
@@ -151,8 +147,8 @@
                         </div>
                     </div>
                     <div class="text-sm font-medium opacity-90">Dikonfirmasi</div>
-                    <div class="text-3xl font-bold mt-1">{{ $approvedCount }}</div>
-                    <div class="text-xs opacity-80 mt-1">Siap diserahkan</div>
+                    <div class="text-3xl font-bold mt-1">{{ $confirmed }}</div>
+                    <div class="text-xs opacity-80 mt-1">Bulan {{ now()->format('F Y') }}</div>
                 </div>
 
                 <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl p-6 text-white shadow-lg">
@@ -164,8 +160,8 @@
                         </div>
                     </div>
                     <div class="text-sm font-medium opacity-90">Total Poin</div>
-                    <div class="text-3xl font-bold mt-1">{{ $totalPoints }}</div>
-                    <div class="text-xs opacity-80 mt-1">Poin ditukar</div>
+                    <div class="text-3xl font-bold mt-1">{{ number_format($totalPoints, 0, ',', '.') }}</div>
+                    <div class="text-xs opacity-80 mt-1">Bulan {{ now()->format('F Y') }}</div>
                 </div>
             </div>
 
@@ -260,19 +256,22 @@
                                                 </a>
                                                 
                                                 @if($redemption->status === 'pending')
-                                                    <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menyetujui penukaran ini?')">
+                                                    <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" class="inline-block">
                                                         @csrf
                                                         @method('POST')
-                                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                        <button type="button" onclick="confirmApprove(this)" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
                                                             <i class="bi bi-check-circle"></i>
                                                             Konfirmasi
                                                         </button>
                                                     </form>
                                                 @elseif($redemption->status === 'approved')
-                                                    <button onclick="alert('Fitur diserahkan akan segera tersedia')" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                                                    <form action="{{ route('admin.penukaran.complete', $redemption->id) }}" method="POST">
+                                                        @csrf
+                                                        <button type="button" onclick="confirmComplete(this)" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
                                                         <i class="bi bi-check-all"></i>
                                                         Diserahkan
                                                     </button>
+                                                    </form>
                                                 @endif
                                             </div>
                                         </div>
@@ -324,5 +323,75 @@
         </div>
     </footer>
 
+
+    <script>
+        // Fungsi konfirmasi untuk tombol "Konfirmasi" (Approve)
+        function confirmApprove(button) {
+            const form = button.closest('form');
+            
+            Swal.fire({
+                title: 'Setujui Penukaran?',
+                text: 'Pastikan Anda telah memeriksa detail penukaran ini.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Setujui!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl px-6 py-2 font-semibold',
+                    cancelButton: 'rounded-xl px-6 py-2 font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                }
+            });
+        }
+
+        // Fungsi konfirmasi untuk tombol "Diserahkan" (Complete)
+        function confirmComplete(button) {
+            const form = button.closest('form');
+            
+            Swal.fire({
+                title: 'Serahkan Barang?',
+                text: 'Pastikan barang sudah diterima oleh warga.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#06b6d4',
+                cancelButtonColor: '#ef4444',
+                confirmButtonText: 'Ya, Sudah Diserahkan!',
+                cancelButtonText: 'Belum',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl px-6 py-2 font-semibold',
+                    cancelButton: 'rounded-xl px-6 py-2 font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 </html>

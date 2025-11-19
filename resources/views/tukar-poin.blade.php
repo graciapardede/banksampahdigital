@@ -47,6 +47,16 @@
                         </div>
                     </div>
 
+                    <!-- Cart Button with Badge -->
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                        <i class="bi bi-cart3 text-white text-xl"></i>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+
                     <!-- Notification Bell -->
                     <a href="/notifikasi" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
                         <i class="bi bi-bell text-gray-700 text-xl"></i>
@@ -110,651 +120,60 @@
             <p class="text-sm text-gray-500">Tukarkan poin Anda dengan hadiah menarik yang tersedia</p>
         </div>
 
+        <!-- Filter Cabang -->
+        <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+            <form method="GET" action="{{ route('tukar-poin') }}" id="branch-filter-form">
+                <div class="flex flex-col md:flex-row md:items-center gap-4">
+                    <div class="flex items-center gap-2 text-gray-700">
+                        <i class="bi bi-geo-alt-fill text-green-600 text-xl"></i>
+                        <label for="branch_id" class="font-semibold">📍 Pilih Lokasi Penukaran:</label>
+                    </div>
+                    <div class="flex-1 max-w-md">
+                        <select 
+                            name="branch_id" 
+                            id="branch_id"
+                            onchange="this.form.submit()"
+                            class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent font-medium text-gray-800 cursor-pointer"
+                        >
+                            @foreach($branches as $cabang)
+                                <option value="{{ $cabang->id }}" {{ $selectedBranch == $cabang->id ? 'selected' : '' }}>
+                                    {{ $cabang->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                        <i class="bi bi-info-circle"></i>
+                        <span>{{ $rewardItems->count() }} barang tersedia</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <!-- Loading State -->
-        <div id="loading-rewards" class="flex justify-center py-12">
+        <div id="loading-rewards" class="hidden flex justify-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
         </div>
 
         <!-- Empty State -->
-        <div id="empty-rewards" class="hidden text-center py-12 bg-white rounded-2xl">
+        @if($rewardItems->count() === 0)
+        <div class="text-center py-12 bg-white rounded-2xl shadow-sm">
             <i class="bi bi-gift text-gray-300 text-6xl mb-4"></i>
             <p class="text-gray-500 text-lg font-semibold">Belum ada hadiah tersedia</p>
-            <p class="text-gray-400 text-sm">Silakan cek kembali nanti</p>
+            <p class="text-gray-400 text-sm">Silakan pilih cabang lain atau cek kembali nanti</p>
         </div>
+        @endif
 
         <!-- Rewards Grid -->
-        <div id="rewards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-            <!-- Items will be loaded dynamically via JavaScript -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow reward-card" 
-                 data-name="Minyak Goreng" 
-                 data-desc="1 Liter - Minyak goreng berkualitas" 
-                 data-price="7500"
-                 data-image="{{ asset('images/minyak goreng.png') }}">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/minyak goreng.png') }}" alt="Minyak Goreng" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Minyak Goreng</h3>
-                            <p class="text-sm text-gray-500">1 Liter - Minyak goreng berkualitas</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    7500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="exchange-btn w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 2: Gula Pasir -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/gula.png') }}" alt="Gula Pasir" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Gula Pasir</h3>
-                            <p class="text-sm text-gray-500">1 Kg - Gula pasir kristal putih</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    6000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 3: Beras -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/beras.png') }}" alt="Beras" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Beras</h3>
-                            <p class="text-sm text-gray-500">5 Kg - Beras premium kualitas terbaik</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    25000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 4: Tepung Terigu -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/tepung.png') }}" alt="Tepung Terigu" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Tepung Terigu</h3>
-                            <p class="text-sm text-gray-500">1 Kg - Tepung terigu serbaguna</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    5000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 5: Kacang -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/kacang.png') }}" alt="Kacang" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Kacang Kedelai</h3>
-                            <p class="text-sm text-gray-500">1 Kg - Kacang kedelai pilihan</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    8000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 6: Susu -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/susu.png') }}" alt="Susu" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Susu</h3>
-                            <p class="text-sm text-gray-500">1 Liter - Susu segar berkualitas</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    9000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 7: Telur -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/telur.png') }}" alt="Telur" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Telur Ayam</h3>
-                            <p class="text-sm text-gray-500">1 Kg - Telur ayam segar</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    10000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 8: Minyak Goreng (variant) -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/minyak goreng.png') }}" alt="Minyak Goreng" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Minyak Goreng Premium</h3>
-                            <p class="text-sm text-gray-500">2 Liter - Minyak goreng premium</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    14000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 9: Gula (variant) -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/gula.png') }}" alt="Gula Pasir" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Gula Pasir Premium</h3>
-                            <p class="text-sm text-gray-500">2 Kg - Gula pasir premium</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    11000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 10: Beras (variant) -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/beras.png') }}" alt="Beras" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Beras Premium</h3>
-                            <p class="text-sm text-gray-500">10 Kg - Beras premium organik</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    48000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 11: Tepung (variant) -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/tepung.png') }}" alt="Tepung" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Tepung Terigu Premium</h3>
-                            <p class="text-sm text-gray-500">2 Kg - Tepung premium protein tinggi</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    9500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 12: Kacang (variant) -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <!-- Image -->
-                    <div class="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/kacang.png') }}" alt="Kacang" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Kacang Hijau</h3>
-                            <p class="text-sm text-gray-500">2 Kg - Kacang hijau organik</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    15000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+        @if($rewardItems->count() > 0)
+        <div id="rewards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($rewardItems as $reward)
+                @include('components.reward-card', ['reward' => $reward])
+            @endforeach
         </div>
-
-        <!-- Hidden Additional Rewards (akan muncul ketika "Muat Lebih Banyak" diklik) -->
-        <div id="moreRewards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 hidden">
-            
-            <!-- Reward Item 13: Sabun Cuci -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/sabun.png') }}" alt="Sabun Cuci" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Sabun Cuci Piring</h3>
-                            <p class="text-sm text-gray-500">800 ml - Sabun cuci berkualitas</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    4500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 14: Deterjen -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/detergen.png') }}" alt="Deterjen" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Deterjen Bubuk</h3>
-                            <p class="text-sm text-gray-500">1 Kg - Deterjen wangi tahan lama</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    8500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 15: Shampo -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/shampo.png') }}" alt="Shampo" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Shampo Anti Ketombe</h3>
-                            <p class="text-sm text-gray-500">300 ml - Shampo untuk rambut sehat</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    6500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 16: Pasta Gigi -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <div class="bg-gradient-to-br from-cyan-50 to-teal-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/pasta.png') }}" alt="Pasta Gigi" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Pasta Gigi Keluarga</h3>
-                            <p class="text-sm text-gray-500">150 gram - Pasta gigi pemutih</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    3500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 17: Sabun Mandi -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/sabuncair.png') }}" alt="Sabun Mandi" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Sabun Mandi Cair</h3>
-                            <p class="text-sm text-gray-500">500 ml - Sabun mandi aroma segar</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    5500 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reward Item 18: Sikat Gigi -->
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                <div class="p-5">
-                    <div class="bg-gradient-to-br from-lime-50 to-green-50 rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                        <img src="{{ asset('images/sikat gigi.png') }}" alt="Sikat Gigi" class="h-40 w-auto object-contain">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Sikat Gigi Premium</h3>
-                            <p class="text-sm text-gray-500">1 Set (4 pcs) - Sikat gigi lembut</p>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                <p class="text-lg font-bold text-green-600">
-                                    <i class="bi bi-coin text-green-500 mr-1"></i>
-                                    4000 poin
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
-                            <i class="bi bi-cart-plus mr-2"></i>
-                            Tukar Sekarang
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Pagination or Load More -->
-        <div class="mt-8 text-center">
-            <button id="loadMoreBtn" onclick="loadMoreRewards()" class="px-8 py-3 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">
-                <i class="bi bi-arrow-clockwise mr-2"></i>
-                Muat Lebih Banyak Hadiah
-            </button>
-        </div>
+        @endif
 
     </main>
-
-    <script>
-        function loadMoreRewards() {
-            const moreRewards = document.getElementById('moreRewards');
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            
-            if (moreRewards.classList.contains('hidden')) {
-                // Tampilkan lebih banyak hadiah
-                moreRewards.classList.remove('hidden');
-                
-                // Ubah tombol
-                loadMoreBtn.innerHTML = '<i class="bi bi-arrow-up mr-2"></i>Tampilkan Lebih Sedikit';
-                
-                // Scroll smooth ke hadiah tambahan
-                setTimeout(() => {
-                    moreRewards.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 100);
-            } else {
-                // Sembunyikan hadiah tambahan
-                moreRewards.classList.add('hidden');
-                
-                // Ubah tombol kembali
-                loadMoreBtn.innerHTML = '<i class="bi bi-arrow-clockwise mr-2"></i>Muat Lebih Banyak Hadiah';
-                
-                // Scroll kembali ke atas grid
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-    </script>
 
     <!-- Footer -->
     <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">
@@ -900,102 +319,14 @@
 
     <script>
         let selectedReward = null;
-        let allRewards = [];
         const currentPoints = {{ Auth::user()->balance_points ?? 0 }};
+        const selectedBranchId = {{ $selectedBranch }};
 
-        // === FETCH DATA ===
-        async function fetchRewards() {
-            const loading = document.getElementById('loading-rewards');
-            const empty = document.getElementById('empty-rewards');
-            const grid = document.getElementById('rewards-grid');
+        // Data rewards dari backend (sudah filtered by branch)
+        const allRewards = @json($rewardItems);
 
-            loading.classList.remove('hidden');
-            empty.classList.add('hidden');
-            grid.classList.add('hidden');
-
-            try {
-                const response = await fetch('/api/reward-items');
-                allRewards = await response.json();
-                
-                renderRewards();
-            } catch (error) {
-                console.error('Error fetching rewards:', error);
-                loading.classList.add('hidden');
-                empty.classList.remove('hidden');
-            }
-        }
-
-        function renderRewards() {
-            const loading = document.getElementById('loading-rewards');
-            const empty = document.getElementById('empty-rewards');
-            const grid = document.getElementById('rewards-grid');
-
-            loading.classList.add('hidden');
-
-            if (allRewards.length === 0) {
-                empty.classList.remove('hidden');
-                grid.classList.add('hidden');
-                return;
-            }
-
-            empty.classList.add('hidden');
-            grid.classList.remove('hidden');
-
-            const colors = [
-                'from-amber-50 to-orange-50',
-                'from-blue-50 to-cyan-50',
-                'from-green-50 to-emerald-50',
-                'from-purple-50 to-pink-50',
-                'from-yellow-50 to-amber-50',
-                'from-red-50 to-pink-50'
-            ];
-
-            grid.innerHTML = allRewards.map((reward, index) => {
-                const colorClass = colors[index % colors.length];
-                const imagePath = reward.image ? `/images/${reward.image}` : '/images/tukar reward.png';
-                const canAfford = currentPoints >= reward.points_cost;
-
-                return `
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                        <div class="p-5">
-                            <div class="bg-gradient-to-br ${colorClass} rounded-xl p-4 mb-4 flex items-center justify-center h-48">
-                                <img src="${imagePath}" alt="${reward.name}" class="h-40 w-auto object-contain" onerror="this.src='/images/tukar reward.png'">
-                            </div>
-                            
-                            <div class="space-y-3">
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-lg mb-1">${reward.name}</h3>
-                                    <p class="text-sm text-gray-500">${reward.description || 'Hadiah menarik'}</p>
-                                </div>
-                                
-                                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Harga</p>
-                                        <p class="text-lg font-bold text-green-600">
-                                            <i class="bi bi-coin text-green-500 mr-1"></i>
-                                            ${reward.points_cost.toLocaleString('id-ID')} poin
-                                        </p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-xs text-gray-500 mb-1">Stok</p>
-                                        <p class="text-sm font-semibold ${reward.stock < 5 ? 'text-red-600' : 'text-gray-700'}">
-                                            ${reward.stock} tersedia
-                                        </p>
-                                    </div>
-                                </div>
-                                
-                                <button onclick="selectReward(${reward.id})" 
-                                        class="w-full ${canAfford ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg"
-                                        ${!canAfford ? 'disabled' : ''}>
-                                    <i class="bi bi-cart-plus mr-2"></i>
-                                    ${canAfford ? 'Tukar Sekarang' : 'Poin Tidak Cukup'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+        // Rewards sudah di-render dari backend via Blade
+        // Tidak perlu renderRewards() lagi
 
         function selectReward(rewardId) {
             selectedReward = allRewards.find(r => r.id === rewardId);
@@ -1041,17 +372,64 @@
             document.getElementById('confirmModal').classList.add('hidden');
         }
 
+        /**
+         * Fungsi untuk konfirmasi penukaran poin
+         * Mengirim request POST ke backend dengan CSRF token dan data lengkap
+         */
         async function confirmExchange() {
-            if (currentPoints < selectedReward.points_cost) return;
+            // Validasi saldo poin mencukupi
+            if (currentPoints < selectedReward.points_cost) {
+                alert('❌ Poin Anda tidak mencukupi untuk menukar reward ini!');
+                return;
+            }
+
+            // Validasi reward terpilih
+            if (!selectedReward || !selectedReward.id) {
+                alert('❌ Reward tidak valid. Silakan pilih reward kembali.');
+                closeConfirmModal();
+                return;
+            }
+
+            // Validasi branch_id
+            if (!selectedBranchId) {
+                alert('❌ Lokasi penukaran tidak valid. Silakan pilih lokasi terlebih dahulu.');
+                closeConfirmModal();
+                return;
+            }
+
+            // Disable tombol untuk mencegah double click
+            const confirmBtn = document.getElementById('confirmExchangeBtn');
+            const originalBtnText = confirmBtn.innerHTML;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="bi bi-hourglass-split mr-2"></i>Memproses...';
 
             try {
+                // Ambil CSRF token dari meta tag
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (!csrfToken || !csrfToken.getAttribute('content')) {
+                    throw new Error('CSRF token tidak ditemukan. Silakan refresh halaman.');
+                }
+
+                // Ambil lokasi dari dropdown (untuk memastikan data terbaru)
+                const branchDropdown = document.getElementById('branch_id');
+                const currentBranchId = branchDropdown ? parseInt(branchDropdown.value) : selectedBranchId;
+
+                console.log('Sending redemption request:', {
+                    branch_id: currentBranchId,
+                    reward_item_id: selectedReward.id,
+                    quantity: 1
+                });
+
+                // Kirim request ke backend API
                 const response = await fetch('/api/redemptions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken.getAttribute('content')
                     },
                     body: JSON.stringify({
+                        branch_id: currentBranchId,
                         items: [{
                             reward_item_id: selectedReward.id,
                             quantity: 1
@@ -1059,161 +437,123 @@
                     })
                 });
 
+                // Parse response JSON
                 const result = await response.json();
 
+                // Handle response berdasarkan status code
                 if (response.ok) {
+                    // ✅ SUCCESS (200-299)
+                    console.log('Redemption success:', result);
+                    
                     closeConfirmModal();
+                    
+                    // Update saldo poin di UI
                     const newBalance = currentPoints - selectedReward.points_cost;
                     document.getElementById('newBalance').textContent = newBalance.toLocaleString('id-ID');
+                    document.getElementById('user-points').textContent = newBalance.toLocaleString('id-ID') + ' poin';
                     
-                    // Show success modal
+                    // Tampilkan modal sukses setelah delay
                     setTimeout(() => {
                         document.getElementById('successModal').classList.remove('hidden');
                         document.getElementById('successModal').classList.add('flex');
                     }, 300);
+                    
+                } else if (response.status === 422) {
+                    // ❌ VALIDATION ERROR (422 Unprocessable Entity)
+                    console.error('Validation error:', result);
+                    
+                    // Tampilkan pesan error spesifik dari backend
+                    let errorMessage = result.message || 'Validasi gagal. Silakan cek kembali data Anda.';
+                    
+                    // Jika ada detail error validasi
+                    if (result.errors) {
+                        const errorDetails = Object.values(result.errors).flat().join('\n');
+                        errorMessage += '\n\n' + errorDetails;
+                    }
+                    
+                    // Pesan error umum berdasarkan kondisi
+                    if (errorMessage.includes('stock') || errorMessage.includes('stok')) {
+                        errorMessage = '❌ Stok barang habis!\n\nMaaf, stok reward ini sudah habis. Silakan pilih reward lain atau cek kembali nanti.';
+                    } else if (errorMessage.includes('poin') || errorMessage.includes('point')) {
+                        errorMessage = '❌ Poin tidak mencukupi!\n\nSaldo poin Anda tidak cukup untuk menukar reward ini. Silakan tukarkan sampah untuk menambah poin.';
+                    } else if (errorMessage.includes('branch') || errorMessage.includes('cabang')) {
+                        errorMessage = '❌ Lokasi tidak valid!\n\nReward tidak tersedia di lokasi yang dipilih. Silakan pilih lokasi lain.';
+                    }
+                    
+                    alert(errorMessage);
+                    closeConfirmModal();
+                    
+                } else if (response.status === 419) {
+                    // ❌ CSRF TOKEN MISMATCH (419)
+                    console.error('CSRF token mismatch');
+                    alert('❌ Session expired!\n\nToken keamanan telah kadaluarsa. Halaman akan di-refresh otomatis.');
+                    
+                    // Refresh halaman untuk mendapatkan CSRF token baru
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    
+                } else if (response.status === 401) {
+                    // ❌ UNAUTHORIZED (401)
+                    alert('❌ Sesi login Anda telah berakhir!\n\nSilakan login kembali.');
+                    window.location.href = '/login';
+                    
+                } else if (response.status === 500) {
+                    // ❌ SERVER ERROR (500)
+                    console.error('Server error:', result);
+                    alert('❌ Terjadi kesalahan server!\n\n' + (result.message || 'Silakan coba lagi atau hubungi administrator.'));
+                    closeConfirmModal();
+                    
                 } else {
-                    alert(result.message || 'Terjadi kesalahan');
+                    // ❌ OTHER ERRORS
+                    console.error('Unexpected error:', result);
+                    alert('❌ Terjadi kesalahan!\n\n' + (result.message || 'Kode error: ' + response.status));
                     closeConfirmModal();
                 }
+                
             } catch (error) {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat mengirim data');
-                closeConfirmModal();
-            }
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
-            window.location.href = '/riwayat';
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchRewards();
-        });
-    </script>
-            const exchangeButtons = document.querySelectorAll('.exchange-btn, button:not(#loadMoreBtn):not(#confirmExchangeBtn):not([onclick*="close"])');
-            
-            exchangeButtons.forEach(button => {
-                const buttonText = button.textContent.trim();
-                if (buttonText.includes('Tukar Sekarang')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        
-                        // Find parent card
-                        const card = this.closest('.bg-white.rounded-2xl');
-                        if (!card) return;
-                        
-                        // Extract product data from card
-                        const productNameEl = card.querySelector('h3');
-                        const productDescEl = card.querySelector('h3 + p');
-                        const productPriceEl = card.querySelector('.text-lg.font-bold.text-green-600');
-                        const productImageEl = card.querySelector('img');
-                        
-                        if (!productNameEl || !productPriceEl || !productImageEl) return;
-                        
-                        const productName = productNameEl.textContent.trim();
-                        const productDesc = productDescEl ? productDescEl.textContent.trim() : '';
-                        const priceText = productPriceEl.textContent.trim();
-                        const productPrice = parseInt(priceText.replace(/[^\d]/g, ''));
-                        const productImage = productImageEl.src;
-                        
-                        openConfirmModal(productName, productDesc, productPrice, productImage);
-                    });
+                // ❌ NETWORK ERROR atau ERROR LAINNYA
+                console.error('Error during redemption:', error);
+                
+                let errorMsg = '❌ Terjadi kesalahan saat mengirim data!\n\n';
+                
+                if (error.message.includes('CSRF')) {
+                    errorMsg += 'Token keamanan tidak valid. Halaman akan di-refresh.';
+                    alert(errorMsg);
+                    setTimeout(() => window.location.reload(), 2000);
+                } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMsg += 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.';
+                    alert(errorMsg);
+                } else {
+                    errorMsg += error.message || 'Silakan coba lagi atau hubungi administrator.';
+                    alert(errorMsg);
                 }
-            });
-        });
-
-        function openConfirmModal(productName, productDesc, productPrice, productImage) {
-            selectedProduct = {
-                name: productName,
-                description: productDesc,
-                price: productPrice,
-                image: productImage
-            };
-
-            // Update modal content
-            document.getElementById('modalProductName').textContent = productName;
-            document.getElementById('modalProductDesc').textContent = productDesc;
-            document.getElementById('modalProductPrice').innerHTML = '<i class="bi bi-coin text-green-500 mr-1"></i>' + productPrice.toLocaleString('id-ID') + ' poin';
-            document.getElementById('modalProductImage').src = productImage;
-            document.getElementById('modalProductImage').alt = productName;
-
-            // Calculate remaining points
-            const remaining = currentPoints - productPrice;
-            const remainingElement = document.getElementById('modalRemainingPoints');
-            
-            if (remaining >= 0) {
-                remainingElement.innerHTML = remaining.toLocaleString('id-ID') + ' poin';
-                remainingElement.classList.remove('text-red-600');
-                remainingElement.classList.add('text-green-600');
-                document.getElementById('insufficientPointsWarning').classList.add('hidden');
-                document.getElementById('confirmExchangeBtn').disabled = false;
-                document.getElementById('confirmExchangeBtn').classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                remainingElement.innerHTML = remaining.toLocaleString('id-ID') + ' poin';
-                remainingElement.classList.remove('text-green-600');
-                remainingElement.classList.add('text-red-600');
-                document.getElementById('pointsShortage').textContent = Math.abs(remaining).toLocaleString('id-ID') + ' poin';
-                document.getElementById('insufficientPointsWarning').classList.remove('hidden');
-                document.getElementById('confirmExchangeBtn').disabled = true;
-                document.getElementById('confirmExchangeBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                
+                closeConfirmModal();
+                
+            } finally {
+                // Re-enable tombol konfirmasi
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalBtnText;
             }
-
-            // Show modal with animation
-            const modal = document.getElementById('confirmModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-                modal.querySelector('.bg-white').classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-            document.getElementById('confirmModal').classList.remove('flex');
-        }
-
-        function confirmExchange() {
-            const remaining = currentPoints - selectedProduct.price;
-            
-            if (remaining < 0) {
-                return; // Prevent exchange if insufficient points
-            }
-
-            // Close confirm modal
-            closeConfirmModal();
-
-            // Update new balance
-            document.getElementById('newBalance').textContent = remaining.toLocaleString('id-ID');
-
-            // Show success modal
-            setTimeout(() => {
-                document.getElementById('successModal').classList.remove('hidden');
-                document.getElementById('successModal').classList.add('flex');
-            }, 300);
         }
 
         function closeSuccessModal() {
             document.getElementById('successModal').classList.add('hidden');
-            document.getElementById('successModal').classList.remove('flex');
             
-            // Refresh page or update UI here
-            // location.reload();
+            // Redirect ke halaman riwayat untuk melihat penukaran yang baru dibuat
+            setTimeout(() => {
+                window.location.href = '/riwayat';
+            }, 500);
         }
 
-        // Close modal when clicking outside
-        document.getElementById('confirmModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeConfirmModal();
-            }
-        });
-
-        document.getElementById('successModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeSuccessModal();
-            }
-        });
+        // Data rewards sudah tersedia dari backend, tidak perlu fetch
+        
+        // Log untuk debugging
+        console.log('Page loaded with:');
+        console.log('- Current Points:', currentPoints);
+        console.log('- Selected Branch ID:', selectedBranchId);
+        console.log('- Available Rewards:', allRewards.length);
     </script>
 
 </body>

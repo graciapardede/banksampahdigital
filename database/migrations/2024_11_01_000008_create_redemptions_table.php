@@ -11,8 +11,12 @@ return new class extends Migration
         Schema::create('redemptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('points_spent');
-            $table->string('status')->default('pending');
+            $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null');
+            $table->integer('total_points'); // TUGAS: Kolom total_points ditambahkan
+            $table->string('status')->default('pending'); // pending, approved, rejected
+            $table->text('notes')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -10,7 +10,6 @@ class RewardItemSeeder extends Seeder
     public function run(): void
     {
         $rewardItems = [
-<<<<<<< HEAD
             // Kategori: Sembako & Kebutuhan Pokok
             ['name' => 'Beras Premium 5 kg', 'stock' => 20, 'points_cost' => 10000, 'branch_id' => 1],
             ['name' => 'Minyak Goreng 2 L', 'stock' => 30, 'points_cost' => 6000, 'branch_id' => 1],
@@ -57,7 +56,6 @@ class RewardItemSeeder extends Seeder
             ['name' => 'Bolpoin (1 pak)', 'stock' => 45, 'points_cost' => 1500, 'branch_id' => 1],
             ['name' => 'Crayon 12 warna', 'stock' => 30, 'points_cost' => 2500, 'branch_id' => 1],
             ['name' => 'Tas Sekolah', 'stock' => 15, 'points_cost' => 12000, 'branch_id' => 1],
-=======
             [
                 'branch_id' => 1,
                 'name' => 'Beras Premium 5kg',
@@ -154,7 +152,6 @@ class RewardItemSeeder extends Seeder
                 'stock' => 25,
                 'points_cost' => 700,
             ],
->>>>>>> cddc942861797fc86d7951fc19fde40adafdf668
         ];
 
         foreach ($rewardItems as $item) {

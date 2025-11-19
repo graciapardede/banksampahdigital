@@ -19,14 +19,21 @@ class DashboardController extends Controller
     {
         // Load branch relation untuk admin
         $admin = auth()->user()->load('branch');
+        $branchId = $admin->branch_id;
         
         // Total statistik
         $stats = [
-            'total_users' => User::where('role', User::ROLE_WARGA)->count(),
-            'total_deposits' => Deposit::count(),
-            'total_redemptions' => Redemption::count(),
-            'pending_deposits' => Deposit::where('status', 'pending')->count(),
-            'pending_redemptions' => Redemption::where('status', 'pending')->count(),
+            'total_users' => User::whereIn('role', ['user', 'warga'])
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->count(),
+            'total_deposits' => Deposit::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
+            'total_redemptions' => Redemption::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
+            'pending_deposits' => Deposit::where('status', 'pending')
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->count(),
+            'pending_redemptions' => Redemption::where('status', 'pending')
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->count(),
         ];
 
         // Total setoran per bulan (12 bulan terakhir)
@@ -47,7 +54,7 @@ class DashboardController extends Controller
         
         return response()->json([
             'stats' => [
-                'total_users' => User::where('role', User::ROLE_WARGA)
+                'total_users' => User::whereIn('role', ['user', 'warga'])
                     ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
                     ->count(),
                 'total_deposits' => Deposit::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
@@ -69,6 +76,7 @@ class DashboardController extends Controller
      */
     private function getDepositsByMonth()
     {
+        $branchId = auth()->user()->branch_id;
         $dbDriver = DB::connection()->getDriverName();
         
         if ($dbDriver === 'sqlite') {
@@ -77,6 +85,7 @@ class DashboardController extends Controller
                     DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year"),
                     DB::raw('COUNT(*) as total')
                 )
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')
@@ -88,6 +97,7 @@ class DashboardController extends Controller
                     DB::raw('YEAR(created_at) as year'),
                     DB::raw('COUNT(*) as total')
                 )
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')
@@ -120,6 +130,7 @@ class DashboardController extends Controller
      */
     private function getRedemptionsByMonth()
     {
+        $branchId = auth()->user()->branch_id;
         $dbDriver = DB::connection()->getDriverName();
         
         if ($dbDriver === 'sqlite') {
@@ -128,6 +139,7 @@ class DashboardController extends Controller
                     DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year"),
                     DB::raw('COUNT(*) as total')
                 )
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')
@@ -139,6 +151,7 @@ class DashboardController extends Controller
                     DB::raw('YEAR(created_at) as year'),
                     DB::raw('COUNT(*) as total')
                 )
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')

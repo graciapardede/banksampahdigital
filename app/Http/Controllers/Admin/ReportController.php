@@ -239,16 +239,22 @@ class ReportController extends Controller
         });
 
         // Pengguna aktif (yang melakukan setoran atau penukaran)
-        $activeUsers = User::where('role', 'warga')
-            ->where('branch_id', $branchId)
-            ->where(function($q) use ($startDate, $endDate) {
-                $q->whereHas('deposits', function($q2) use ($startDate, $endDate) {
-                    $q2->whereBetween('created_at', [$startDate, $endDate]);
-                })
-                ->orWhereHas('redemptions', function($q2) use ($startDate, $endDate) {
-                    $q2->whereBetween('created_at', [$startDate, $endDate]);
-                });
-            })
+        // Ambil user_id dari deposits
+        $depositUserIds = Deposit::where('branch_id', $branchId)
+            ->where('status', 'verified')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->pluck('user_id');
+        
+        // Ambil user_id dari redemptions
+        $redemptionUserIds = Redemption::where('branch_id', $branchId)
+            ->whereIn('status', ['approved', 'completed'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->pluck('user_id');
+        
+        // Gabungkan dan hitung unique users
+        $activeUsers = $depositUserIds
+            ->merge($redemptionUserIds)
+            ->unique()
             ->count();
 
         // Net poin (poin diberikan - poin ditukar)
@@ -292,7 +298,7 @@ class ReportController extends Controller
     private function getTopUsers($branchId, $startDate, $endDate, $limit = 5)
     {
         return User::select('users.id', 'users.name', 'users.phone')
-            ->where('users.role', 'warga')
+            ->whereIn('users.role', ['user', 'warga'])
             ->where('users.branch_id', $branchId)
             ->withCount(['deposits as total_deposits' => function($q) use ($startDate, $endDate) {
                 $q->where('status', 'verified')

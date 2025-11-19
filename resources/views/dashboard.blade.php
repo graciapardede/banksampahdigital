@@ -33,7 +33,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'lisbeth' }}</p>
+                        <p class="text-sm text-green-600">Halo, {{ $namaUser }}</p>
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-200 shadow-sm">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="balance-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
+                            <span id="balance-points" class="font-bold text-green-700 text-lg">{{ number_format($saldoPoin, 0, ',', '.') }} poin</span>
                         </div>
                     </div>
 
@@ -108,31 +108,27 @@
         <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div class="flex-1">
-                    <h2 class="text-2xl font-bold mb-2">Selamat Datang, <span id="user-name">{{ Auth::user()->full_name ?? Auth::user()->name }}</span></h2>
+                    <h2 class="text-2xl font-bold mb-2">Selamat Datang, <span id="user-name">{{ $namaUser }}</span></h2>
                     <div class="flex flex-wrap items-center gap-4 mt-4">
                         <div class="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
                             <span id="user-member-level">
-                                @php
-                                    $points = Auth::user()->balance_points ?? 0;
-                                    if ($points >= 10000) {
-                                        echo 'Gold Member';
-                                    } elseif ($points >= 5000) {
-                                        echo 'Silver Member';
-                                    } else {
-                                        echo 'Bronze Member';
-                                    }
-                                @endphp
+                                @if($saldoPoin >= 10000)
+                                    Gold Member
+                                @elseif($saldoPoin >= 5000)
+                                    Silver Member
+                                @else
+                                    Bronze Member
+                                @endif
                             </span>
                         </div>
                         <span class="text-sm opacity-90" id="member-since">
-                            Member sejak {{ Auth::user()->created_at ? Auth::user()->created_at->format('M Y') : 'Jan 2024' }}
+                            Member sejak {{ $authUser->created_at ? $authUser->created_at->format('M Y') : 'Nov 2025' }}
                         </span>
                     </div>
                 </div>
                 <div class="text-center md:text-right">
                     <div class="bg-white bg-opacity-15 backdrop-blur-sm rounded-2xl px-6 py-4 mb-4">
-                        <div id="balance-points-large" class="text-3xl font-bold">{{ number_format(Auth::user()->balance_points ?? 0, 0, ',', '.') }}</div>
-                        <div class="text-3xl font-bold">15,420</div>
+                        <div id="balance-points-large" class="text-3xl font-bold">{{ number_format($saldoPoin, 0, ',', '.') }}</div>
                         <div class="text-sm opacity-90">ECO coin</div>
                     </div>
                     <a href="/tukar-poin" class="inline-block bg-white bg-opacity-20 backdrop-blur-sm hover:bg-opacity-30 text-white px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-200">

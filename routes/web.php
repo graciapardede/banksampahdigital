@@ -40,6 +40,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Email Verification Routes
+Route::middleware('auth')->group(function () {
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('success', 'Link verifikasi telah dikirim ke email Anda!');
+    })->middleware('throttle:6,1')->name('verification.send');
+});
+
 // Route untuk force logout (debugging)
 Route::get('/force-logout', function () {
     auth()->logout();
@@ -59,38 +67,58 @@ Route::get('/debug-auth', function () {
 
 // Protected routes - perlu login
 Route::middleware('auth')->group(function () {
-    // Dashboard untuk user biasa
-    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    // Dashboard untuk user biasa - DENGAN NO-CACHE untuk data real-time
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+        ->name('dashboard')
+        ->middleware('no.cache'); // Prevent stale data - always fetch fresh from DB
     
-    // Profile routes
+    // Profile routes (API)
     Route::get('/profile', [AuthController::class, 'getProfile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 
-
-    // Profil - View (show form) dan API untuk update
-    Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profil');
-
-    // Profil
-    Route::get('/profil', function () {
-        return view('profil');
-    })->name('profil');
+    // Profil - Route Group
+    Route::prefix('profil')->name('profil.')->controller(\App\Http\Controllers\ProfileController::class)->group(function () {
+        Route::get('/', 'index')->name('index');                       // Halaman utama read-only
+        Route::get('/edit', 'edit')->name('edit');                     // Form edit data diri
+        Route::put('/update', 'update')->name('update');               // Action simpan data
+        Route::get('/password', 'editPassword')->name('password');     // Form ganti password
+        Route::put('/password', 'updatePassword')->name('password.update'); // Action simpan password
+    });
 
     
     // Setor Sampah (read-only untuk user - tampilkan view dengan riwayat)
-    Route::get('/setor', function() {
-        return view('setor');
-    })->name('setor');
+    Route::get('/setor', [\App\Http\Controllers\SetorController::class, 'index'])->name('setor');
     
     // Tukar Poin - View (show form/list reward items)
     Route::get('/tukar-poin', [\App\Http\Controllers\RedemptionController::class, 'create'])->name('tukar-poin');
     
-    // Riwayat Transaksi (Deposits + Redemptions)
-    Route::get('/riwayat', [\App\Http\Controllers\DepositController::class, 'history'])->name('riwayat');
+    // === CART SYSTEM ROUTES ===
+    // Detail Item (before adding to cart)
+    Route::get('/tukar/{rewardItem}/detail', [\App\Http\Controllers\CartController::class, 'detail'])->name('tukar.detail');
+    
+    // Cart Management
+    Route::post('/cart/add/{rewardItem}', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/update/{rewardItem}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{rewardItem}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/clear', [\App\Http\Controllers\CartController::class, 'clear'])->name('cart.clear');
+    
+    // Checkout (process redemption from cart)
+    Route::post('/cart/checkout', [\App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
+    
+    // Instant Redeem (skip cart, direct checkout for single item)
+    Route::post('/tukar/{rewardItem}/instant', [\App\Http\Controllers\CartController::class, 'instantRedeem'])->name('tukar.instant');
+    
+    // Riwayat Transaksi (Deposits + Redemptions) - DENGAN NO-CACHE untuk status terbaru
+    Route::get('/riwayat', [\App\Http\Controllers\DepositController::class, 'history'])
+        ->name('riwayat')
+        ->middleware('no.cache'); // Always show latest transaction status
     
     // Notifikasi
-    Route::get('/notifikasi', function () {
-        return view('notifikasi');
-    })->name('notifikasi');
+    Route::get('/notifikasi', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifikasi');
+    Route::post('/notifikasi/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifikasi.read');
+    Route::post('/notifikasi/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifikasi.read-all');
+    Route::get('/api/notifikasi/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifikasi.unread-count');
     
     // Riwayat Penukaran
     Route::get('/riwayat-tukar', [\App\Http\Controllers\RedemptionController::class, 'index'])->name('riwayat-tukar');
@@ -144,7 +172,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::get('/setoran/create', [\App\Http\Controllers\Admin\DepositController::class, 'create'])->name('setoran.create');
     Route::post('/setoran', [\App\Http\Controllers\Admin\DepositController::class, 'store'])->name('setoran.store');
     Route::get('/setoran/{id}', [\App\Http\Controllers\Admin\DepositController::class, 'show'])->name('setoran.show');
-    Route::post('/setoran/{id}/confirm', [\App\Http\Controllers\Admin\DepositController::class, 'confirm'])->name('setoran.confirm');
+    // Route::post('/setoran/{id}/confirm', ...) → REMOVED (One-Click Verification active)
     Route::delete('/setoran/{id}', [\App\Http\Controllers\Admin\DepositController::class, 'destroy'])->name('setoran.destroy');
 
     // Manajemen Penukaran (Redemptions)
@@ -153,6 +181,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::post('/penukaran/{id}/approve', [\App\Http\Controllers\Admin\RedemptionController::class, 'approve'])->name('penukaran.approve');
     Route::post('/penukaran/{id}/reject', [\App\Http\Controllers\Admin\RedemptionController::class, 'reject'])->name('penukaran.reject');
     Route::post('/penukaran/{id}/cancel', [\App\Http\Controllers\Admin\RedemptionController::class, 'cancel'])->name('penukaran.cancel');
+    Route::post('/penukaran/{id}/complete', [\App\Http\Controllers\Admin\RedemptionController::class, 'complete'])->name('penukaran.complete');
 
     // CRUD Reward Items (Barang Penukaran)
     Route::resource('reward-items', \App\Http\Controllers\Admin\RewardItemController::class);

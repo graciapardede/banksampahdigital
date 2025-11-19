@@ -113,10 +113,10 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <button x-on:click.prevent="openAddModal()" class="inline-flex items-center gap-2 bg-white text-green-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                    <a href="{{ route('admin.waste-types.create') }}" class="inline-flex items-center gap-2 bg-white text-green-600 px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
                         <i class="bi bi-plus-circle text-lg"></i>
                         <span>Tambah Jenis Sampah</span>
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -268,60 +268,174 @@
                 </form>
             </div>
 
-            <!-- Waste types grid -->
+            <!-- Waste types table -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 @if($wasteTypes->isEmpty())
                     <div class="text-center py-12">
                         <i class="bi bi-recycle text-6xl text-gray-300"></i>
                         <p class="mt-4 text-gray-500">Belum ada jenis sampah. Tambahkan jenis sampah pertama Anda!</p>
-                        <button x-on:click="openAddModal()" class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <a href="{{ route('admin.waste-types.create') }}" class="inline-block mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             Tambah Jenis Sampah
-                        </button>
+                        </a>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($wasteTypes as $item)
-                            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 border border-gray-200">
-                                <div class="flex flex-col items-center text-center gap-3">
-                                    <div class="w-40 h-40 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg flex items-center justify-center overflow-hidden border-2 border-gray-200">
-                                        @if($item->image)
-                                            <img src="{{ asset('images/' . $item->image) }}" alt="{{ $item->name }}" class="object-contain h-full w-full p-2" />
-                                        @else
-                                            <i class="bi bi-recycle text-6xl text-gray-300"></i>
-                                        @endif
-                                    </div>
-                                    <div class="w-full">
-                                        <h3 class="font-semibold text-lg text-gray-800">{{ $item->name }}</h3>
-                                        <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $item->description ?? 'Tidak ada deskripsi' }}</p>
-                                        <div class="mt-2 flex items-center justify-center gap-2 flex-wrap">
-                                            @if($item->category)
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                                    <i class="bi bi-tag mr-1"></i> {{ $item->category }}
+                    <!-- Desktop Table View -->
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gradient-to-r from-green-50 to-emerald-50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        Kategori
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        Nama Barang
+                                    </th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        Satuan
+                                    </th>
+                                    <th class="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        Harga (Poin)
+                                    </th>
+                                    <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                        Aksi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach($wasteTypes as $item)
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($item->category == 'Plastik')
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                                                    <i class="bi bi-circle-fill text-xs mr-2"></i> {{ $item->category }}
+                                                </span>
+                                            @elseif($item->category == 'Kertas')
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                                    <i class="bi bi-circle-fill text-xs mr-2"></i> {{ $item->category }}
+                                                </span>
+                                            @elseif($item->category == 'Logam')
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-100 text-gray-800 border border-gray-300">
+                                                    <i class="bi bi-circle-fill text-xs mr-2"></i> {{ $item->category }}
+                                                </span>
+                                            @elseif($item->category == 'Kaca')
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200">
+                                                    <i class="bi bi-circle-fill text-xs mr-2"></i> {{ $item->category }}
+                                                </span>
+                                            @elseif($item->category == 'Elektronik')
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-red-100 text-red-800 border border-red-200">
+                                                    <i class="bi bi-circle-fill text-xs mr-2"></i> {{ $item->category }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                                    <i class="bi bi-circle-fill text-xs mr-2"></i> {{ $item->category }}
                                                 </span>
                                             @endif
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                                <i class="bi bi-coin mr-1"></i> {{ $item->points_per_unit }} poin/{{ $item->unit }}
-                                            </span>
-                                        </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                @if($item->image)
+                                                    <img src="{{ asset('images/' . $item->image) }}" alt="{{ $item->name }}" class="w-12 h-12 rounded-lg object-cover border border-gray-200">
+                                                @else
+                                                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                        <i class="bi bi-recycle text-gray-400 text-xl"></i>
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <p class="font-bold text-gray-900">{{ $item->name }}</p>
+                                                    @if($item->description)
+                                                        <p class="text-xs text-gray-500 line-clamp-1">{{ $item->description }}</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="text-sm font-medium text-gray-700">{{ strtoupper($item->unit) }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                                            <span class="text-lg font-bold text-green-600">{{ number_format($item->points_per_unit, 0, ',', '.') }}</span>
+                                            <span class="text-xs text-gray-500 ml-1">poin</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <div class="flex items-center justify-center gap-2">
+                                                <a href="{{ route('admin.waste-types.edit', $item) }}" class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
+                                                    <i class="bi bi-pencil-square mr-1"></i> Edit
+                                                </a>
+                                                <form action="{{ route('admin.waste-types.destroy', $item) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus jenis sampah ini?')" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                                                        <i class="bi bi-trash mr-1"></i> Hapus
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
-                                        <div class="mt-4 grid grid-cols-2 gap-2">
-                                            <button
-                                                class="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 py-2 rounded-lg text-sm font-medium transition-colors"
-                                                x-on:click="openEditModal(@js($item))"
-                                            >
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </button>
-                                            <button
-                                                class="border-2 border-red-500 text-red-600 hover:bg-red-50 py-2 rounded-lg text-sm font-medium transition-colors"
-                                                x-on:click="openDeleteModal(@js($item))"
-                                            >
-                                                <i class="bi bi-trash"></i> Hapus
-                                            </button>
+                    <!-- Mobile Card View -->
+                    <div class="md:hidden space-y-4">
+                        @foreach($wasteTypes as $item)
+                            <div class="bg-white rounded-xl shadow-md p-4 border border-gray-200">
+                                <div class="flex items-start gap-3 mb-3">
+                                    @if($item->image)
+                                        <img src="{{ asset('images/' . $item->image) }}" alt="{{ $item->name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-200">
+                                    @else
+                                        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <i class="bi bi-recycle text-gray-400 text-2xl"></i>
                                         </div>
+                                    @endif
+                                    <div class="flex-1">
+                                        @if($item->category == 'Plastik')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 mb-2">
+                                                {{ $item->category }}
+                                            </span>
+                                        @elseif($item->category == 'Kertas')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 mb-2">
+                                                {{ $item->category }}
+                                            </span>
+                                        @elseif($item->category == 'Logam')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 mb-2">
+                                                {{ $item->category }}
+                                            </span>
+                                        @elseif($item->category == 'Kaca')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 mb-2">
+                                                {{ $item->category }}
+                                            </span>
+                                        @elseif($item->category == 'Elektronik')
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 mb-2">
+                                                {{ $item->category }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 mb-2">
+                                                {{ $item->category }}
+                                            </span>
+                                        @endif
+                                        <h3 class="font-bold text-gray-900">{{ $item->name }}</h3>
+                                        <p class="text-sm text-gray-600 mt-1">{{ strtoupper($item->unit) }} • <span class="text-green-600 font-bold">{{ number_format($item->points_per_unit, 0, ',', '.') }}</span> poin</p>
                                     </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="{{ route('admin.waste-types.edit', $item) }}" class="flex-1 text-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <form action="{{ route('admin.waste-types.destroy', $item) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')" class="flex-1">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         @endforeach
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        {{ $wasteTypes->links() }}
                     </div>
                 @endif
             </div>

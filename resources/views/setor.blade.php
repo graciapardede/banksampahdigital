@@ -54,7 +54,7 @@
                     </div>
                     <div>
                         <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'lisbeth' }}</p>
+                        <p class="text-sm text-green-600">Halo, {{ $namaUser }}</p>
                     </div>
                 </div>
 
@@ -64,7 +64,7 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ number_format($saldoPoin, 0, ',', '.') }} poin</span>
                         </div>
                     </div>
 
@@ -153,90 +153,43 @@
             <p class="text-sm text-gray-500 mb-6">Lihat daftar jenis sampah dan poin yang bisa Anda dapatkan</p>
 
             <div class="space-y-4">
-                <!-- Plastik -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-recycle text-green-600 text-2xl"></i>
+                @forelse($wasteTypes as $index => $waste)
+                    @php
+                        // Icon dan warna berdasarkan kategori atau index
+                        $colors = [
+                            ['bg' => 'bg-green-100', 'text' => 'text-green-600', 'badge' => 'bg-green-100 text-green-700', 'icon' => 'bi-recycle'],
+                            ['bg' => 'bg-amber-100', 'text' => 'text-amber-600', 'badge' => 'bg-amber-100 text-amber-700', 'icon' => 'bi-box-seam'],
+                            ['bg' => 'bg-gray-200', 'text' => 'text-gray-600', 'badge' => 'bg-gray-200 text-gray-700', 'icon' => 'bi-cup-straw'],
+                            ['bg' => 'bg-blue-100', 'text' => 'text-blue-600', 'badge' => 'bg-blue-100 text-blue-700', 'icon' => 'bi-droplet'],
+                            ['bg' => 'bg-orange-100', 'text' => 'text-orange-600', 'badge' => 'bg-orange-100 text-orange-700', 'icon' => 'bi-basket'],
+                            ['bg' => 'bg-purple-100', 'text' => 'text-purple-600', 'badge' => 'bg-purple-100 text-purple-700', 'icon' => 'bi-gem'],
+                        ];
+                        $color = $colors[$index % count($colors)];
+                    @endphp
+                    
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 {{ $color['bg'] }} rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="bi {{ $color['icon'] }} {{ $color['text'] }} text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">{{ $waste->name }}</h4>
+                                <p class="text-sm text-gray-600">{{ $waste->description ?? 'Sampah jenis ' . strtolower($waste->name) }}</p>
+                                <span class="inline-block px-2 py-1 {{ $color['badge'] }} text-xs font-medium rounded mt-1">
+                                    {{ $waste->unit }}
+                                </span>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Plastik</h4>
-                            <p class="text-sm text-gray-600">Botol plastik, kemasan plastik</p>
-                            <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded mt-1">Plastik</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-green-600 font-bold text-lg">300 poin/kg</p>
-                    </div>
-                </div>
-
-                <!-- Kertas/Kardus -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-box-seam text-amber-600 text-2xl"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Kertas/Kardus</h4>
-                            <p class="text-sm text-gray-600">Kertas bekas, kardus, majalah, koran</p>
-                            <span class="inline-block px-2 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded mt-1">Kertas</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-green-600 font-bold text-lg">150 poin/kg</p>
-                    </div>
-                </div>
-
-                <!-- Kaleng Alumunium -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-cup-straw text-gray-600 text-2xl"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Kaleng Alumunium</h4>
-                            <p class="text-sm text-gray-600">Kaleng minuman, kemasan makanan kaleng</p>
-                            <span class="inline-block px-2 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded mt-1">Logam</span>
+                        <div class="text-right">
+                            <p class="text-green-600 font-bold text-lg">{{ number_format($waste->points_per_unit, 0, ',', '.') }} poin/{{ strtolower($waste->unit) }}</p>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-green-600 font-bold text-lg">1200 poin/kg</p>
+                @empty
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="bi bi-inbox text-4xl mb-2"></i>
+                        <p>Belum ada jenis sampah yang terdaftar</p>
                     </div>
-                </div>
-
-                <!-- Kaca -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-droplet text-blue-600 text-2xl"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Kaca</h4>
-                            <p class="text-sm text-gray-600">Botol kaca, pecahan kaca bersih</p>
-                            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded mt-1">Kaca</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-green-600 font-bold text-lg">100 poin/kg</p>
-                    </div>
-                </div>
-
-                <!-- Logam Lainnya -->
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-basket text-orange-600 text-2xl"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800">Logam Lainnya</h4>
-                            <p class="text-sm text-gray-600">Besi bekas, tembaga, kuningan</p>
-                            <span class="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded mt-1">Logam</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-green-600 font-bold text-lg">1000 poin/kg</p>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </div>
 
@@ -371,122 +324,83 @@
                 <h2 class="text-xl font-bold text-gray-800 mb-2">Riwayat Setoran Sampah</h2>
                 <p class="text-sm text-gray-500 mb-6">Lihat semua transaksi setoran sampah Anda</p>
 
-                <!-- Loading State -->
-                <div id="loading-deposits" class="flex justify-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-                </div>
-
-                <!-- Deposits Container -->
-                <div id="deposits-container" class="space-y-4 hidden">
-                    <!-- Data will be loaded here -->
-                </div>
-
-                <!-- Empty State -->
-                <div id="empty-deposits" class="hidden text-center py-12">
-                    <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
-                    <p class="text-gray-500 font-semibold">Belum ada riwayat setoran</p>
-                    <p class="text-sm text-gray-400 mt-2">Hubungi admin untuk menyetor sampah</p>
-                </div>
-            </div>
-        </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
-                                        <i class="bi bi-check-circle-fill text-green-600 text-sm mr-1"></i>
-                                        <span class="text-xs font-semibold text-green-700">Completed</span>
-                                    </div>
+                <!-- Deposits List -->
+                <div class="space-y-4">
+                    @forelse($deposits as $deposit)
+                        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all">
+                            <div class="flex items-start gap-4">
+                                <!-- Icon -->
+                                <div class="w-14 h-14 {{ $deposit->status == 'verified' ? 'bg-green-100' : 'bg-amber-100' }} rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="bi bi-recycle {{ $deposit->status == 'verified' ? 'text-green-600' : 'text-amber-600' }} text-2xl"></i>
                                 </div>
                                 
-                                <!-- Details Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
-                                        <p class="text-sm font-semibold text-gray-700">
-                                            <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                            2025-3-9 · 10:15
-                                        </p>
+                                <!-- Content -->
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h4 class="font-bold text-gray-800 mb-1">
+                                                @foreach($deposit->depositItems as $item)
+                                                    {{ $item->wasteType->name }}{{ !$loop->last ? ', ' : '' }}
+                                                @endforeach
+                                            </h4>
+                                            <p class="text-sm font-medium text-gray-600 mb-1">{{ number_format($deposit->total_weight, 1) }}kg</p>
+                                            <div class="flex items-center text-sm text-gray-500">
+                                                <i class="bi bi-geo-alt text-xs mr-1"></i>
+                                                <span>{{ $deposit->branch->name ?? 'Bank Sampah' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center {{ $deposit->status == 'verified' ? 'bg-green-50' : 'bg-amber-50' }} px-3 py-1 rounded-full">
+                                            <i class="bi {{ $deposit->status == 'verified' ? 'bi-check-circle-fill text-green-600' : 'bi-clock-fill text-amber-600' }} text-sm mr-1"></i>
+                                            <span class="text-xs font-semibold {{ $deposit->status == 'verified' ? 'text-green-700' : 'text-amber-700' }}">
+                                                {{ $deposit->status == 'verified' ? 'Terverifikasi' : 'Pending' }}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Point</p>
-                                        <p class="text-sm font-bold text-green-600">
-                                            <i class="bi bi-coin text-green-500 mr-1"></i>
-                                            750 poin
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Status</p>
-                                        <p class="text-sm font-semibold text-green-600">
-                                            <i class="bi bi-check-circle text-green-500 mr-1"></i>
-                                            Completed
-                                        </p>
+                                    
+                                    <!-- Details Grid -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
+                                        <div>
+                                            <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
+                                            <p class="text-sm font-semibold text-gray-700">
+                                                <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
+                                                {{ $deposit->created_at->format('d M Y · H:i') }}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 mb-1">Poin</p>
+                                            <p class="text-sm font-bold text-green-600">
+                                                <i class="bi bi-coin text-green-500 mr-1"></i>
+                                                {{ number_format($deposit->total_points, 0, ',', '.') }} poin
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500 mb-1">Status</p>
+                                            <p class="text-sm font-semibold {{ $deposit->status == 'verified' ? 'text-green-600' : 'text-amber-600' }}">
+                                                <i class="bi {{ $deposit->status == 'verified' ? 'bi-check-circle' : 'bi-clock' }} mr-1"></i>
+                                                {{ $deposit->status == 'verified' ? 'Terverifikasi' : 'Menunggu Verifikasi' }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Riwayat Item 4 -->
-                    <div onclick="showTransactionDetail('TRX-20250307-004', 'Completed', 'Bank Sampah Sitolusna', '2025-3-7', '09:00', 'Ahmad Rizki', 900, 500, 1400)" 
-                         class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all cursor-pointer">
-                        <div class="flex items-start gap-4">
-                            <!-- Icon -->
-                            <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="bi bi-recycle text-green-600 text-2xl"></i>
-                            </div>
-                            
-                            <!-- Content -->
-                            <div class="flex-1">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-1">Plastik</h4>
-                                        <p class="text-sm font-medium text-gray-600 mb-1">2.5kg</p>
-                                        <div class="flex items-center text-sm text-gray-500">
-                                            <i class="bi bi-geo-alt text-xs mr-1"></i>
-                                            <span>Bank Sampah Sitoluama</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center bg-green-50 px-3 py-1 rounded-full">
-                                        <i class="bi bi-check-circle-fill text-green-600 text-sm mr-1"></i>
-                                        <span class="text-xs font-semibold text-green-700">Completed</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Details Grid -->
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
-                                        <p class="text-sm font-semibold text-gray-700">
-                                            <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                            2025-3-9 · 10:15
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Point</p>
-                                        <p class="text-sm font-bold text-green-600">
-                                            <i class="bi bi-coin text-green-500 mr-1"></i>
-                                            750 poin
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Status</p>
-                                        <p class="text-sm font-semibold text-green-600">
-                                            <i class="bi bi-check-circle text-green-500 mr-1"></i>
-                                            Completed
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                    @empty
+                        <div class="text-center py-12">
+                            <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
+                            <p class="text-gray-500 font-semibold">Belum ada riwayat setoran</p>
+                            <p class="text-sm text-gray-400 mt-2">Hubungi admin untuk menyetor sampah</p>
                         </div>
-                    </div>
+                    @endforelse
                 </div>
 
-                <!-- Pagination atau Load More bisa ditambahkan di sini -->
-                <div class="mt-6 text-center">
-                    <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
-                        <i class="bi bi-arrow-clockwise mr-2"></i>
-                        Muat Lebih Banyak
-                    </button>
-                </div>
+                @if($deposits->count() > 0)
+                    <div class="mt-6 text-center">
+                        <a href="/riwayat" class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+                            <i class="bi bi-clock-history mr-2"></i>
+                            Lihat Semua Riwayat
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
         <!-- End Tab Content: Riwayat -->

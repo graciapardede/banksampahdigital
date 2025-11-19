@@ -6,43 +6,83 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile page (for web view)
+     * Display the user's profile page (read-only view)
      */
-    public function index()
+    public function index(): View
     {
-        return view('profil');
+        return view('profil.index', [
+            'user' => Auth::user(),
+        ]);
     }
     
     /**
-     * Display the user's profile form.
+     * Show the form for editing profile data
      */
-    public function edit(Request $request): View
+    public function edit(): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
+        return view('profil.edit', [
+            'user' => Auth::user(),
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Update the user's profile information
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        $user->full_name = $validated['full_name'];
+        $user->phone = $validated['phone'] ?? null;
+        $user->address = $validated['address'] ?? null;
+        $user->save();
+
+        return Redirect::route('profil.index')->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    /**
+     * Show the form for changing password
+     */
+    public function editPassword(): View
+    {
+        return view('profil.password', [
+            'user' => Auth::user(),
+        ]);
+    }
+
+    /**
+     * Update the user's password
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        // Verify current password
+        if (!Hash::check($validated['current_password'], $request->user()->password)) {
+            return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
         }
 
-        $request->user()->save();
+        // Update password
+        $user = $request->user();
+        $user->password = Hash::make($validated['password']);
+        $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profil.index')->with('success', 'Password berhasil diperbarui!');
     }
 
     /**

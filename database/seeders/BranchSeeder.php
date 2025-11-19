@@ -11,19 +11,14 @@ class BranchSeeder extends Seeder
     {
         $branches = [
             [
-                'name' => 'Cabang Medan Utara',
-                'address' => 'Jl. Gatot Subroto No. 123, Medan',
-                'phone' => '061-1234567',
+                'name' => 'Cabang Sitoluama',
+                'address' => 'Jl. Raya Sitoluama, Laguboti, Toba Samosir',
+                'phone' => '0632-331001',
             ],
             [
-                'name' => 'Cabang Medan Timur',
-                'address' => 'Jl. Jend. Sudirman No. 456, Medan',
-                'phone' => '061-7654321',
-            ],
-            [
-                'name' => 'Cabang Medan Barat',
-                'address' => 'Jl. Asia No. 789, Medan',
-                'phone' => '061-9876543',
+                'name' => 'Cabang Balige',
+                'address' => 'Jl. Sisingamangaraja No. 45, Balige, Toba Samosir',
+                'phone' => '0632-321002',
             ],
         ];
 

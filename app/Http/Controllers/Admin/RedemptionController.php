@@ -19,7 +19,15 @@ class RedemptionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Redemption::with(['user', 'branch', 'items.rewardItem'])
+        // Get authenticated user's branch
+        $user = auth()->user();
+        $branchId = $user->branch_id;
+
+        // Build main query with branch filter
+        $query = Redemption::with(['user', 'branch', 'redemptionItems.rewardItem'])
+            ->when($branchId, function($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            })
             ->latest();
 
         // Filter by status
@@ -37,7 +45,36 @@ class RedemptionController extends Controller
 
         $redemptions = $query->paginate(20);
 
-        return view('admin.penukaran.index', compact('redemptions'));
+        // Calculate statistics for current month with branch filter
+        $pending = Redemption::when($branchId, function($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            })
+            ->where('status', 'pending')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $confirmed = Redemption::when($branchId, function($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            })
+            ->where('status', 'approved')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $totalPoints = Redemption::when($branchId, function($q) use ($branchId) {
+                $q->where('branch_id', $branchId);
+            })
+            ->where('status', 'approved')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('total_points');
+
+        // Add pendingCount and confirmedCount for view compatibility
+        $pendingCount = $pending;
+        $confirmedCount = $confirmed;
+
+        return view('admin.penukaran.index', compact('redemptions', 'pending', 'confirmed', 'totalPoints', 'pendingCount', 'confirmedCount'));
     }
 
     /**
@@ -183,9 +220,35 @@ class RedemptionController extends Controller
      */
     public function show($id)
     {
-        $redemption = Redemption::with(['user', 'branch', 'items.rewardItem'])
+        $redemption = Redemption::with(['user', 'branch', 'redemptionItems.rewardItem'])
             ->findOrFail($id);
 
         return view('admin.penukaran.show', compact('redemption'));
+    }
+    /**
+     * Mark redemption as completed (barang sudah diserahkan ke user)
+     */
+    public function complete($id)
+    {
+        $redemption = Redemption::with('user', 'items')->findOrFail($id);
+
+        if ($redemption->status !== 'approved') {
+            return back()->with('error', 'Hanya penukaran dengan status "Dikonfirmasi" yang bisa diserahkan.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update status ke completed
+            $redemption->update([
+                'status' => 'completed',
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'Penukaran berhasil diserahkan! Status diubah menjadi Selesai.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menandai penukaran sebagai selesai: ' . $e->getMessage());
+        }
     }
 }
