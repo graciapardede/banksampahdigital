@@ -40,18 +40,25 @@ class PenukaranBerhasil extends Notification
         // Load items dengan rewardItem
         $this->penukaran->load('items.rewardItem');
         
-        // Ambil detail item yang ditukar
+        // Ambil ringkasan item yang ditukar
         $itemsDescription = $this->penukaran->items->map(function ($item) {
             return $item->rewardItem->name . ' (x' . $item->quantity . ')';
-        })->join(', ');
+        })->take(2)->join(', ');
+        
+        // Tambahkan "..." jika lebih dari 2 item
+        if ($this->penukaran->items->count() > 2) {
+            $itemsDescription .= ', ...';
+        }
 
         return [
-            'title' => 'Penukaran Poin Berhasil',
-            'message' => "Penukaran poin Anda untuk {$itemsDescription} berhasil diproses. Total {$this->penukaran->total_points} poin telah dipotong dari saldo Anda.",
-            'type' => 'info',
-            'icon' => 'gift',
+            'title' => '✅ Penukaran Selesai!',
+            'message' => "Barang Anda ({$itemsDescription}) telah diserahkan. Terima kasih telah menggunakan Green Saving!",
+            'type' => 'success',
+            'icon' => 'check-circle-fill',
+            'link' => url('/riwayat'),
             'redemption_id' => $this->penukaran->id,
             'points_used' => $this->penukaran->total_points,
+            'items_count' => $this->penukaran->items->count(),
         ];
     }
 }

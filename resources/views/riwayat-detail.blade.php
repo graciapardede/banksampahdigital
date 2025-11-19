@@ -181,11 +181,11 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 text-right text-sm text-gray-700">
-                                    {{ number_format($item->points_per_unit, 0, ',', '.') }}
+                                    {{ number_format($item->wasteType->points_per_kg ?? 0, 0, ',', '.') }}
                                 </td>
                                 <td class="px-4 py-4 text-right">
                                     <span class="text-sm font-bold text-green-600">
-                                        +{{ number_format($item->subtotal_points, 0, ',', '.') }}
+                                        +{{ number_format($item->points, 0, ',', '.') }}
                                     </span>
                                 </td>
                             </tr>
@@ -232,7 +232,7 @@
                                         <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                                             <i class="bi bi-gift text-blue-600 text-sm"></i>
                                         </div>
-                                        <p class="text-sm font-semibold text-gray-800">{{ $item->reward_name }}</p>
+                                        <p class="text-sm font-semibold text-gray-800">{{ $item->rewardItem->name ?? 'Unknown' }}</p>
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center">
@@ -241,11 +241,11 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-4 text-right text-sm text-gray-700">
-                                    {{ number_format($item->points_cost, 0, ',', '.') }}
+                                    {{ number_format($item->points, 0, ',', '.') }}
                                 </td>
                                 <td class="px-4 py-4 text-right">
                                     <span class="text-sm font-bold text-red-600">
-                                        -{{ number_format($item->subtotal_points, 0, ',', '.') }}
+                                        -{{ number_format($item->points * $item->quantity, 0, ',', '.') }}
                                     </span>
                                 </td>
                             </tr>

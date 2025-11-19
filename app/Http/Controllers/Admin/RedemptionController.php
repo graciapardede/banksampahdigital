@@ -11,6 +11,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Notifications\BarangSiapDiambil;
+use App\Notifications\PenukaranBerhasil;
 
 class RedemptionController extends Controller
 {
@@ -24,9 +26,15 @@ class RedemptionController extends Controller
         $branchId = $user->branch_id;
 
         // Build main query with branch filter
+        // Jika admin punya branch_id, filter sesuai branch
+        // Jika tidak punya branch_id (superadmin), tampilkan semua
         $query = Redemption::with(['user', 'branch', 'redemptionItems.rewardItem'])
             ->when($branchId, function($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
+                // Tampilkan redemption yang branch_id-nya sama ATAU NULL (untuk backward compatibility)
+                $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                });
             });
 
         // Filter by status - jangan filter jika 'semua' atau kosong
@@ -55,7 +63,10 @@ class RedemptionController extends Controller
         // Calculate statistics for current month with branch filter
         // 1. Pending Count - transaksi menunggu konfirmasi
         $pendingCount = Redemption::when($branchId, function($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
+                $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                });
             })
             ->where('status', 'pending')
             ->whereMonth('created_at', $currentMonth)
@@ -64,7 +75,10 @@ class RedemptionController extends Controller
 
         // 2. Confirmed Count - transaksi sudah dikonfirmasi, siap diambil
         $confirmedCount = Redemption::when($branchId, function($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
+                $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                });
             })
             ->where('status', 'confirmed')
             ->whereMonth('created_at', $currentMonth)
@@ -73,7 +87,10 @@ class RedemptionController extends Controller
 
         // 3. Total Points - hanya transaksi yang sudah selesai (completed)
         $totalPoints = Redemption::when($branchId, function($q) use ($branchId) {
-                $q->where('branch_id', $branchId);
+                $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                });
             })
             ->where('status', 'completed')
             ->whereMonth('created_at', $currentMonth)
@@ -145,6 +162,9 @@ class RedemptionController extends Controller
                 'balance_after' => $user->balance_points,
                 'description' => 'Penukaran poin dengan barang',
             ]);
+
+            // KIRIM NOTIFIKASI KE USER: Barang siap diambil
+            $user->notify(new BarangSiapDiambil($redemption));
 
             DB::commit();
 
@@ -252,6 +272,9 @@ class RedemptionController extends Controller
             $redemption->update([
                 'status' => 'completed',
             ]);
+
+            // KIRIM NOTIFIKASI KE USER: Penukaran selesai (barang sudah diserahkan)
+            $redemption->user->notify(new PenukaranBerhasil($redemption));
 
             DB::commit();
 

@@ -347,6 +347,12 @@
                     `;
                 } else {
                     const totalPoints = activity.total_points || 0;
+                    // Hanya tampilkan minus poin jika sudah dikonfirmasi/selesai
+                    const showDeduction = ['confirmed', 'completed'].includes(activity.status);
+                    const pointsDisplay = showDeduction 
+                        ? `- ${totalPoints.toLocaleString('id-ID')}` 
+                        : `${totalPoints.toLocaleString('id-ID')}`;
+                    const pointsColor = showDeduction ? 'text-blue-600' : 'text-gray-500';
 
                     return `
                         <div onclick="showDetail('redemption', ${activity.id})" 
@@ -366,7 +372,7 @@
                                 </div>
                             </div>
                             <div class="text-right">
-                                <div class="font-bold text-blue-600 text-lg">- ${totalPoints.toLocaleString('id-ID')} <i class="bi bi-currency-dollar"></i></div>
+                                <div class="font-bold ${pointsColor} text-lg">${pointsDisplay} <i class="bi bi-currency-dollar"></i></div>
                             </div>
                         </div>
                     `;

@@ -148,7 +148,7 @@ class DepositController extends Controller
                 ->where('user_id', $user->id)
                 ->findOrFail($id);
         } elseif ($type === 'redemption') {
-            $transaction = \App\Models\Redemption::with(['redemptionItems.rewardItem', 'branch', 'user'])
+            $transaction = \App\Models\Redemption::with(['items.rewardItem', 'redemptionItems.rewardItem', 'branch', 'user'])
                 ->where('user_id', $user->id)
                 ->findOrFail($id);
         } else {

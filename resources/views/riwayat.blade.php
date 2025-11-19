@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Transaksi - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -104,6 +105,46 @@
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-8">
         
+        <!-- Flash Messages -->
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                 class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-check-circle-fill text-2xl"></i>
+                    <span class="font-semibold">{{ session('success') }}</span>
+                </div>
+                <button @click="show = false" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                 class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-exclamation-circle-fill text-2xl"></i>
+                    <span class="font-semibold">{{ session('error') }}</span>
+                </div>
+                <button @click="show = false" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        @endif
+
+        @if(session('info'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                 class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-info-circle-fill text-2xl"></i>
+                    <span class="font-semibold">{{ session('info') }}</span>
+                </div>
+                <button @click="show = false" class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        @endif
+
         <!-- Page Title -->
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Riwayat Transaksi</h2>

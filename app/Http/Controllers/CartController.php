@@ -253,12 +253,11 @@ class CartController extends Controller
             // ============================================================
             // STEP 7: KIRIM NOTIFIKASI KE ADMIN CABANG
             // ============================================================
-            // Ambil branch_id dari reward item yang ditukar (item pertama)
-            $firstItem = $redemption->items()->with('rewardItem')->first();
-            $branchId = $firstItem->rewardItem->branch_id ?? null;
+            // Ambil branch_id dari user yang melakukan penukaran
+            $branchId = $user->branch_id;
             
             if ($branchId) {
-                // Cari admin yang branch_id-nya sama dengan barang yang ditukar
+                // Cari admin yang branch_id-nya sama dengan user
                 $admins = User::where('role', 'admin')
                     ->where('branch_id', $branchId)
                     ->get();
@@ -266,11 +265,17 @@ class CartController extends Controller
                 foreach ($admins as $admin) {
                     $admin->notify(new NewRedemptionRequest($redemption));
                 }
+            } else {
+                // Jika user tidak punya branch_id, kirim ke semua admin
+                $admins = User::where('role', 'admin')->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new NewRedemptionRequest($redemption));
+                }
             }
 
             DB::commit();
 
-            return redirect()->route('riwayat-tukar')
+            return redirect()->route('riwayat')
                 ->with('success', "✅ Permintaan penukaran berhasil dikirim! Total {$totalPoints} poin akan dikurangi setelah admin menyetujui.");
 
         } catch (\Exception $e) {

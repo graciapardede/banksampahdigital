@@ -109,19 +109,10 @@
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-8">
         
-        <!-- Page Title & Actions -->
-        <div class="mb-6 flex justify-between items-center">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Notifikasi</h2>
-                <p class="text-gray-600">Pantau aktivitas dan pembaruan akun Anda</p>
-            </div>
-            
-            @if($notifications->count() > 0)
-            <button onclick="markAllAsRead()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm transition-colors">
-                <i class="bi bi-check-all mr-2"></i>
-                Tandai Semua Dibaca
-            </button>
-            @endif
+        <!-- Page Title -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Notifikasi</h2>
+            <p class="text-gray-600">Pantau aktivitas dan pembaruan akun Anda</p>
         </div>
 
         <!-- Empty State or Notification List -->
@@ -175,17 +166,10 @@
                                 @endif
                             </div>
                             <p class="text-sm text-gray-600 mb-2">{{ $notif->data['message'] ?? 'Pesan notifikasi' }}</p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs text-gray-400">
-                                    <i class="bi bi-clock mr-1"></i>
-                                    {{ $notif->created_at->diffForHumans() }}
-                                </span>
-                                @if(!$notif->read_at)
-                                <button onclick="markAsRead('{{ $notif->id }}')" class="text-xs text-green-600 hover:text-green-700 font-semibold">
-                                    Tandai dibaca
-                                </button>
-                                @endif
-                            </div>
+                            <span class="text-xs text-gray-400">
+                                <i class="bi bi-clock mr-1"></i>
+                                {{ $notif->created_at->diffForHumans() }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -218,43 +202,7 @@
         </div>
     </footer>
 
-    <script>
-        async function markAsRead(notificationId) {
-            try {
-                const response = await fetch(`/notifikasi/${notificationId}/read`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
 
-                if (response.ok) {
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Error marking notification as read:', error);
-            }
-        }
-
-        async function markAllAsRead() {
-            try {
-                const response = await fetch('/notifikasi/read-all', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-
-                if (response.ok) {
-                    window.location.reload();
-                }
-            } catch (error) {
-                console.error('Error marking all notifications as read:', error);
-            }
-        }
-    </script>
 
 </body>
 </html>

@@ -22,12 +22,10 @@
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
     <!-- Header -->
-    @include('admin.partials.header')
+    <x-admin-header />
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
-<div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 py-8 px-4">
-    <div class="max-w-7xl mx-auto">
+    <main class="max-w-7xl mx-auto px-4 py-8">
         <!-- Header with Filter -->
         <div class="mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -262,7 +260,6 @@
         }
     });
 </script>
-        </div>
 
     </main>
 

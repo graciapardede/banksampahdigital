@@ -12,7 +12,7 @@ Route::get('/', function () {
             ? redirect('/admin/dashboard') 
             : redirect('/dashboard');
     }
-    return view('home');
+    return view('welcome');
 });
 
 // Halaman login (form)
@@ -23,7 +23,7 @@ Route::get('/login', function () {
             ? redirect('/admin/dashboard') 
             : redirect('/dashboard');
     }
-    return view('login');
+    return view('auth.login');
 })->name('login');
 
 // Halaman register (form)
@@ -32,8 +32,8 @@ Route::get('/register', function () {
     if (auth()->check()) {
         return redirect('/dashboard');
     }
-    return view('register');
-});
+    return view('auth.register');
+})->name('register');
 
 // Auth actions
 Route::post('/register', [AuthController::class, 'register']);

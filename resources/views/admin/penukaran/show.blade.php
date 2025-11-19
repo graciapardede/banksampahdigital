@@ -127,7 +127,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($item->rewardItem && $item->rewardItem->image)
                                 <img src="{{ asset('images/' . $item->rewardItem->image) }}" 
-                                     alt="{{ $item->reward_name }}" 
+                                     alt="{{ $item->rewardItem->name }}" 
                                      class="h-16 w-16 object-cover rounded-lg shadow-sm"
                                      onerror="this.src='{{ asset('images/no-image.png') }}'">
                             @else
@@ -137,7 +137,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $item->reward_name }}</div>
+                            <div class="text-sm font-medium text-gray-900">{{ $item->rewardItem->name }}</div>
                             @if($item->rewardItem && $item->rewardItem->description)
                                 <div class="text-xs text-gray-500 mt-1">{{ Str::limit($item->rewardItem->description, 50) }}</div>
                             @endif
@@ -148,10 +148,10 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
-                            {{ number_format($item->points_cost, 0, ',', '.') }}
+                            {{ number_format($item->points, 0, ',', '.') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-600">
-                            {{ number_format($item->subtotal_points, 0, ',', '.') }}
+                            {{ number_format($item->quantity * $item->points, 0, ',', '.') }}
                         </td>
                     </tr>
                     @endforeach
