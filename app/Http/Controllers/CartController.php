@@ -210,9 +210,13 @@ class CartController extends Controller
             // ============================================================
             // STEP 2: CREATE REDEMPTION HEADER
             // ============================================================
+            // Ambil branch_id dari item pertama di cart (semua item di cart pasti dari cabang yang sama)
+            $firstItem = reset($items);
+            $branchId = $firstItem['rewardItem']->branch_id;
+            
             $redemption = Redemption::create([
                 'user_id' => $user->id,
-                'branch_id' => $user->branch_id,
+                'branch_id' => $branchId,
                 'status' => 'pending', // Pending approval dari admin
                 'total_points' => $totalPoints,
                 'notes' => $request->notes ?? null,
@@ -253,20 +257,13 @@ class CartController extends Controller
             // ============================================================
             // STEP 7: KIRIM NOTIFIKASI KE ADMIN CABANG
             // ============================================================
-            // Ambil branch_id dari user yang melakukan penukaran
-            $branchId = $user->branch_id;
+            // Kirim notifikasi ke admin yang cabangnya sama dengan redemption
+            $admins = User::where('role', 'admin')
+                ->where('branch_id', $redemption->branch_id)
+                ->get();
             
-            if ($branchId) {
-                // Cari admin yang branch_id-nya sama dengan user
-                $admins = User::where('role', 'admin')
-                    ->where('branch_id', $branchId)
-                    ->get();
-                
-                foreach ($admins as $admin) {
-                    $admin->notify(new NewRedemptionRequest($redemption));
-                }
-            } else {
-                // Jika user tidak punya branch_id, kirim ke semua admin
+            if ($admins->isEmpty()) {
+                // Fallback: jika tidak ada admin di cabang tersebut, kirim ke semua admin
                 $admins = User::where('role', 'admin')->get();
                 foreach ($admins as $admin) {
                     $admin->notify(new NewRedemptionRequest($redemption));

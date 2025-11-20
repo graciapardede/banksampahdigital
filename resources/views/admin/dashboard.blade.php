@@ -171,36 +171,23 @@
             <!-- Recent Activities -->
             <div class="bg-white rounded-2xl p-6 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Aktivitas Terbaru</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center space-x-3 p-3 bg-green-50 rounded-xl">
-                        <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-arrow-up text-white"></i>
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                    @forelse($recentActivities as $activity)
+                        <div class="flex items-center space-x-3 p-3 bg-{{ $activity['color'] }}-50 rounded-xl">
+                            <div class="w-10 h-10 bg-{{ $activity['color'] }}-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="bi {{ $activity['icon'] }} text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-800 truncate">{{ $activity['title'] }}</p>
+                                <p class="text-xs text-gray-500">{{ $activity['time_human'] }}</p>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-800 truncate">Setoran baru dari Sari Simanullang</p>
-                            <p class="text-xs text-gray-500">2 menit yang lalu</p>
+                    @empty
+                        <div class="text-center py-8">
+                            <i class="bi bi-inbox text-gray-300 text-4xl mb-2"></i>
+                            <p class="text-gray-500 text-sm">Belum ada aktivitas</p>
                         </div>
-                    </div>
-
-                    <div class="flex items-center space-x-3 p-3 bg-emerald-50 rounded-xl">
-                        <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-check text-white"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-800 truncate">Penukaran dikonfirmasi</p>
-                            <p class="text-xs text-gray-500">15 menit yang lalu</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-3 p-3 bg-teal-50 rounded-xl">
-                        <div class="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-person-plus text-white"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-800 truncate">Pengguna baru terdaftar</p>
-                            <p class="text-xs text-gray-500">1 jam yang lalu</p>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -208,36 +195,28 @@
             <div class="bg-white rounded-2xl p-6 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Status Sistem</h3>
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Database</span>
+                    @foreach($systemStatus as $key => $status)
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-{{ $status['color'] }}-500 rounded-full"></div>
+                                <span class="text-sm text-gray-700 capitalize">{{ ucfirst($key) }}</span>
+                            </div>
+                            <span class="text-xs font-semibold text-{{ $status['color'] }}-600">{{ $status['label'] }}</span>
                         </div>
-                        <span class="text-xs font-semibold text-green-600">Online</span>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Server</span>
+                    @endforeach
+                    
+                    <!-- System Info -->
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-500 mb-1">PHP Version</p>
+                                <p class="font-semibold text-gray-800">{{ PHP_VERSION }}</p>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-gray-500 mb-1">Laravel</p>
+                                <p class="font-semibold text-gray-800">{{ app()->version() }}</p>
+                            </div>
                         </div>
-                        <span class="text-xs font-semibold text-green-600">Running</span>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Cache</span>
-                        </div>
-                        <span class="text-xs font-semibold text-green-600">Active</span>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-3 h-3 bg-lime-500 rounded-full"></div>
-                            <span class="text-sm text-gray-700">Storage</span>
-                        </div>
-                        <span class="text-xs font-semibold text-lime-600">75% Used</span>
                     </div>
                 </div>
             </div>

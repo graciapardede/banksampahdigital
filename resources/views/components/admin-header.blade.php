@@ -67,7 +67,7 @@
                             @endphp
 
                             @forelse($notifications as $notification)
-                                <a href="{{ $notification->data['link'] ?? '#' }}" 
+                                <a href="{{ route('notifikasi.read', $notification->id) }}" 
                                    class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 {{ $notification->read_at ? 'bg-white' : 'bg-blue-50' }}">
                                     <div class="flex items-start gap-3">
                                         <!-- Icon -->

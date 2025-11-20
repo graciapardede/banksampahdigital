@@ -121,7 +121,7 @@ Route::middleware('auth')->group(function () {
     
     // Notifikasi
     Route::get('/notifikasi', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifikasi');
-    Route::post('/notifikasi/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifikasi.read');
+    Route::get('/notifikasi/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifikasi.read');
     Route::post('/notifikasi/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifikasi.read-all');
     Route::get('/api/notifikasi/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('notifikasi.unread-count');
     

@@ -48,8 +48,13 @@
                     </div>
 
                     <!-- Notification Bell -->
-                    <a href="#" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                    <a href="{{ route('notifikasi') }}" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
                         <i class="bi bi-bell text-gray-700 text-xl"></i>
+                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                        </span>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->

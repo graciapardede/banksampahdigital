@@ -13,6 +13,10 @@ class NotificationController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Mark all unread notifications as read when viewing
+        $user->unreadNotifications->markAsRead();
+        
         $notifications = $user->notifications()
             ->latest()
             ->get();
@@ -27,7 +31,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Mark a specific notification as read
+     * Mark a specific notification as read and redirect to link
      */
     public function markAsRead($id)
     {
@@ -38,9 +42,10 @@ class NotificationController extends Controller
 
         $notification->markAsRead();
 
-        return response()->json([
-            'message' => 'Notifikasi ditandai sudah dibaca'
-        ]);
+        // Redirect ke link notifikasi atau ke halaman notifikasi
+        $link = $notification->data['link'] ?? route('notifikasi');
+        
+        return redirect($link);
     }
 
     /**

@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
             if (Auth::check()) {
                 $user = Auth::user();
                 
+                // Hitung notifikasi yang belum dibaca
+                $unreadCount = $user->unreadNotifications()->count();
+                
                 // Variabel yang tersedia di semua view
                 $view->with([
                     'authUser' => $user,
@@ -33,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
                     'namaUser' => $user->full_name ?? $user->name ?? 'User',
                     'emailUser' => $user->email ?? '',
                     'roleUser' => $user->role ?? 'user',
+                    'unreadNotifications' => $unreadCount,
                 ]);
             }
         });

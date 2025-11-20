@@ -47,12 +47,22 @@
                         </div>
                     </div>
 
+                    <!-- Cart Button with Badge -->
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                        <i class="bi bi-cart3 text-white text-xl"></i>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+
                     <!-- Notification Bell -->
-                    <a href="/notifikasi" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all relative">
+                    <a href="/notifikasi" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
                         <i class="bi bi-bell text-gray-700 text-xl"></i>
-                        @if(Auth::user()->unreadNotifications->count() > 0)
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            {{ Auth::user()->unreadNotifications->count() }}
+                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                         </span>
                         @endif
                     </a>
@@ -97,9 +107,14 @@
                         <i class="bi bi-clock-history"></i>
                         <span class="truncate">Riwayat</span>
                     </a>
-                    <a href="/notifikasi" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2">
+                    <a href="/notifikasi" class="relative bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2">
                         <i class="bi bi-bell"></i>
                         <span class="truncate">Notifikasi</span>
+                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                        </span>
+                        @endif
                     </a>
                 </div>
             </div>

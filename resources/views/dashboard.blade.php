@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard - Green Saving</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <script>
@@ -47,10 +48,103 @@
                         </div>
                     </div>
 
-                    <!-- Notification Bell -->
-                    <a href="/notifikasi" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                    <!-- Cart Button with Badge -->
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                        <i class="bi bi-cart3 text-white text-xl"></i>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
                     </a>
+
+                    <!-- Notification Bell with Dropdown -->
+                    <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                            <i class="bi bi-bell text-gray-700 text-xl"></i>
+                            @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                                {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                            </span>
+                            @endif
+                        </button>
+
+                        <!-- Dropdown Notifikasi -->
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 transform scale-95"
+                             x-transition:enter-end="opacity-100 transform scale-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 transform scale-100"
+                             x-transition:leave-end="opacity-0 transform scale-95"
+                             class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border-2 border-gray-100 overflow-hidden z-50"
+                             style="display: none;">
+                            
+                            <!-- Header Dropdown -->
+                            <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3">
+                                <h3 class="text-white font-bold text-sm flex items-center gap-2">
+                                    <i class="bi bi-bell-fill"></i>
+                                    Notifikasi Terbaru
+                                </h3>
+                            </div>
+
+                            <!-- Notifikasi List -->
+                            <div class="max-h-96 overflow-y-auto">
+                                @php
+                                    $notifications = Auth::user()->notifications->take(5);
+                                @endphp
+
+                                @forelse($notifications as $notification)
+                                    <a href="{{ route('notifikasi.read', $notification->id) }}" 
+                                       class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 {{ $notification->read_at ? 'bg-white' : 'bg-blue-50' }}">
+                                        <div class="flex items-start gap-3">
+                                            <!-- Icon -->
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-green-100">
+                                                <i class="bi bi-bell-fill text-green-600"></i>
+                                            </div>
+
+                                            <!-- Content -->
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-semibold text-gray-800 line-clamp-2">
+                                                    {{ $notification->data['title'] ?? 'Notifikasi Baru' }}
+                                                </p>
+                                                @if(isset($notification->data['message']))
+                                                    <p class="text-xs text-gray-600 mt-1 line-clamp-1">
+                                                        {{ $notification->data['message'] }}
+                                                    </p>
+                                                @endif
+                                                <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                                                    <i class="bi bi-clock"></i>
+                                                    {{ $notification->created_at->diffForHumans() }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Unread Indicator -->
+                                            @if(!$notification->read_at)
+                                                <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            @endif
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="px-4 py-8 text-center">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i class="bi bi-bell-slash text-gray-400 text-2xl"></i>
+                                        </div>
+                                        <p class="text-gray-500 text-sm font-medium">Tidak ada notifikasi baru</p>
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            <!-- Footer - Link ke halaman notifikasi lengkap -->
+                            @if($notifications->count() > 0)
+                            <div class="bg-gray-50 px-4 py-2 border-t border-gray-200">
+                                <a href="/notifikasi" class="text-sm text-green-600 hover:text-green-700 font-semibold block text-center">
+                                    Lihat Semua Notifikasi →
+                                </a>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
 
                     <!-- Profile Button -->
                     <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
@@ -92,9 +186,14 @@
                         <i class="bi bi-clock-history pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Riwayat</span>
                     </a>
-                    <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
+                    <a href="/notifikasi" class="relative bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-bell pointer-events-none"></i>
                         <span class="truncate pointer-events-none">Notifikasi</span>
+                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center pointer-events-none">
+                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                        </span>
+                        @endif
                     </a>
                 </div>
             </div>
@@ -591,45 +690,6 @@
             
             // Auto refresh every 30 seconds
             setInterval(fetchDashboardData, 30000);
-        });
-    </script>
-
-</body>
-</html>addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-1px)';
-                });
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-n closeModal() {
-            document.getElementById('detail-modal').classList.add('hidden');
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('detail-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Initial load
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchDashboardData();
-            
-            // Auto refresh every 30 seconds
-            setInterval(fetchDashboardData, 30000);
-        });
-    </script>
-
-</body>
-</html>tton.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-1px)';
-                });
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
         });
     </script>
 
