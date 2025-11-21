@@ -29,14 +29,21 @@ class RedemptionController extends Controller
      */
     public function create(Request $request)
     {
-        // Ambil cabang yang dipilih, default cabang user
-        $selectedBranch = $request->input('branch_id', Auth::user()->branch_id);
+        // Ambil cabang yang dipilih dari request (tidak auto-select)
+        $selectedBranch = $request->input('branch_id');
         
         // Ambil daftar reward sesuai cabang terpilih
-        $rewardItems = RewardItem::where('branch_id', $selectedBranch)
-            ->where('stock', '>', 0)
-            ->orderBy('name')
-            ->get();
+        // Jika tidak ada cabang dipilih, tampilkan semua barang yang ada stok
+        if ($selectedBranch) {
+            $rewardItems = RewardItem::where('branch_id', $selectedBranch)
+                ->where('stock', '>', 0)
+                ->orderBy('name')
+                ->get();
+        } else {
+            $rewardItems = RewardItem::where('stock', '>', 0)
+                ->orderBy('name')
+                ->get();
+        }
         
         // Ambil semua cabang untuk dropdown
         $branches = \App\Models\Branch::orderBy('name')->get();

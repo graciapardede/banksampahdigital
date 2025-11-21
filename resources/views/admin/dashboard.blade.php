@@ -27,7 +27,7 @@
     <x-admin-header activePage="dashboard" />
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
         <!-- Welcome Card -->
         <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-8 mb-8 text-white shadow-lg">
@@ -61,107 +61,152 @@
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6 mb-8">
             <!-- Total Pengguna -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-teal-500">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-people text-teal-600 text-2xl"></i>
+            <div class="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100 group overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-teal-100 to-teal-50 rounded-full -mr-12 -mt-12 opacity-50"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <i class="bi bi-people text-white text-2xl"></i>
+                        </div>
                     </div>
+                    <h3 class="text-gray-500 text-xs font-semibold mb-2 uppercase tracking-wider">Total Warga</h3>
+                    <p class="text-3xl font-bold text-gray-800 mb-1">{{ $stats['total_users'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 flex items-center gap-1">
+                        <i class="bi bi-person-check"></i>
+                        Pengguna terdaftar
+                    </p>
                 </div>
-                <h3 class="text-gray-500 text-sm mb-1">Total Warga</h3>
-                <p class="text-2xl font-bold text-gray-800">{{ $stats['total_users'] ?? 0 }}</p>
-                <p class="text-xs text-gray-500 mt-1">Pengguna terdaftar</p>
             </div>
 
             <!-- Total Setoran -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-graph-up text-green-600 text-2xl"></i>
+            <div class="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100 group overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-100 to-green-50 rounded-full -mr-12 -mt-12 opacity-50"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <i class="bi bi-graph-up text-white text-2xl"></i>
+                        </div>
                     </div>
+                    <h3 class="text-gray-500 text-xs font-semibold mb-2 uppercase tracking-wider">Total Setoran</h3>
+                    <p class="text-3xl font-bold text-gray-800 mb-1">{{ $stats['total_deposits'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 flex items-center gap-1">
+                        <i class="bi bi-check-circle"></i>
+                        Semua transaksi
+                    </p>
                 </div>
-                <h3 class="text-gray-500 text-sm mb-1">Total Setoran</h3>
-                <p class="text-2xl font-bold text-gray-800">{{ $stats['total_deposits'] ?? 0 }}</p>
-                <p class="text-xs text-gray-500 mt-1">Semua transaksi setoran</p>
             </div>
 
             <!-- Setoran Pending -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-clock text-yellow-600 text-2xl"></i>
+            <div class="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100 group overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-full -mr-12 -mt-12 opacity-50"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <i class="bi bi-clock text-white text-2xl"></i>
+                        </div>
+                        @if($stats['pending_deposits'] > 0)
+                        <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-xs font-bold border border-yellow-200">{{ $stats['pending_deposits'] }} New</span>
+                        @endif
                     </div>
-                    @if($stats['pending_deposits'] > 0)
-                    <span class="text-yellow-600 text-sm font-semibold">{{ $stats['pending_deposits'] }} Pending</span>
-                    @endif
+                    <h3 class="text-gray-500 text-xs font-semibold mb-2 uppercase tracking-wider">Setoran Pending</h3>
+                    <p class="text-3xl font-bold text-gray-800 mb-1">{{ $stats['pending_deposits'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 flex items-center gap-1">
+                        <i class="bi bi-hourglass-split"></i>
+                        Menunggu konfirmasi
+                    </p>
                 </div>
-                <h3 class="text-gray-500 text-sm mb-1">Setoran Pending</h3>
-                <p class="text-2xl font-bold text-gray-800">{{ $stats['pending_deposits'] ?? 0 }}</p>
-                <p class="text-xs text-gray-500 mt-1">Menunggu konfirmasi</p>
             </div>
 
             <!-- Penukaran Pending -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-orange-500">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-arrow-left-right text-orange-600 text-2xl"></i>
+            <div class="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-100 group overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-100 to-orange-50 rounded-full -mr-12 -mt-12 opacity-50"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                            <i class="bi bi-arrow-left-right text-white text-2xl"></i>
+                        </div>
+                        @if($stats['pending_redemptions'] > 0)
+                        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-xs font-bold border border-orange-200">{{ $stats['pending_redemptions'] }} New</span>
+                        @endif
                     </div>
-                    @if($stats['pending_redemptions'] > 0)
-                    <span class="text-orange-600 text-sm font-semibold">{{ $stats['pending_redemptions'] }} Pending</span>
-                    @endif
+                    <h3 class="text-gray-500 text-xs font-semibold mb-2 uppercase tracking-wider">Penukaran Pending</h3>
+                    <p class="text-3xl font-bold text-gray-800 mb-1">{{ $stats['pending_redemptions'] ?? 0 }}</p>
+                    <p class="text-xs text-gray-500 flex items-center gap-1">
+                        <i class="bi bi-exclamation-circle"></i>
+                        Menunggu approval
+                    </p>
                 </div>
-                <h3 class="text-gray-500 text-sm mb-1">Penukaran Pending</h3>
-                <p class="text-2xl font-bold text-gray-800">{{ $stats['pending_redemptions'] ?? 0 }}</p>
-                <p class="text-xs text-gray-500 mt-1">Menunggu approval</p>
             </div>
         </div>
 
         <!-- Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Grafik Setoran -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Grafik Setoran (12 Bulan Terakhir)</h3>
+            <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-gray-100">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center border border-green-200">
+                        <i class="bi bi-bar-chart-line text-green-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Grafik Setoran</h3>
+                        <p class="text-xs text-gray-500">12 Bulan Terakhir</p>
+                    </div>
+                </div>
                 <canvas id="depositsChart"></canvas>
             </div>
 
             <!-- Grafik Penukaran -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Grafik Penukaran (12 Bulan Terakhir)</h3>
+            <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-gray-100">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center border border-orange-200">
+                        <i class="bi bi-graph-up text-orange-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Grafik Penukaran</h3>
+                        <p class="text-xs text-gray-500">12 Bulan Terakhir</p>
+                    </div>
+                </div>
                 <canvas id="redemptionsChart"></canvas>
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white rounded-2xl p-6 mb-8 shadow-sm">
-            <h3 class="text-xl font-bold text-gray-800 mb-6">Quick Actions</h3>
+        <div class="bg-white rounded-3xl p-6 lg:p-8 mb-8 shadow-lg border border-gray-100">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center border border-blue-200">
+                    <i class="bi bi-lightning-charge text-blue-600 text-lg"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Quick Actions</h3>
+            </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="{{ route('admin.setoran.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl hover:shadow-md transition-all group">
-                    <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                <a href="{{ route('admin.setoran.index') }}" class="flex flex-col items-center justify-center p-5 lg:p-6 bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 rounded-2xl hover:shadow-lg transition-all duration-200 group border border-green-200">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
                         <i class="bi bi-graph-up text-white text-2xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-700 text-center">Laporan Setoran</span>
+                    <span class="text-sm font-bold text-gray-700 text-center">Laporan Setoran</span>
                 </a>
 
-                <a href="{{ route('admin.penukaran.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl hover:shadow-md transition-all group">
-                    <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                <a href="{{ route('admin.penukaran.index') }}" class="flex flex-col items-center justify-center p-5 lg:p-6 bg-gradient-to-br from-emerald-50 via-emerald-100 to-teal-50 rounded-2xl hover:shadow-lg transition-all duration-200 group border border-emerald-200">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
                         <i class="bi bi-check-circle text-white text-2xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-700 text-center">Proses Penukaran</span>
+                    <span class="text-sm font-bold text-gray-700 text-center">Proses Penukaran</span>
                 </a>
 
-                <a href="{{ route('admin.reward-items.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl hover:shadow-md transition-all group">
-                    <div class="w-16 h-16 bg-teal-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                <a href="{{ route('admin.reward-items.index') }}" class="flex flex-col items-center justify-center p-5 lg:p-6 bg-gradient-to-br from-teal-50 via-teal-100 to-cyan-50 rounded-2xl hover:shadow-lg transition-all duration-200 group border border-teal-200">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
                         <i class="bi bi-plus-circle text-white text-2xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-700 text-center">Tambah Barang</span>
+                    <span class="text-sm font-bold text-gray-700 text-center">Tambah Barang</span>
                 </a>
 
-                <a href="{{ route('admin.waste-types.index') }}" class="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-lime-50 to-lime-100 rounded-2xl hover:shadow-md transition-all group">
-                    <div class="w-16 h-16 bg-lime-500 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                <a href="{{ route('admin.waste-types.index') }}" class="flex flex-col items-center justify-center p-5 lg:p-6 bg-gradient-to-br from-lime-50 via-lime-100 to-green-50 rounded-2xl hover:shadow-lg transition-all duration-200 group border border-lime-200">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-lime-500 to-lime-600 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
                         <i class="bi bi-gear text-white text-2xl"></i>
                     </div>
-                    <span class="text-sm font-semibold text-gray-700 text-center">Kelola Sampah</span>
+                    <span class="text-sm font-bold text-gray-700 text-center">Kelola Sampah</span>
                 </a>
             </div>
         </div>

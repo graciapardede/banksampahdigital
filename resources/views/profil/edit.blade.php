@@ -55,11 +55,70 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ route('profil.update') }}" method="POST" class="p-6">
+            <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data" class="p-6">
                 @csrf
                 @method('PUT')
 
                 <div class="space-y-6">
+                    <!-- Foto Profil -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-4">
+                            <i class="bi bi-camera-fill text-gray-600"></i>
+                            Foto Profil
+                        </label>
+                        
+                        <div class="flex flex-col sm:flex-row items-start gap-6">
+                            <!-- Preview -->
+                            <div class="relative">
+                                <div id="preview-container" class="w-32 h-32 rounded-3xl border-4 border-gray-200 shadow-lg overflow-hidden">
+                                    @if($user->profile_photo)
+                                        <img id="photo-preview" src="{{ asset('storage/profile_photos/' . $user->profile_photo) }}" 
+                                             alt="Profile Photo" 
+                                             class="w-full h-full object-cover">
+                                    @else
+                                        <div id="photo-preview" class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                            <i class="bi bi-person text-gray-400 text-6xl"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Upload Controls -->
+                            <div class="flex-1">
+                                <div class="space-y-3">
+                                    <div class="flex flex-wrap gap-3">
+                                        <label class="cursor-pointer inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2.5 rounded-xl transition-all shadow-md">
+                                            <i class="bi bi-upload"></i>
+                                            Pilih Foto
+                                            <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="hidden" onchange="previewImage(event)">
+                                        </label>
+                                        
+                                        @if($user->profile_photo)
+                                        <button type="button" onclick="deletePhoto()" class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2.5 rounded-xl transition-all shadow-md">
+                                            <i class="bi bi-trash"></i>
+                                            Hapus Foto
+                                        </button>
+                                        @endif
+                                    </div>
+                                    
+                                    <p class="text-xs text-gray-500 flex items-start gap-2">
+                                        <i class="bi bi-info-circle mt-0.5"></i>
+                                        <span>Format: JPG, PNG, GIF. Maksimal 2MB</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @error('profile_photo')
+                            <p class="text-red-500 text-sm mt-2 flex items-center gap-1">
+                                <i class="bi bi-exclamation-circle"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
+                    <hr class="border-gray-200">
+
                     <!-- Nama Lengkap -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -197,6 +256,48 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // Preview image before upload
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('photo-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Delete photo
+        function deletePhoto() {
+            if (confirm('Apakah Anda yakin ingin menghapus foto profil?')) {
+                // Create form for delete request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("profil.photo.delete") }}';
+                
+                // Add CSRF token
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+                
+                // Add method spoofing for DELETE
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
 
 </body>
 </html>

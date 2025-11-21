@@ -51,7 +51,94 @@ class DashboardController extends Controller
                 ->count(),
         ];
 
-        return view('dashboard', compact('user', 'totalPoints', 'recentDeposits', 'recentRedemptions', 'stats'));
+        // Calculate member level based on total points
+        $memberLevel = $this->calculateMemberLevel($totalPoints);
+
+        // Data untuk view dengan nama yang sesuai
+        $saldoPoin = $totalPoints;
+        $namaUser = $user->name;
+        $authUser = $user;
+
+        // Count unread notifications
+        $unreadNotifications = $user->unreadNotifications()->count();
+
+        return view('dashboard', compact(
+            'user', 
+            'saldoPoin', 
+            'namaUser', 
+            'authUser',
+            'totalPoints', 
+            'recentDeposits', 
+            'recentRedemptions', 
+            'stats',
+            'memberLevel',
+            'unreadNotifications'
+        ));
+    }
+
+    /**
+     * Calculate member level based on total points
+     * 
+     * Tier system:
+     * - Platinum: 20000+ points
+     * - Gold: 10000-19999 points
+     * - Silver: 5000-9999 points
+     * - Bronze: 0-4999 points
+     */
+    private function calculateMemberLevel($points)
+    {
+        if ($points >= 20000) {
+            return [
+                'name' => 'Platinum Member',
+                'icon' => 'bi-gem',
+                'color' => 'from-cyan-400 to-blue-500',
+                'text_color' => 'text-cyan-300',
+                'next_tier' => null,
+                'progress' => 100
+            ];
+        } elseif ($points >= 10000) {
+            $nextTier = 20000;
+            $currentTier = 10000;
+            $progress = (($points - $currentTier) / ($nextTier - $currentTier)) * 100;
+            
+            return [
+                'name' => 'Gold Member',
+                'icon' => 'bi-star-fill',
+                'color' => 'from-yellow-400 to-orange-500',
+                'text_color' => 'text-yellow-300',
+                'next_tier' => $nextTier,
+                'points_to_next' => $nextTier - $points,
+                'progress' => $progress
+            ];
+        } elseif ($points >= 5000) {
+            $nextTier = 10000;
+            $currentTier = 5000;
+            $progress = (($points - $currentTier) / ($nextTier - $currentTier)) * 100;
+            
+            return [
+                'name' => 'Silver Member',
+                'icon' => 'bi-award-fill',
+                'color' => 'from-gray-300 to-gray-400',
+                'text_color' => 'text-gray-300',
+                'next_tier' => $nextTier,
+                'points_to_next' => $nextTier - $points,
+                'progress' => $progress
+            ];
+        } else {
+            $nextTier = 5000;
+            $currentTier = 0;
+            $progress = ($points / $nextTier) * 100;
+            
+            return [
+                'name' => 'Bronze Member',
+                'icon' => 'bi-trophy',
+                'color' => 'from-orange-400 to-orange-600',
+                'text_color' => 'text-orange-300',
+                'next_tier' => $nextTier,
+                'points_to_next' => $nextTier - $points,
+                'progress' => $progress
+            ];
+        }
     }
 
     /**

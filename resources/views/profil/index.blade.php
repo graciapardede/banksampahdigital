@@ -61,35 +61,37 @@
     @endif
 
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-6">
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+                        <i class="bi bi-recycle text-white text-xl lg:text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ $namaUser }}</p>
+                        <h1 class="font-bold text-lg lg:text-xl text-gray-800">Green Saving</h1>
+                        <p class="text-xs lg:text-sm text-green-600 hidden sm:block">Halo, {{ $namaUser }}</p>
                     </div>
                 </div>
 
                 <!-- Points & Actions -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 lg:space-x-4">
                     <!-- Points Display -->
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                    <div class="hidden lg:flex bg-gradient-to-r from-green-100 to-green-50 px-5 py-2.5 rounded-full border-2 border-green-300 shadow-md hover:shadow-lg transition-shadow">
                         <div class="flex items-center space-x-2">
-                            <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ number_format($saldoPoin, 0, ',', '.') }} poin</span>
+                            <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="bi bi-coin text-white text-sm"></i>
+                            </div>
+                            <span id="user-points" class="font-bold text-green-700 text-base">{{ number_format($saldoPoin, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
-                        <i class="bi bi-cart3 text-white text-xl"></i>
+                    <a href="{{ route('cart.index') }}" class="relative w-11 h-11 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                        <i class="bi bi-cart3 text-white text-lg lg:text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span class="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ count(session('cart')) }}
                             </span>
                         @endif
@@ -193,16 +195,16 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="bg-green-100 px-4 py-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
+        <div class="bg-gradient-to-r from-green-100 via-green-50 to-emerald-100 px-4 py-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 lg:gap-3">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-all shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-house-door pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Dashboard</span>
+                        <span class="truncate pointer-events-none hidden sm:inline">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full cursor-default">
-                        <i class="bi bi-person pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Profil</span>
+                    <a href="/profil" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-bold shadow-lg flex items-center justify-center space-x-2 w-full cursor-default">
+                        <i class="bi bi-person-fill pointer-events-none"></i>
+                        <span class="truncate pointer-events-none hidden sm:inline">Profil</span>
                     </a>
                     <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
                         <i class="bi bi-recycle pointer-events-none"></i>
@@ -231,53 +233,75 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
         <!-- Profile Card -->
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <!-- Header Card -->
-            <div class="bg-green-600 px-6 py-8 text-white">
-                <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-4 border-white/30">
-                            <i class="bi bi-person text-white text-4xl"></i>
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+            <!-- Header Card with Gradient -->
+            <div class="bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 px-6 lg:px-8 py-8 lg:py-10 text-white relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-6">
+                    <div class="relative group">
+                        <div class="w-24 h-24 lg:w-28 lg:h-28 rounded-3xl border-4 border-white/40 shadow-xl backdrop-blur-sm overflow-hidden">
+                            @if($user->profile_photo)
+                                <img src="{{ asset('storage/profile_photos/' . $user->profile_photo) }}" 
+                                     alt="Profile Photo" 
+                                     class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full bg-white/20 flex items-center justify-center">
+                                    <i class="bi bi-person text-white text-5xl lg:text-6xl"></i>
+                                </div>
+                            @endif
                         </div>
-                        <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center border-2 border-white">
-                            <i class="bi bi-check text-white text-xs font-bold"></i>
-                        </div>
+                        <a href="{{ route('profil.edit') }}" class="absolute -bottom-2 -right-2 w-9 h-9 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center border-3 border-white shadow-lg hover:scale-110 transition-transform">
+                            <i class="bi bi-pencil-fill text-white text-sm font-bold"></i>
+                        </a>
                     </div>
-                    <div>
-                        <h2 class="text-2xl font-bold">{{ $user->full_name ?? $user->name }}</h2>
-                        <p class="text-green-50 text-sm mt-1">
-                            <i class="bi bi-calendar-check"></i>
-                            Member sejak {{ $user->created_at->format('d F Y') }}
-                        </p>
+                    <div class="flex-1">
+                        <h2 class="text-2xl lg:text-3xl font-bold mb-2">{{ $user->full_name ?? $user->name }}</h2>
+                        <div class="flex flex-wrap items-center gap-4 text-sm lg:text-base">
+                            <p class="text-green-50 flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                                <i class="bi bi-calendar-check"></i>
+                                Member sejak {{ $user->created_at->format('d F Y') }}
+                            </p>
+                            @if($user->branch)
+                            <p class="text-green-50 flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                {{ $user->branch->name }}
+                            </p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Profile Information -->
-            <div class="p-6 space-y-4">
-                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="bi bi-info-circle-fill text-green-600"></i>
-                    Informasi Personal
-                </h3>
+            <div class="p-6 lg:p-8 space-y-5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center border border-green-200">
+                        <i class="bi bi-info-circle-fill text-green-600 text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Informasi Personal</h3>
+                </div>
 
                 <!-- Nama Lengkap -->
-                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i class="bi bi-person-fill text-green-600"></i>
+                <div class="flex items-start gap-4 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center flex-shrink-0 border border-green-200">
+                        <i class="bi bi-person-fill text-green-600 text-lg"></i>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm text-gray-600 mb-1">Nama Lengkap</p>
-                        <p class="font-semibold text-gray-900">{{ $user->full_name ?? $user->name ?? '-' }}</p>
+                        <p class="text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Nama Lengkap</p>
+                        <p class="font-bold text-gray-900 text-base lg:text-lg">{{ $user->full_name ?? $user->name ?? '-' }}</p>
                     </div>
                 </div>
 
                 <!-- Email -->
-                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i class="bi bi-envelope-fill text-blue-600"></i>
+                <div class="flex items-start gap-4 p-5 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0 border border-blue-200">
+                        <i class="bi bi-envelope-fill text-blue-600 text-lg"></i>
                     </div>
                     <div class="flex-1">
                         <p class="text-sm text-gray-600 mb-1">Email</p>

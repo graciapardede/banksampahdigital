@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', 'index')->name('index');                       // Halaman utama read-only
         Route::get('/edit', 'edit')->name('edit');                     // Form edit data diri
         Route::put('/update', 'update')->name('update');               // Action simpan data
+        Route::delete('/photo', 'deletePhoto')->name('photo.delete');  // Delete foto profil
         Route::get('/password', 'editPassword')->name('password');     // Form ganti password
         Route::put('/password', 'updatePassword')->name('password.update'); // Action simpan password
     });

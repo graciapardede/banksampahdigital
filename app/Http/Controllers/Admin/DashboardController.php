@@ -23,16 +23,31 @@ class DashboardController extends Controller
         
         // Total statistik
         $stats = [
-            'total_users' => User::whereIn('role', ['user', 'warga'])
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            'total_users' => User::where('role', 'warga')
+                ->when($branchId, fn($q) => $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                }))
                 ->count(),
-            'total_deposits' => Deposit::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
-            'total_redemptions' => Redemption::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
+            'total_deposits' => Deposit::when($branchId, fn($q) => $q->where(function($query) use ($branchId) {
+                $query->where('branch_id', $branchId)
+                      ->orWhereNull('branch_id');
+            }))->count(),
+            'total_redemptions' => Redemption::when($branchId, fn($q) => $q->where(function($query) use ($branchId) {
+                $query->where('branch_id', $branchId)
+                      ->orWhereNull('branch_id');
+            }))->count(),
             'pending_deposits' => Deposit::where('status', 'pending')
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->when($branchId, fn($q) => $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                }))
                 ->count(),
             'pending_redemptions' => Redemption::where('status', 'pending')
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->when($branchId, fn($q) => $q->where(function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId)
+                          ->orWhereNull('branch_id');
+                }))
                 ->count(),
         ];
 
@@ -60,16 +75,31 @@ class DashboardController extends Controller
         
         return response()->json([
             'stats' => [
-                'total_users' => User::whereIn('role', ['user', 'warga'])
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
+                'total_users' => User::where('role', 'warga')
+                    ->when($adminBranchId, fn($q) => $q->where(function($query) use ($adminBranchId) {
+                        $query->where('branch_id', $adminBranchId)
+                              ->orWhereNull('branch_id');
+                    }))
                     ->count(),
-                'total_deposits' => Deposit::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
-                'total_redemptions' => Redemption::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
+                'total_deposits' => Deposit::when($adminBranchId, fn($q) => $q->where(function($query) use ($adminBranchId) {
+                    $query->where('branch_id', $adminBranchId)
+                          ->orWhereNull('branch_id');
+                }))->count(),
+                'total_redemptions' => Redemption::when($adminBranchId, fn($q) => $q->where(function($query) use ($adminBranchId) {
+                    $query->where('branch_id', $adminBranchId)
+                          ->orWhereNull('branch_id');
+                }))->count(),
                 'pending_deposits' => Deposit::where('status', 'pending')
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
+                    ->when($adminBranchId, fn($q) => $q->where(function($query) use ($adminBranchId) {
+                        $query->where('branch_id', $adminBranchId)
+                              ->orWhereNull('branch_id');
+                    }))
                     ->count(),
                 'pending_redemptions' => Redemption::where('status', 'pending')
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
+                    ->when($adminBranchId, fn($q) => $q->where(function($query) use ($adminBranchId) {
+                        $query->where('branch_id', $adminBranchId)
+                              ->orWhereNull('branch_id');
+                    }))
                     ->count(),
             ],
             'deposits_by_month' => $this->getDepositsByMonth(),

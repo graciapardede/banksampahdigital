@@ -41,15 +41,55 @@ class ProfileController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:500'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
         $user = $request->user();
         $user->full_name = $validated['full_name'];
         $user->phone = $validated['phone'] ?? null;
         $user->address = $validated['address'] ?? null;
+
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($user->profile_photo && file_exists(public_path('storage/profile_photos/' . $user->profile_photo))) {
+                unlink(public_path('storage/profile_photos/' . $user->profile_photo));
+            }
+
+            // Store new photo
+            $file = $request->file('profile_photo');
+            $filename = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('storage/profile_photos'), $filename);
+            $user->profile_photo = $filename;
+        }
+
         $user->save();
 
         return Redirect::route('profil.index')->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    /**
+     * Delete profile photo
+     */
+    public function deletePhoto(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->profile_photo) {
+            // Delete photo file
+            $photoPath = public_path('storage/profile_photos/' . $user->profile_photo);
+            if (file_exists($photoPath)) {
+                unlink($photoPath);
+            }
+
+            // Update database
+            $user->profile_photo = null;
+            $user->save();
+
+            return back()->with('success', 'Foto profil berhasil dihapus!');
+        }
+
+        return back()->with('error', 'Tidak ada foto profil untuk dihapus.');
     }
 
     /**

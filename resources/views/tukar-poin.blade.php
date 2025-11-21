@@ -29,30 +29,32 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+                        <i class="bi bi-recycle text-white text-xl lg:text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'lisbeth' }}</p>
+                        <h1 class="font-bold text-lg lg:text-xl text-gray-800">Green Saving</h1>
+                        <p class="text-xs lg:text-sm text-green-600 hidden sm:block">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'Warga' }}</p>
                     </div>
                 </div>
 
                 <!-- Points & Actions -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 lg:space-x-4">
                     <!-- Points Display -->
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                    <div class="hidden lg:flex bg-gradient-to-r from-green-100 to-green-50 px-5 py-2.5 rounded-full border-2 border-green-300 shadow-md hover:shadow-lg transition-shadow">
                         <div class="flex items-center space-x-2">
-                            <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
+                            <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="bi bi-coin text-white text-sm"></i>
+                            </div>
+                            <span id="user-points" class="font-bold text-green-700 text-base">{{ number_format(Auth::user()->balance_points ?? 0, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
-                        <i class="bi bi-cart3 text-white text-xl"></i>
+                    <a href="{{ route('cart.index') }}" class="relative w-11 h-11 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                        <i class="bi bi-cart3 text-white text-lg lg:text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span class="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ count(session('cart')) }}
                             </span>
                         @endif
@@ -60,10 +62,10 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
-                            <i class="bi bi-bell text-gray-700 text-xl"></i>
+                        <button @click="open = !open" class="relative w-11 h-11 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all hover:scale-105">
+                            <i class="bi bi-bell text-gray-700 text-lg lg:text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span class="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                             </span>
                             @endif
@@ -140,15 +142,21 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-green-500 hover:border-green-600 transition-all hover:scale-105 shadow-lg group">
+                        @if(Auth::user()->profile_photo)
+                            <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-green-500 group-hover:bg-green-600 flex items-center justify-center transition-colors">
+                                <i class="bi bi-person-fill text-white text-lg lg:text-xl"></i>
+                            </div>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
-                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
+                        <button type="submit" class="w-11 h-11 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-sm">
+                            <i class="bi bi-box-arrow-right text-red-600 text-lg lg:text-xl"></i>
                         </button>
                     </form>
                 </div>
@@ -197,36 +205,52 @@
     <main class="max-w-6xl mx-auto px-4 py-8">
         
         <!-- Page Header -->
-        <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Tukar Poin Hadiah</h2>
-            <p class="text-sm text-gray-500">Tukarkan poin Anda dengan hadiah menarik yang tersedia</p>
+        <div class="bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-3xl p-6 lg:p-8 mb-6 shadow-xl text-white overflow-hidden relative">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-48 h-48 bg-white opacity-5 rounded-full -mr-24 -mt-24"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-16 -mb-16"></div>
+            
+            <div class="relative z-10 flex items-center gap-4">
+                <div class="w-14 h-14 bg-white bg-opacity-20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white border-opacity-20 shadow-lg">
+                    <i class="bi bi-gift text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl lg:text-3xl font-bold mb-1.5 leading-tight">Tukar Poin Hadiah 🎁</h2>
+                    <p class="text-green-50 text-sm lg:text-base">Tukarkan poin Anda dengan hadiah menarik yang tersedia</p>
+                </div>
+            </div>
         </div>
 
         <!-- Filter Cabang -->
-        <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+        <div class="bg-white rounded-3xl p-6 lg:p-8 mb-8 shadow-lg border border-gray-100">
             <form method="GET" action="{{ route('tukar-poin') }}" id="branch-filter-form">
-                <div class="flex flex-col md:flex-row md:items-center gap-4">
-                    <div class="flex items-center gap-2 text-gray-700">
-                        <i class="bi bi-geo-alt-fill text-green-600 text-xl"></i>
-                        <label for="branch_id" class="font-semibold">📍 Pilih Lokasi Penukaran:</label>
+                <div class="flex flex-col lg:flex-row lg:items-center gap-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center border border-green-200">
+                            <i class="bi bi-geo-alt-fill text-green-600 text-xl"></i>
+                        </div>
+                        <label for="branch_id" class="font-bold text-gray-800 text-lg">Pilih Lokasi Penukaran</label>
                     </div>
-                    <div class="flex-1 max-w-md">
+                    <div class="flex-1">
                         <select 
                             name="branch_id" 
                             id="branch_id"
                             onchange="this.form.submit()"
-                            class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent font-medium text-gray-800 cursor-pointer"
+                            class="w-full px-5 py-3.5 bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 font-semibold text-gray-800 cursor-pointer shadow-sm hover:border-green-300 transition-all duration-200"
                         >
+                            <option value="" {{ !$selectedBranch ? 'selected' : '' }}>
+                                📍 Pilih Lokasi Cabang
+                            </option>
                             @foreach($branches as $cabang)
                                 <option value="{{ $cabang->id }}" {{ $selectedBranch == $cabang->id ? 'selected' : '' }}>
-                                    {{ $cabang->name }}
+                                    🏪 {{ $cabang->name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex items-center gap-2 text-sm text-gray-500">
-                        <i class="bi bi-info-circle"></i>
-                        <span>{{ $rewardItems->count() }} barang tersedia</span>
+                    <div class="flex items-center gap-2 px-4 py-2.5 bg-green-50 rounded-xl border border-green-200">
+                        <i class="bi bi-box-seam text-green-600 text-lg"></i>
+                        <span class="text-sm font-semibold text-green-700">{{ $rewardItems->count() }} barang</span>
                     </div>
                 </div>
             </form>
@@ -239,10 +263,16 @@
 
         <!-- Empty State -->
         @if($rewardItems->count() === 0)
-        <div class="text-center py-12 bg-white rounded-2xl shadow-sm">
-            <i class="bi bi-gift text-gray-300 text-6xl mb-4"></i>
-            <p class="text-gray-500 text-lg font-semibold">Belum ada hadiah tersedia</p>
-            <p class="text-gray-400 text-sm">Silakan pilih cabang lain atau cek kembali nanti</p>
+        <div class="text-center py-16 bg-white rounded-3xl shadow-lg border border-gray-100">
+            <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full mx-auto flex items-center justify-center mb-6">
+                <i class="bi bi-gift text-gray-300 text-5xl"></i>
+            </div>
+            <p class="text-gray-700 text-xl font-bold mb-2">Belum ada hadiah tersedia</p>
+            <p class="text-gray-500 text-sm mb-6">Silakan pilih cabang lain atau cek kembali nanti</p>
+            <button onclick="location.reload()" class="inline-flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
+                <i class="bi bi-arrow-clockwise"></i>
+                Muat Ulang
+            </button>
         </div>
         @endif
 

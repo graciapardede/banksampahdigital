@@ -26,6 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'branch',
         'branch_id',
         'balance_points',
+        'profile_photo',
     ];
 
     protected $hidden = [

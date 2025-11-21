@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -50,30 +50,32 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+                        <i class="bi bi-recycle text-white text-xl lg:text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ $namaUser }}</p>
+                        <h1 class="font-bold text-lg lg:text-xl text-gray-800">Green Saving</h1>
+                        <p class="text-xs lg:text-sm text-green-600 hidden sm:block">Halo, {{ $namaUser }}</p>
                     </div>
                 </div>
 
                 <!-- Points & Actions -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 lg:space-x-4">
                     <!-- Points Display -->
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                    <div class="hidden lg:flex bg-gradient-to-r from-green-100 to-green-50 px-5 py-2.5 rounded-full border-2 border-green-300 shadow-md hover:shadow-lg transition-shadow">
                         <div class="flex items-center space-x-2">
-                            <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ number_format($saldoPoin, 0, ',', '.') }} poin</span>
+                            <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="bi bi-coin text-white text-sm"></i>
+                            </div>
+                            <span id="user-points" class="font-bold text-green-700 text-base">{{ number_format($saldoPoin, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
-                        <i class="bi bi-cart3 text-white text-xl"></i>
+                    <a href="{{ route('cart.index') }}" class="relative w-11 h-11 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                        <i class="bi bi-cart3 text-white text-lg lg:text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span class="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ count(session('cart')) }}
                             </span>
                         @endif
@@ -81,10 +83,10 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
-                            <i class="bi bi-bell text-gray-700 text-xl"></i>
+                        <button @click="open = !open" class="relative w-11 h-11 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all hover:scale-105">
+                            <i class="bi bi-bell text-gray-700 text-lg lg:text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span class="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                             </span>
                             @endif
@@ -154,7 +156,7 @@
                             @if($notifications->count() > 0)
                             <div class="bg-gray-50 px-4 py-2 border-t border-gray-200">
                                 <a href="/notifikasi" class="text-sm text-green-600 hover:text-green-700 font-semibold block text-center">
-                                    Lihat Semua Notifikasi →
+                                    Lihat Semua Notifikasi ?
                                 </a>
                             </div>
                             @endif
@@ -162,15 +164,21 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-green-500 hover:border-green-600 transition-all hover:scale-105 shadow-lg group">
+                        @if(Auth::user()->profile_photo)
+                            <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-green-500 group-hover:bg-green-600 flex items-center justify-center transition-colors">
+                                <i class="bi bi-person-fill text-white text-lg lg:text-xl"></i>
+                            </div>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
-                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
+                        <button type="submit" class="w-11 h-11 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-sm">
+                            <i class="bi bi-box-arrow-right text-red-600 text-lg lg:text-xl"></i>
                         </button>
                     </form>
                 </div>
@@ -216,23 +224,30 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
         <!-- Page Header with Tabs -->
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
-            <div class="p-6 pb-0">
-                <h2 class="text-xl font-bold text-gray-800 mb-2">Setor Sampah</h2>
-                <p class="text-sm text-gray-500 mb-6">Kelola setoran sampah Anda dan dapatkan poin</p>
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden mb-6">
+            <div class="p-6 lg:p-8 pb-0">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-md">
+                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 leading-tight">Setor Sampah</h2>
+                        <p class="text-sm text-gray-500">Kelola setoran sampah dan dapatkan poin</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Tabs -->
-            <div class="flex border-b border-gray-200 px-6">
-                <button id="panduan-tab" onclick="switchTab('panduan')" class="tab-button flex-1 sm:flex-none px-6 py-4 text-sm font-semibold text-green-600 border-b-2 border-green-600 flex items-center justify-center gap-2 transition-colors">
-                    <i class="bi bi-compass"></i>
+            <div class="flex border-b border-gray-200 px-4 lg:px-6 mt-6">
+                <button id="panduan-tab" onclick="switchTab('panduan')" class="tab-button flex-1 sm:flex-none px-5 lg:px-8 py-3.5 text-sm font-semibold text-green-600 border-b-3 border-green-600 flex items-center justify-center gap-2 transition-all duration-200 bg-green-50">
+                    <i class="bi bi-compass text-lg"></i>
                     <span>Panduan</span>
                 </button>
-                <button id="riwayat-tab" onclick="switchTab('riwayat')" class="tab-button flex-1 sm:flex-none px-6 py-4 text-sm font-semibold text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors">
-                    <i class="bi bi-clock-history"></i>
+                <button id="riwayat-tab" onclick="switchTab('riwayat')" class="tab-button flex-1 sm:flex-none px-5 lg:px-8 py-3.5 text-sm font-semibold text-gray-500 hover:bg-gray-50 hover:text-gray-700 flex items-center justify-center gap-2 transition-all duration-200">
+                    <i class="bi bi-clock-history text-lg"></i>
                     <span>Riwayat</span>
                 </button>
             </div>
@@ -241,9 +256,16 @@
         <!-- Tab Content: Panduan -->
         <div id="panduan-content" class="tab-content">`
         <!-- Jenis Sampah yang Diterima Section -->
-        <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Jenis Sampah yang Diterima</h2>
-            <p class="text-sm text-gray-500 mb-6">Lihat daftar jenis sampah dan poin yang bisa Anda dapatkan</p>
+        <div class="bg-white rounded-3xl p-6 lg:p-8 mb-6 shadow-lg border border-gray-100">
+            <div class="flex items-start gap-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center border border-green-200">
+                    <i class="bi bi-list-check text-green-600 text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl lg:text-2xl font-bold text-gray-800 mb-1.5">Jenis Sampah yang Diterima</h2>
+                    <p class="text-sm text-gray-500">Lihat daftar jenis sampah dan poin yang bisa Anda dapatkan</p>
+                </div>
+            </div>
 
             <div class="space-y-4">
                 @forelse($wasteTypes as $index => $waste)
@@ -260,21 +282,29 @@
                         $color = $colors[$index % count($colors)];
                     @endphp
                     
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 {{ $color['bg'] }} rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="bi {{ $color['icon'] }} {{ $color['text'] }} text-2xl"></i>
-                            </div>
+                    <div class="flex items-center justify-between p-4 lg:p-5 bg-gradient-to-br from-gray-50 to-white rounded-2xl hover:shadow-md transition-all duration-200 border border-gray-100 hover:border-green-200 group">
+                        <div class="flex items-center space-x-4">
+                            @if($waste->image)
+                                <img src="{{ asset('images/' . $waste->image) }}" alt="{{ $waste->name }}" class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-2xl flex-shrink-0 shadow-sm border-2 border-white group-hover:scale-105 transition-transform duration-200">
+                            @else
+                                <div class="w-14 h-14 lg:w-16 lg:h-16 {{ $color['bg'] }} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border-2 border-white group-hover:scale-105 transition-transform duration-200">
+                                    <i class="bi {{ $color['icon'] }} {{ $color['text'] }} text-2xl"></i>
+                                </div>
+                            @endif
                             <div>
-                                <h4 class="font-bold text-gray-800">{{ $waste->name }}</h4>
-                                <p class="text-sm text-gray-600">{{ $waste->description ?? 'Sampah jenis ' . strtolower($waste->name) }}</p>
-                                <span class="inline-block px-2 py-1 {{ $color['badge'] }} text-xs font-medium rounded mt-1">
-                                    {{ $waste->unit }}
+                                <h4 class="font-bold text-gray-800 text-base lg:text-lg mb-1">{{ $waste->name }}</h4>
+                                <p class="text-sm text-gray-600 mb-2">{{ $waste->description ?? 'Sampah jenis ' . strtolower($waste->name) }}</p>
+                                <span class="inline-block px-3 py-1 {{ $color['badge'] }} text-xs font-semibold rounded-lg">
+                                    <i class="bi bi-box text-xs mr-1"></i>{{ $waste->unit }}
                                 </span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-green-600 font-bold text-lg">{{ number_format($waste->points_per_unit, 0, ',', '.') }} poin/{{ strtolower($waste->unit) }}</p>
+                            <div class="bg-gradient-to-br from-green-50 to-emerald-50 px-4 py-3 rounded-xl border border-green-200">
+                                <p class="text-xs text-green-600 font-medium mb-1">Harga</p>
+                                <p class="text-green-600 font-bold text-lg lg:text-xl">{{ number_format($waste->points_per_unit, 0, ',', '.') }}</p>
+                                <p class="text-xs text-green-600 font-medium">poin/{{ strtolower($waste->unit) }}</p>
+                            </div>
                         </div>
                     </div>
                 @empty
@@ -287,21 +317,28 @@
         </div>
 
         <!-- Cara Setor Sampah Section -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Cara Setor Sampah</h2>
-            <p class="text-sm text-gray-500 mb-6">Panduan lengkap untuk menyetor sampah dan mendapatkan poin</p>
+        <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-gray-100">
+            <div class="flex items-start gap-3 mb-8">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center border border-blue-200">
+                    <i class="bi bi-info-circle text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl lg:text-2xl font-bold text-gray-800 mb-1.5">Cara Setor Sampah</h2>
+                    <p class="text-sm text-gray-500">Panduan lengkap untuk menyetor sampah dan mendapatkan poin</p>
+                </div>
+            </div>
 
             <!-- Tahap 1: Persiapan -->
-            <div class="mb-6">
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">1</span>
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-5">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-white font-bold text-base">1</span>
                     </div>
-                    <h3 class="font-bold text-gray-800">Tahap 1: Persiapan (Warga)</h3>
+                    <h3 class="font-bold text-gray-800 text-lg">Tahap 1: Persiapan (Warga)</h3>
                 </div>
-                <div class="ml-10 space-y-3">
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                <div class="ml-13 space-y-3">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             1
                         </div>
                         <div>
@@ -309,61 +346,61 @@
                             <p class="text-sm text-gray-600">Pastikan sampah sudah dibersihkan dari sisa makanan dan dipisahkan berdasarkan jenisnya.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             2
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Kunjungi Cabang</p>
-                            <p class="text-sm text-gray-600">Bawa sampah yang telah di pilah dan dibersihkan ke bank sampah terdekat dari lokasi Anda.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Kunjungi Cabang</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Bawa sampah yang telah dipilah dan dibersihkan ke bank sampah terdekat dari lokasi Anda.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             3
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Datang ke Bank Sampah Terdekat</p>
-                            <p class="text-sm text-gray-600">Bawa sampah yang sudah di pilah dan dibersihkan ke bank sampah terdekat dari lokasi Anda.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Datang ke Bank Sampah Terdekat</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Bawa sampah yang sudah dipilah dan dibersihkan ke bank sampah terdekat dari lokasi Anda.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Tahap 2: Transaksi -->
-            <div class="mb-6">
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">2</span>
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-5">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-white font-bold text-base">2</span>
                     </div>
-                    <h3 class="font-bold text-gray-800">Tahap 2: Transaksi di Lokasi (Peran Admin & Sistem)</h3>
+                    <h3 class="font-bold text-gray-800 text-lg">Tahap 2: Transaksi di Lokasi (Peran Admin & Sistem)</h3>
                 </div>
-                <div class="ml-10 space-y-3">
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                <div class="ml-13 space-y-3">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             1
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Serahkan ID akun Warga Anda</p>
-                            <p class="text-sm text-gray-600">Atau tunjukkan kode ID di aplikasi/website kepada Admin Cabang yang bertugas.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Serahkan ID akun Warga Anda</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Atau tunjukkan kode ID di aplikasi/website kepada Admin Cabang yang bertugas.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             2
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Penimbangan dan Pencatatan</p>
-                            <p class="text-sm text-gray-600">Admin akan menimbang sampah Anda dan menginput jenis serta beratnya ke dalam sistem.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Penimbangan dan Pencatatan</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Admin akan menimbang sampah Anda dan menginput jenis serta beratnya ke dalam sistem.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             3
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Verifikasi Lokasi</p>
-                            <p class="text-sm text-gray-600">Sistem secara otomatis mencatat setoran ini di cabang Bank Sampah tempat Anda berada.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Verifikasi Lokasi</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Sistem secara otomatis mencatat setoran ini di cabang Bank Sampah tempat Anda berada.</p>
                         </div>
                     </div>
                 </div>
@@ -371,38 +408,38 @@
 
             <!-- Tahap 3: Poin Masuk -->
             <div class="mb-2">
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">3</span>
+                <div class="flex items-center space-x-3 mb-5">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-white font-bold text-base">3</span>
                     </div>
-                    <h3 class="font-bold text-gray-800">Tahap 3: Poin Masuk (Peran Sistem)</h3>
+                    <h3 class="font-bold text-gray-800 text-lg">Tahap 3: Poin Masuk (Peran Sistem)</h3>
                 </div>
-                <div class="ml-10 space-y-3">
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                <div class="ml-13 space-y-3">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             1
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Poin Dihitung</p>
-                            <p class="text-sm text-gray-600">Sistem secara otomatis menghitung total poin Anda.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Poin Dihitung</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Sistem secara otomatis menghitung total poin Anda.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             2
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Verifikasi Admin</p>
-                            <p class="text-sm text-gray-600">Admin akan mengkonfirmasi transaksi di sistem. Setelah dikonfirmasi, poin Anda langsung dimasukkan ke saldo.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Verifikasi Admin</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Admin akan mengkonfirmasi transaksi di sistem. Setelah dikonfirmasi, poin Anda langsung dimasukkan ke saldo.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div class="flex items-start space-x-3 p-4 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-100 hover:shadow-md transition-shadow duration-200">
+                        <div class="w-7 h-7 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5 shadow-sm">
                             3
                         </div>
                         <div>
-                            <p class="font-semibold text-gray-800 mb-1">Cek Saldo</p>
-                            <p class="text-sm text-gray-600">Anda akan menerima notifikasi bahwa setoran sudah diverifikasi dan poin berhasil ditambahkan. Cek Dashboard Anda untuk melihat saldo terbaru.</p>
+                            <p class="font-semibold text-gray-800 mb-1.5">Cek Saldo</p>
+                            <p class="text-sm text-gray-600 leading-relaxed">Anda akan menerima notifikasi bahwa setoran sudah diverifikasi dan poin berhasil ditambahkan. Cek Dashboard Anda untuk melihat saldo terbaru.</p>
                         </div>
                     </div>
                 </div>
@@ -413,9 +450,16 @@
 
         <!-- Tab Content: Riwayat -->
         <div id="riwayat-content" class="tab-content hidden">
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 class="text-xl font-bold text-gray-800 mb-2">Riwayat Setoran Sampah</h2>
-                <p class="text-sm text-gray-500 mb-6">Lihat semua transaksi setoran sampah Anda</p>
+            <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-gray-100">
+                <div class="flex items-start gap-3 mb-8">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center border border-green-200">
+                        <i class="bi bi-clock-history text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl lg:text-2xl font-bold text-gray-800 mb-1.5">Riwayat Setoran Sampah</h2>
+                        <p class="text-sm text-gray-500">Lihat semua transaksi setoran sampah Anda</p>
+                    </div>
+                </div>
 
                 <!-- Deposits List -->
                 <div class="space-y-4">
@@ -456,7 +500,7 @@
                                             <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
                                             <p class="text-sm font-semibold text-gray-700">
                                                 <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                                {{ $deposit->created_at->format('d M Y · H:i') }}
+                                                {{ $deposit->created_at->format('d M Y � H:i') }}
                                             </p>
                                         </div>
                                         <div>
@@ -518,7 +562,7 @@
                 </p>
                 
                 <!-- Copyright -->
-                <p class="text-sm text-gray-500">© 2025 Green Saving. All rights reserved.</p>
+                <p class="text-sm text-gray-500">� 2025 Green Saving. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -743,7 +787,7 @@
             // Update modal content
             document.getElementById('modalStatus').textContent = status;
             document.getElementById('modalLokasi').textContent = lokasi;
-            document.getElementById('modalTanggalWaktu').textContent = tanggal + ' · ' + waktu;
+            document.getElementById('modalTanggalWaktu').textContent = tanggal + ' � ' + waktu;
             document.getElementById('modalAdmin').textContent = admin;
             document.getElementById('modalPoinDiperoleh').innerHTML = '<i class="bi bi-coin text-green-500 mr-1"></i>' + poinDiperoleh.toLocaleString('id-ID') + ' poin';
             document.getElementById('modalPoinSebelum').textContent = poinSebelum.toLocaleString('id-ID') + ' poin';
@@ -884,7 +928,7 @@
                                         <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
                                         <p class="text-sm font-semibold text-gray-700">
                                             <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                            ${dateStr} · ${timeStr}
+                                            ${dateStr} � ${timeStr}
                                         </p>
                                     </div>
                                     <div>
@@ -944,7 +988,7 @@
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-800">${item.waste_type?.name || 'Sampah'}</p>
-                                <p class="text-sm text-gray-500">${item.weight} kg × ${item.points_per_kg || 0} poin/kg</p>
+                                <p class="text-sm text-gray-500">${item.weight} kg � ${item.points_per_kg || 0} poin/kg</p>
                             </div>
                         </div>
                         <div class="text-right">

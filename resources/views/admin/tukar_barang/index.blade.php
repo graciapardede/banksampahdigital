@@ -94,21 +94,26 @@
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-7xl">
                     <!-- Statistics cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                         @php
                             $stats = [
-                                ['label' => 'Total Barang', 'value' => 0],
-                                ['label' => 'Aktif', 'value' => 0],
-                                ['label' => 'Total Stok', 'value' => 0],
-                                ['label' => 'Stok Menipis', 'value' => 0],
-                                ['label' => 'Total Ditukar', 'value' => 0],
+                                ['label' => 'Total Barang', 'value' => 0, 'icon' => 'bi-gift', 'color' => 'blue'],
+                                ['label' => 'Aktif', 'value' => 0, 'icon' => 'bi-check-circle', 'color' => 'green'],
+                                ['label' => 'Total Stok', 'value' => 0, 'icon' => 'bi-box-seam', 'color' => 'purple'],
+                                ['label' => 'Stok Menipis', 'value' => 0, 'icon' => 'bi-exclamation-triangle', 'color' => 'orange'],
+                                ['label' => 'Total Ditukar', 'value' => 0, 'icon' => 'bi-arrow-repeat', 'color' => 'teal'],
                             ];
                         @endphp
 
                         @foreach($stats as $stat)
-                            <div class="p-4 rounded-lg border bg-white shadow-sm">
-                                <div class="text-sm text-gray-500">{{ $stat['label'] }}</div>
-                                <div class="mt-2 text-2xl font-bold text-gray-800">{{ $stat['value'] }}</div>
+                            <div class="p-5 rounded-2xl bg-gradient-to-br from-{{ $stat['color'] }}-50 to-{{ $stat['color'] }}-100 border border-{{ $stat['color'] }}-200 shadow-sm hover:shadow-md transition-all">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-xl bg-{{ $stat['color'] }}-500 flex items-center justify-center">
+                                        <i class="bi {{ $stat['icon'] }} text-white text-lg"></i>
+                                    </div>
+                                </div>
+                                <div class="text-xs font-semibold text-{{ $stat['color'] }}-600 uppercase tracking-wide mb-1">{{ $stat['label'] }}</div>
+                                <div class="text-2xl font-bold text-gray-800">{{ $stat['value'] }}</div>
                             </div>
                         @endforeach
                     </div>
@@ -116,14 +121,23 @@
                     <!-- Search and filters -->
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                         <div class="flex-1">
-                            <input type="text" placeholder="Cari nama barang atau kategori..." class="w-full px-4 py-3 rounded border focus:outline-none focus:ring" />
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="bi bi-search text-gray-400"></i>
+                                </div>
+                                <input type="text" placeholder="Cari nama barang atau kategori..." class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-teal-500 transition-colors" />
+                            </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <select class="px-4 py-3 rounded border">
+                            <select class="px-5 py-3 rounded-xl border-2 border-gray-200 focus:border-teal-500 focus:outline-none font-semibold text-sm text-gray-700">
                                 <option>Semua Status</option>
                                 <option>Aktif</option>
                                 <option>Nonaktif</option>
                             </select>
+                            <button class="px-5 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-semibold text-sm transition-colors flex items-center gap-2">
+                                <i class="bi bi-funnel"></i>
+                                <span>Filter</span>
+                            </button>
                         </div>
                     </div>
                 </div>

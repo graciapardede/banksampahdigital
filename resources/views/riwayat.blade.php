@@ -24,35 +24,37 @@
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-6">
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="bi bi-recycle text-white text-2xl"></i>
+                    <div class="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+                        <i class="bi bi-recycle text-white text-xl lg:text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
-                        <p class="text-sm text-green-600">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'Warga' }}</p>
+                        <h1 class="font-bold text-lg lg:text-xl text-gray-800">Green Saving</h1>
+                        <p class="text-xs lg:text-sm text-green-600 hidden sm:block">Halo, {{ Auth::user()->full_name ?? Auth::user()->name ?? 'Warga' }}</p>
                     </div>
                 </div>
 
                 <!-- Points & Actions -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 lg:space-x-4">
                     <!-- Points Display -->
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
+                    <div class="hidden lg:flex bg-gradient-to-r from-green-100 to-green-50 px-5 py-2.5 rounded-full border-2 border-green-300 shadow-md hover:shadow-lg transition-shadow">
                         <div class="flex items-center space-x-2">
-                            <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span class="font-bold text-green-700 text-lg">{{ number_format($userBalance ?? 0, 0, ',', '.') }} poin</span>
+                            <div class="w-7 h-7 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="bi bi-coin text-white text-sm"></i>
+                            </div>
+                            <span class="font-bold text-green-700 text-base">{{ number_format($userBalance ?? 0, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
-                        <i class="bi bi-cart3 text-white text-xl"></i>
+                    <a href="{{ route('cart.index') }}" class="relative w-11 h-11 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+                        <i class="bi bi-cart3 text-white text-lg lg:text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span class="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-red-500 to-red-600 text-white text-xs font-bold rounded-full w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center ring-2 ring-white shadow-md">
                                 {{ count(session('cart')) }}
                             </span>
                         @endif
@@ -140,8 +142,14 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-green-500 hover:border-green-600 transition-all hover:scale-105 shadow-lg group">
+                        @if(Auth::user()->profile_photo)
+                            <img src="{{ asset('storage/profile_photos/' . Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-green-500 group-hover:bg-green-600 flex items-center justify-center transition-colors">
+                                <i class="bi bi-person-fill text-white text-lg lg:text-xl"></i>
+                            </div>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
@@ -156,28 +164,28 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="bg-green-100 px-4 py-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+        <div class="bg-gradient-to-r from-green-100 via-green-50 to-emerald-100 px-4 py-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 lg:gap-3">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-all shadow-sm flex items-center justify-center space-x-2">
                         <i class="bi bi-house-door"></i>
-                        <span class="truncate">Dashboard</span>
+                        <span class="truncate hidden sm:inline">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                    <a href="/profil" class="bg-white text-gray-700 px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-all shadow-sm flex items-center justify-center space-x-2">
                         <i class="bi bi-person"></i>
-                        <span class="truncate">Profil</span>
+                        <span class="truncate hidden sm:inline">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                    <a href="/setor" class="bg-white text-gray-700 px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-all shadow-sm flex items-center justify-center space-x-2">
                         <i class="bi bi-recycle"></i>
-                        <span class="truncate">Setor</span>
+                        <span class="truncate hidden sm:inline">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-all shadow-sm flex items-center justify-center space-x-2">
                         <i class="bi bi-gift"></i>
-                        <span class="truncate">Tukar Poin</span>
+                        <span class="truncate hidden sm:inline">Tukar Poin</span>
                     </a>
-                    <a href="/riwayat" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2">
+                    <a href="/riwayat" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-bold shadow-lg flex items-center justify-center space-x-2">
                         <i class="bi bi-clock-history"></i>
-                        <span class="truncate">Riwayat</span>
+                        <span class="truncate hidden sm:inline">Riwayat</span>
                     </a>
                     <a href="/notifikasi" class="relative bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
                         <i class="bi bi-bell"></i>
@@ -194,7 +202,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         
         <!-- Flash Messages -->
         @if(session('success'))
@@ -237,19 +245,35 @@
         @endif
 
         <!-- Page Title -->
-        <div class="mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Riwayat Transaksi</h2>
-            <p class="text-gray-600">Semua aktivitas setoran dan penukaran Anda</p>
+        <div class="mb-6 lg:mb-8">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center border-2 border-green-200">
+                    <i class="bi bi-clock-history text-green-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Riwayat Transaksi</h2>
+                    <p class="text-sm lg:text-base text-gray-600">Semua aktivitas setoran dan penukaran Anda</p>
+                </div>
+            </div>
         </div>
 
         <!-- Filter Section -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+        <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border border-gray-100 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center border border-blue-200">
+                    <i class="bi bi-funnel text-blue-600 text-lg"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">Filter Transaksi</h3>
+            </div>
             <form method="GET" action="{{ route('riwayat') }}">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
                     <!-- Filter by Type -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Transaksi</label>
-                        <select name="type" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                        <label class="block text-sm font-bold text-gray-700 mb-2.5 flex items-center gap-2">
+                            <i class="bi bi-tag text-gray-500"></i>
+                            Jenis Transaksi
+                        </label>
+                        <select name="type" class="w-full px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all">
                             <option value="">Semua</option>
                             <option value="deposit" {{ request('type') === 'deposit' ? 'selected' : '' }}>Setoran</option>
                             <option value="redemption" {{ request('type') === 'redemption' ? 'selected' : '' }}>Penukaran</option>
@@ -258,8 +282,11 @@
 
                     <!-- Filter by Status -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                        <select name="status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                        <label class="block text-sm font-bold text-gray-700 mb-2.5 flex items-center gap-2">
+                            <i class="bi bi-check-circle text-gray-500"></i>
+                            Status
+                        </label>
+                        <select name="status" class="w-full px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all">
                             <option value="">Semua Status</option>
                             <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Selesai</option>
@@ -271,16 +298,21 @@
 
                     <!-- Filter by Date Range -->
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Bulan</label>
-                        <input type="month" name="month" value="{{ request('month') }}" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
+                        <label class="block text-sm font-bold text-gray-700 mb-2.5 flex items-center gap-2">
+                            <i class="bi bi-calendar3 text-gray-500"></i>
+                            Bulan
+                        </label>
+                        <input type="month" name="month" value="{{ request('month') }}" class="w-full px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-200 focus:outline-none transition-all">
                     </div>
                 </div>
 
-                <div class="mt-4 flex justify-end space-x-2">
-                    <a href="{{ route('riwayat') }}" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
+                <div class="mt-6 flex flex-col sm:flex-row justify-end gap-3">
+                    <a href="{{ route('riwayat') }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2">
+                        <i class="bi bi-arrow-counterclockwise"></i>
                         Reset
                     </a>
-                    <button type="submit" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition-colors">
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                        <i class="bi bi-search"></i>
                         Terapkan Filter
                     </button>
                 </div>
@@ -313,66 +345,66 @@
             <!-- Transaction List -->
             <div class="space-y-4">
                 @foreach($transactions as $transaction)
-                <a href="{{ route('riwayat.detail', ['id' => $transaction['id'], 'type' => $transaction['type']]) }}" class="block bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-300 transition-all duration-300 cursor-pointer">
+                <a href="{{ route('riwayat.detail', ['id' => $transaction['id'], 'type' => $transaction['type']]) }}" class="block bg-white rounded-3xl p-5 lg:p-6 shadow-lg hover:shadow-xl border border-gray-100 hover:border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-300 transition-all duration-200 cursor-pointer group">
                     <div class="flex items-center justify-between">
                         <!-- Left: Icon and Details -->
                         <div class="flex items-center space-x-4 flex-1">
                             <!-- Icon with Direction -->
-                            <div class="w-14 h-14 bg-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-100 to-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-50 rounded-2xl flex items-center justify-center flex-shrink-0 border-2 border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-200 group-hover:scale-110 transition-transform">
                                 @if($transaction['type'] === 'deposit')
-                                    <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
+                                    <i class="bi bi-arrow-up-right text-green-600 text-2xl lg:text-3xl font-bold"></i>
                                 @else
-                                    <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
+                                    <i class="bi bi-arrow-down-left text-blue-600 text-2xl lg:text-3xl font-bold"></i>
                                 @endif
                             </div>
                             
                             <!-- Transaction Details -->
                             <div class="flex-1">
-                                <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                    <i class="bi bi-{{ $transaction['type'] === 'deposit' ? 'recycle' : 'gift' }} text-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-600 mr-2"></i>
+                                <h3 class="font-bold text-gray-800 text-base lg:text-lg mb-2 flex items-center gap-2">
+                                    <i class="bi bi-{{ $transaction['type'] === 'deposit' ? 'recycle' : 'gift' }} text-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-600"></i>
                                     {{ $transaction['title'] }}
                                 </h3>
-                                <p class="text-sm text-gray-600 mb-2">{{ $transaction['description'] }}</p>
-                                <div class="flex items-center space-x-3 text-sm text-gray-500">
-                                    <span class="flex items-center">
-                                        <i class="bi bi-calendar3 mr-1 text-xs"></i>
+                                <p class="text-sm text-gray-600 mb-3">{{ $transaction['description'] }}</p>
+                                <div class="flex flex-wrap items-center gap-3 text-xs lg:text-sm text-gray-500">
+                                    <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                        <i class="bi bi-calendar3"></i>
                                         {{ $transaction['date']->format('d M Y, H:i') }}
                                     </span>
                                     @if(isset($transaction['weight']))
-                                    <span class="flex items-center">
-                                        <i class="bi bi-box-seam mr-1 text-xs"></i>
+                                    <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                        <i class="bi bi-box-seam"></i>
                                         {{ $transaction['weight'] }} kg
                                     </span>
                                     @endif
                                     
                                     <!-- Status Badge -->
                                     @if($transaction['status'] === 'verified' || $transaction['status'] === 'completed')
-                                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="px-3 py-1.5 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-green-200">
                                             <i class="bi bi-check-circle-fill"></i>
                                             Selesai
                                         </span>
                                     @elseif($transaction['status'] === 'confirmed')
-                                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-blue-200">
                                             <i class="bi bi-check-circle"></i>
                                             Siap Ambil
                                         </span>
                                     @elseif($transaction['status'] === 'pending')
-                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="px-3 py-1.5 bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-yellow-200">
                                             <i class="bi bi-clock"></i>
                                             Menunggu
                                         </span>
                                     @elseif($transaction['status'] === 'rejected')
-                                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="px-3 py-1.5 bg-gradient-to-r from-red-100 to-red-50 text-red-700 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-red-200">
                                             <i class="bi bi-x-circle"></i>
                                             Ditolak
                                         </span>
                                     @elseif($transaction['status'] === 'cancelled')
-                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-gray-200">
                                             <i class="bi bi-slash-circle"></i>
                                             Dibatalkan
                                         </span>
                                     @else
-                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                                        <span class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-bold border border-gray-200">
                                             Unknown
                                         </span>
                                     @endif
@@ -382,10 +414,13 @@
 
                         <!-- Right: Points -->
                         <div class="text-right ml-4">
-                            <p class="text-xl font-bold {{ $transaction['points'] > 0 ? 'text-green-600' : 'text-red-600' }} flex items-center justify-end mb-1">
-                                {{ $transaction['points'] > 0 ? '+' : '' }}{{ number_format($transaction['points'], 0, ',', '.') }}
-                                <i class="bi bi-coin text-{{ $transaction['points'] > 0 ? 'green' : 'red' }}-500 ml-1 text-lg"></i>
-                            </p>
+                            <div class="bg-{{ $transaction['points'] > 0 ? 'green' : 'red' }}-50 px-4 py-3 rounded-2xl border-2 border-{{ $transaction['points'] > 0 ? 'green' : 'red' }}-200">
+                                <p class="text-xl lg:text-2xl font-bold {{ $transaction['points'] > 0 ? 'text-green-600' : 'text-red-600' }} flex items-center justify-center gap-1.5 mb-0.5">
+                                    {{ $transaction['points'] > 0 ? '+' : '' }}{{ number_format($transaction['points'], 0, ',', '.') }}
+                                    <i class="bi bi-coin text-{{ $transaction['points'] > 0 ? 'green' : 'red' }}-500"></i>
+                                </p>
+                                <p class="text-xs text-gray-600 font-semibold">Poin</p>
+                            </div>
                         </div>
                     </div>
                 </a>
