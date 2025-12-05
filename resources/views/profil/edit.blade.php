@@ -55,11 +55,52 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ route('profil.update') }}" method="POST" class="p-6">
+            <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data" class="p-6">
                 @csrf
                 @method('PUT')
 
                 <div class="space-y-6">
+                    <!-- Profile Photo -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Foto Profil
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                @if($user->profile_photo)
+                                    <img src="/{{ $user->profile_photo }}" alt="Profile" id="previewImage" class="w-24 h-24 rounded-full object-cover border-4 border-gray-200">
+                                @else
+                                    <div id="previewImage" class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center border-4 border-gray-200">
+                                        <i class="bi bi-person text-gray-400 text-4xl"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex-1">
+                                <label for="profile_photo" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors">
+                                    <i class="bi bi-camera-fill"></i>
+                                    <span>Pilih Foto</span>
+                                </label>
+                                <input 
+                                    type="file" 
+                                    id="profile_photo"
+                                    name="profile_photo" 
+                                    accept="image/jpeg,image/jpg,image/png"
+                                    class="hidden"
+                                    onchange="previewPhoto(event)"
+                                >
+                                <p class="text-xs text-gray-500 mt-2">
+                                    <i class="bi bi-info-circle"></i>
+                                    Format: JPG, JPEG, PNG. Maksimal 2MB
+                                </p>
+                                @error('profile_photo')
+                                    <p class="text-red-500 text-sm mt-1 flex items-center gap-1">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                     <!-- Nama Lengkap -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -197,6 +238,22 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function previewPhoto(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('previewImage');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Replace the preview with an img tag
+                    preview.outerHTML = '<img src="' + e.target.result + '" alt="Preview" id="previewImage" class="w-24 h-24 rounded-full object-cover border-4 border-gray-200">';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 
 </body>
 </html>

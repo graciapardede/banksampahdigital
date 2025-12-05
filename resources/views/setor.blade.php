@@ -18,28 +18,6 @@
                 }
             }
         }
-
-        // Tab switching functionality
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            
-            // Remove active state from all tabs
-            document.querySelectorAll('.tab-button').forEach(tab => {
-                tab.classList.remove('text-green-600', 'border-green-600', 'border-b-2');
-                tab.classList.add('text-gray-500');
-            });
-            
-            // Show selected tab content
-            document.getElementById(tabName + '-content').classList.remove('hidden');
-            
-            // Add active state to selected tab
-            const activeTab = document.getElementById(tabName + '-tab');
-            activeTab.classList.remove('text-gray-500');
-            activeTab.classList.add('text-green-600', 'border-green-600', 'border-b-2');
-        }
     </script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
@@ -70,7 +48,7 @@
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
                         <i class="bi bi-cart3 text-white text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -81,7 +59,7 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -162,14 +140,18 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-all overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="/{{ Auth::user()->profile_photo }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <i class="bi bi-person-fill text-white text-xl"></i>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>
@@ -218,28 +200,15 @@
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-8">
         
-        <!-- Page Header with Tabs -->
+        <!-- Page Header -->
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
-            <div class="p-6 pb-0">
+            <div class="p-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-2">Setor Sampah</h2>
-                <p class="text-sm text-gray-500 mb-6">Kelola setoran sampah Anda dan dapatkan poin</p>
-            </div>
-
-            <!-- Tabs -->
-            <div class="flex border-b border-gray-200 px-6">
-                <button id="panduan-tab" onclick="switchTab('panduan')" class="tab-button flex-1 sm:flex-none px-6 py-4 text-sm font-semibold text-green-600 border-b-2 border-green-600 flex items-center justify-center gap-2 transition-colors">
-                    <i class="bi bi-compass"></i>
-                    <span>Panduan</span>
-                </button>
-                <button id="riwayat-tab" onclick="switchTab('riwayat')" class="tab-button flex-1 sm:flex-none px-6 py-4 text-sm font-semibold text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-2 transition-colors">
-                    <i class="bi bi-clock-history"></i>
-                    <span>Riwayat</span>
-                </button>
+                <p class="text-sm text-gray-500">Kelola setoran sampah Anda dan dapatkan poin</p>
             </div>
         </div>
 
-        <!-- Tab Content: Panduan -->
-        <div id="panduan-content" class="tab-content">`
+        <!-- Content -->
         <!-- Jenis Sampah yang Diterima Section -->
         <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
             <h2 class="text-xl font-bold text-gray-800 mb-2">Jenis Sampah yang Diterima</h2>
@@ -408,95 +377,6 @@
                 </div>
             </div>
         </div>
-        </div>
-        <!-- End Tab Content: Panduan -->
-
-        <!-- Tab Content: Riwayat -->
-        <div id="riwayat-content" class="tab-content hidden">
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h2 class="text-xl font-bold text-gray-800 mb-2">Riwayat Setoran Sampah</h2>
-                <p class="text-sm text-gray-500 mb-6">Lihat semua transaksi setoran sampah Anda</p>
-
-                <!-- Deposits List -->
-                <div class="space-y-4">
-                    @forelse($deposits as $deposit)
-                        <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-green-300 transition-all">
-                            <div class="flex items-start gap-4">
-                                <!-- Icon -->
-                                <div class="w-14 h-14 {{ $deposit->status == 'verified' ? 'bg-green-100' : 'bg-amber-100' }} rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <i class="bi bi-recycle {{ $deposit->status == 'verified' ? 'text-green-600' : 'text-amber-600' }} text-2xl"></i>
-                                </div>
-                                
-                                <!-- Content -->
-                                <div class="flex-1">
-                                    <div class="flex items-start justify-between mb-3">
-                                        <div>
-                                            <h4 class="font-bold text-gray-800 mb-1">
-                                                @foreach($deposit->depositItems as $item)
-                                                    {{ $item->wasteType->name }}{{ !$loop->last ? ', ' : '' }}
-                                                @endforeach
-                                            </h4>
-                                            <p class="text-sm font-medium text-gray-600 mb-1">{{ number_format($deposit->total_weight, 1) }}kg</p>
-                                            <div class="flex items-center text-sm text-gray-500">
-                                                <i class="bi bi-geo-alt text-xs mr-1"></i>
-                                                <span>{{ $deposit->branch->name ?? 'Bank Sampah' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center {{ $deposit->status == 'verified' ? 'bg-green-50' : 'bg-amber-50' }} px-3 py-1 rounded-full">
-                                            <i class="bi {{ $deposit->status == 'verified' ? 'bi-check-circle-fill text-green-600' : 'bi-clock-fill text-amber-600' }} text-sm mr-1"></i>
-                                            <span class="text-xs font-semibold {{ $deposit->status == 'verified' ? 'text-green-700' : 'text-amber-700' }}">
-                                                {{ $deposit->status == 'verified' ? 'Terverifikasi' : 'Pending' }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Details Grid -->
-                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-gray-100">
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">Tanggal & Waktu</p>
-                                            <p class="text-sm font-semibold text-gray-700">
-                                                <i class="bi bi-calendar3 text-gray-400 text-xs mr-1"></i>
-                                                {{ $deposit->created_at->format('d M Y · H:i') }}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">Poin</p>
-                                            <p class="text-sm font-bold text-green-600">
-                                                <i class="bi bi-coin text-green-500 mr-1"></i>
-                                                {{ number_format($deposit->total_points, 0, ',', '.') }} poin
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">Status</p>
-                                            <p class="text-sm font-semibold {{ $deposit->status == 'verified' ? 'text-green-600' : 'text-amber-600' }}">
-                                                <i class="bi {{ $deposit->status == 'verified' ? 'bi-check-circle' : 'bi-clock' }} mr-1"></i>
-                                                {{ $deposit->status == 'verified' ? 'Terverifikasi' : 'Menunggu Verifikasi' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-12">
-                            <i class="bi bi-inbox text-gray-300 text-6xl mb-4"></i>
-                            <p class="text-gray-500 font-semibold">Belum ada riwayat setoran</p>
-                            <p class="text-sm text-gray-400 mt-2">Hubungi admin untuk menyetor sampah</p>
-                        </div>
-                    @endforelse
-                </div>
-
-                @if($deposits->count() > 0)
-                    <div class="mt-6 text-center">
-                        <a href="/riwayat" class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
-                            <i class="bi bi-clock-history mr-2"></i>
-                            Lihat Semua Riwayat
-                        </a>
-                    </div>
-                @endif
-            </div>
-        </div>
-        <!-- End Tab Content: Riwayat -->
 
     </main>
 

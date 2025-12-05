@@ -1,4 +1,4 @@
-<div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow reward-card" 
+<a href="{{ route('tukar.detail', $reward->id) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all hover:scale-[1.02] reward-card block cursor-pointer" 
      data-id="{{ $reward->id }}"
      data-name="{{ $reward->name }}" 
      data-desc="{{ $reward->description ?? 'Produk berkualitas' }}" 
@@ -39,20 +39,6 @@
                     </p>
                 </div>
             </div>
-            
-            @if($reward->stock > 0)
-                <a href="{{ route('tukar.detail', $reward->id) }}"
-                    class="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg text-center">
-                    <i class="bi bi-eye mr-2"></i>
-                    Lihat Detail & Beli
-                </a>
-            @else
-                <button disabled
-                    class="w-full bg-gray-300 text-gray-500 py-3 rounded-xl font-semibold cursor-not-allowed">
-                    <i class="bi bi-x-circle mr-2"></i>
-                    Stok Habis
-                </button>
-            @endif
         </div>
     </div>
-</div>
+</a>

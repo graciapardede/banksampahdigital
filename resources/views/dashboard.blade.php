@@ -49,7 +49,7 @@
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
                         <i class="bi bi-cart3 text-white text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -60,7 +60,7 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -147,14 +147,18 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-all overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="/{{ Auth::user()->profile_photo }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <i class="bi bi-person-fill text-white text-xl"></i>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>
@@ -238,7 +242,7 @@
         </div>
 
         <!-- Aktivitas Section -->
-        <div class="bg-white rounded-2xl p-6 mb-8 shadow-sm">
+        <div class="mb-8">
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h3 class="text-xl font-bold text-gray-800">Aktivitas Terbaru</h3>
@@ -249,11 +253,40 @@
                 </a>
             </div>
 
-            <!-- Activity Items -->
-            <div id="activity-container" class="space-y-4">
-                <!-- Loading State -->
-                <div class="flex items-center justify-center py-8">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+            <!-- Two Column Layout: Setor (Left) and Tukar (Right) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left Column: Setor Sampah -->
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
+                        <h4 class="text-white font-bold text-lg flex items-center">
+                            <i class="bi bi-recycle mr-2"></i>
+                            Setor Sampah
+                        </h4>
+                        <p class="text-green-100 text-sm">Riwayat setoran terbaru</p>
+                    </div>
+                    <div id="deposit-container" class="p-4 space-y-3 min-h-[300px]">
+                        <!-- Loading State -->
+                        <div class="flex items-center justify-center py-8">
+                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Tukar Poin -->
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
+                        <h4 class="text-white font-bold text-lg flex items-center">
+                            <i class="bi bi-gift mr-2"></i>
+                            Tukar Poin
+                        </h4>
+                        <p class="text-blue-100 text-sm">Riwayat penukaran terbaru</p>
+                    </div>
+                    <div id="redemption-container" class="p-4 space-y-3 min-h-[300px]">
+                        <!-- Loading State -->
+                        <div class="flex items-center justify-center py-8">
+                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -361,122 +394,154 @@
                 const deposits = await depositsRes.json();
                 const redemptions = await redemptionsRes.json();
 
-                // Combine and sort by date
-                activities = [
-                    ...deposits.map(d => ({ ...d, type: 'deposit' })),
-                    ...redemptions.map(r => ({ ...r, type: 'redemption' }))
-                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                 .slice(0, 5); // Take only 5 most recent
+                // Separate activities
+                const depositActivities = deposits
+                    .map(d => ({ ...d, type: 'deposit' }))
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .slice(0, 5); // Take only 5 most recent
 
-                renderActivities();
+                const redemptionActivities = redemptions
+                    .map(r => ({ ...r, type: 'redemption' }))
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .slice(0, 5); // Take only 5 most recent
+
+                renderActivities(depositActivities, redemptionActivities);
             } catch (error) {
                 console.error('Error fetching activities:', error);
-                document.getElementById('activity-container').innerHTML = `
+                document.getElementById('deposit-container').innerHTML = `
                     <div class="text-center py-8 text-gray-500">
-                        <i class="bi bi-exclamation-circle text-4xl mb-2"></i>
-                        <p>Gagal memuat aktivitas</p>
+                        <i class="bi bi-exclamation-circle text-3xl mb-2"></i>
+                        <p class="text-sm">Gagal memuat data</p>
+                    </div>
+                `;
+                document.getElementById('redemption-container').innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="bi bi-exclamation-circle text-3xl mb-2"></i>
+                        <p class="text-sm">Gagal memuat data</p>
                     </div>
                 `;
             }
         }
 
         // Render activities
-        function renderActivities() {
-            const container = document.getElementById('activity-container');
+        function renderActivities(deposits, redemptions) {
+            const depositContainer = document.getElementById('deposit-container');
+            const redemptionContainer = document.getElementById('redemption-container');
 
-            if (activities.length === 0) {
-                container.innerHTML = `
+            // Render Deposits
+            if (deposits.length === 0) {
+                depositContainer.innerHTML = `
                     <div class="text-center py-8 text-gray-500">
-                        <i class="bi bi-inbox text-4xl mb-2"></i>
-                        <p>Belum ada aktivitas</p>
+                        <i class="bi bi-inbox text-3xl mb-2"></i>
+                        <p class="text-sm">Belum ada setoran</p>
                     </div>
                 `;
-                return;
-            }
+            } else {
+                depositContainer.innerHTML = deposits.map(activity => {
+                    const date = new Date(activity.created_at).toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
 
-            container.innerHTML = activities.map(activity => {
-                const isDeposit = activity.type === 'deposit';
-                const date = new Date(activity.created_at).toLocaleDateString('id-ID', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
+                    const statusConfig = {
+                        pending: { bg: 'bg-yellow-200', text: 'text-yellow-800', label: 'Menunggu' },
+                        verified: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
+                        completed: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
+                        approved: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
+                        rejected: { bg: 'bg-red-200', text: 'text-red-800', label: 'Ditolak' },
+                        cancelled: { bg: 'bg-gray-200', text: 'text-gray-800', label: 'Dibatalkan' }
+                    };
 
-                const statusConfig = {
-                    pending: { bg: 'bg-yellow-200', text: 'text-yellow-800', label: 'Menunggu' },
-                    verified: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
-                    confirmed: { bg: 'bg-blue-200', text: 'text-blue-800', label: 'Siap Ambil' },
-                    completed: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
-                    approved: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
-                    rejected: { bg: 'bg-red-200', text: 'text-red-800', label: 'Ditolak' },
-                    cancelled: { bg: 'bg-gray-200', text: 'text-gray-800', label: 'Dibatalkan' }
-                };
-
-                const status = statusConfig[activity.status] || statusConfig.pending;
-
-                if (isDeposit) {
+                    const status = statusConfig[activity.status] || statusConfig.pending;
                     const totalWeight = activity.items?.reduce((sum, item) => sum + parseFloat(item.weight || 0), 0) || 0;
                     const totalPoints = activity.total_points || 0;
 
                     return `
                         <div onclick="showDetail('deposit', ${activity.id})" 
-                             class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-l-4 border-green-500 cursor-pointer hover:shadow-md transition-shadow">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-sm">
-                                    <i class="bi bi-arrow-up text-white text-xl"></i>
+                             class="p-3 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border-l-4 border-green-500 cursor-pointer hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <i class="bi bi-arrow-up-right text-white text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-semibold text-gray-800 text-sm">Setor Sampah</span>
+                                        <div class="text-xs text-gray-500">${date}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="flex items-center space-x-2 mb-1">
-                                        <span class="font-semibold text-gray-800">Setor Sampah</span>
-                                    </div>
-                                    <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                        <span>${date}</span>
-                                        <span class="flex items-center space-x-1">
-                                            <i class="bi bi-box text-gray-500"></i>
-                                            <span>${totalWeight.toFixed(1)} kg</span>
-                                        </span>
-                                        <span class="${status.bg} ${status.text} px-3 py-1 rounded-full text-xs font-semibold">${status.label}</span>
-                                    </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-green-600 text-sm">+${totalPoints.toLocaleString('id-ID')} <i class="bi bi-coin text-xs"></i></div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="font-bold text-green-600 text-lg">+ ${totalPoints.toLocaleString('id-ID')} <i class="bi bi-currency-dollar"></i></div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-600 flex items-center">
+                                    <i class="bi bi-box mr-1"></i>
+                                    ${totalWeight.toFixed(1)} kg
+                                </span>
+                                <span class="${status.bg} ${status.text} px-2 py-1 rounded-full font-semibold">${status.label}</span>
                             </div>
                         </div>
                     `;
-                } else {
+                }).join('');
+            }
+
+            // Render Redemptions
+            if (redemptions.length === 0) {
+                redemptionContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="bi bi-inbox text-3xl mb-2"></i>
+                        <p class="text-sm">Belum ada penukaran</p>
+                    </div>
+                `;
+            } else {
+                redemptionContainer.innerHTML = redemptions.map(activity => {
+                    const date = new Date(activity.created_at).toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+
+                    const statusConfig = {
+                        pending: { bg: 'bg-yellow-200', text: 'text-yellow-800', label: 'Menunggu' },
+                        confirmed: { bg: 'bg-blue-200', text: 'text-blue-800', label: 'Siap Ambil' },
+                        completed: { bg: 'bg-green-200', text: 'text-green-800', label: 'Selesai' },
+                        rejected: { bg: 'bg-red-200', text: 'text-red-800', label: 'Ditolak' },
+                        cancelled: { bg: 'bg-gray-200', text: 'text-gray-800', label: 'Dibatalkan' }
+                    };
+
+                    const status = statusConfig[activity.status] || statusConfig.pending;
                     const totalPoints = activity.total_points || 0;
-                    // Hanya tampilkan minus poin jika sudah dikonfirmasi/selesai
                     const showDeduction = ['confirmed', 'completed'].includes(activity.status);
                     const pointsDisplay = showDeduction 
-                        ? `- ${totalPoints.toLocaleString('id-ID')}` 
+                        ? `-${totalPoints.toLocaleString('id-ID')}` 
                         : `${totalPoints.toLocaleString('id-ID')}`;
                     const pointsColor = showDeduction ? 'text-blue-600' : 'text-gray-500';
 
                     return `
                         <div onclick="showDetail('redemption', ${activity.id})" 
-                             class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-l-4 border-blue-500 cursor-pointer hover:shadow-md transition-shadow">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-sm">
-                                    <i class="bi bi-arrow-down text-white text-xl"></i>
+                             class="p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-l-4 border-blue-500 cursor-pointer hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <i class="bi bi-arrow-down-left text-white text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-semibold text-gray-800 text-sm">Tukar Poin</span>
+                                        <div class="text-xs text-gray-500">${date}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="flex items-center space-x-2 mb-1">
-                                        <span class="font-semibold text-gray-800">Tukar Poin</span>
-                                    </div>
-                                    <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                        <span>${date}</span>
-                                        <span class="${status.bg} ${status.text} px-3 py-1 rounded-full text-xs font-semibold">${status.label}</span>
-                                    </div>
+                                <div class="text-right">
+                                    <div class="font-bold ${pointsColor} text-sm">${pointsDisplay} <i class="bi bi-coin text-xs"></i></div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="font-bold ${pointsColor} text-lg">${pointsDisplay} <i class="bi bi-currency-dollar"></i></div>
+                            <div class="flex items-center justify-end text-xs">
+                                <span class="${status.bg} ${status.text} px-2 py-1 rounded-full font-semibold">${status.label}</span>
                             </div>
                         </div>
                     `;
-                }
-            }).join('');
+                }).join('');
+            }
         }
 
         // Show detail modal

@@ -48,7 +48,7 @@
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
                         <i class="bi bi-cart3 text-white text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -68,14 +68,18 @@
                     </a>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-all overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="/{{ Auth::user()->profile_photo }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <i class="bi bi-person-fill text-white text-xl"></i>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>

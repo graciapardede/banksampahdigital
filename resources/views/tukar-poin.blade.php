@@ -44,12 +44,12 @@
                     <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
                             <i class="bi bi-coin text-green-600 text-xl"></i>
-                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ Auth::user()->balance_points ?? 0 }} poin</span>
+                            <span id="user-points" class="font-bold text-green-700 text-lg">{{ number_format(Auth::user()->balance_points ?? 0, 0, ',', '.') }} poin</span>
                         </div>
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
                         <i class="bi bi-cart3 text-white text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -60,7 +60,7 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -140,14 +140,18 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-all overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="/{{ Auth::user()->profile_photo }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <i class="bi bi-person-fill text-white text-xl"></i>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>
@@ -208,7 +212,7 @@
                 <div class="flex flex-col md:flex-row md:items-center gap-4">
                     <div class="flex items-center gap-2 text-gray-700">
                         <i class="bi bi-geo-alt-fill text-green-600 text-xl"></i>
-                        <label for="branch_id" class="font-semibold">📍 Pilih Lokasi Penukaran:</label>
+                        <label for="branch_id" class="font-semibold">Pilih Lokasi Penukaran:</label>
                     </div>
                     <div class="flex-1 max-w-md">
                         <select 
