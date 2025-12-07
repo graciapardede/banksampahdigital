@@ -41,12 +41,28 @@ class ProfileController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:500'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
         ]);
 
         $user = $request->user();
         $user->full_name = $validated['full_name'];
         $user->phone = $validated['phone'] ?? null;
         $user->address = $validated['address'] ?? null;
+        
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($user->profile_photo && file_exists(public_path($user->profile_photo))) {
+                unlink(public_path($user->profile_photo));
+            }
+            
+            // Upload new photo
+            $file = $request->file('profile_photo');
+            $filename = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/profiles'), $filename);
+            $user->profile_photo = 'images/profiles/' . $filename;
+        }
+        
         $user->save();
 
         return Redirect::route('profil.index')->with('success', 'Profil berhasil diperbarui!');

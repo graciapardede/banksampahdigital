@@ -20,6 +20,26 @@
             }
         }
     </script>
+    <style>
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
@@ -49,7 +69,7 @@
                     </div>
 
                     <!-- Cart Button with Badge -->
-                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
                         <i class="bi bi-cart3 text-white text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -60,7 +80,7 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -140,14 +160,18 @@
                     </div>
 
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-xl flex items-center justify-center transition-all">
-                        <i class="bi bi-person-fill text-white text-xl"></i>
+                    <a href="/profil" class="w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-all overflow-hidden">
+                        @if(Auth::user()->profile_photo)
+                            <img src="/{{ Auth::user()->profile_photo }}" alt="Profile" class="w-full h-full object-cover">
+                        @else
+                            <i class="bi bi-person-fill text-white text-xl"></i>
+                        @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-xl flex items-center justify-center transition-all">
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>
@@ -242,51 +266,6 @@
             <p class="text-gray-600">Semua aktivitas setoran dan penukaran Anda</p>
         </div>
 
-        <!-- Filter Section -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-            <form method="GET" action="{{ route('riwayat') }}">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Filter by Type -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Transaksi</label>
-                        <select name="type" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                            <option value="">Semua</option>
-                            <option value="deposit" {{ request('type') === 'deposit' ? 'selected' : '' }}>Setoran</option>
-                            <option value="redemption" {{ request('type') === 'redemption' ? 'selected' : '' }}>Penukaran</option>
-                        </select>
-                    </div>
-
-                    <!-- Filter by Status -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                        <select name="status" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                            <option value="">Semua Status</option>
-                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Selesai</option>
-                            <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
-                            <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                        </select>
-                    </div>
-
-                    <!-- Filter by Date Range -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Bulan</label>
-                        <input type="month" name="month" value="{{ request('month') }}" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <div class="mt-4 flex justify-end space-x-2">
-                    <a href="{{ route('riwayat') }}" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors">
-                        Reset
-                    </a>
-                    <button type="submit" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition-colors">
-                        Terapkan Filter
-                    </button>
-                </div>
-            </form>
-        </div>
-
         <!-- Empty State or Transaction List -->
         @if($transactions->isEmpty())
             <!-- Empty State -->
@@ -310,100 +289,164 @@
                 </div>
             </div>
         @else
-            <!-- Transaction List -->
-            <div class="space-y-4">
-                @foreach($transactions as $transaction)
-                <a href="{{ route('riwayat.detail', ['id' => $transaction['id'], 'type' => $transaction['type']]) }}" class="block bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-300 transition-all duration-300 cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <!-- Left: Icon and Details -->
-                        <div class="flex items-center space-x-4 flex-1">
-                            <!-- Icon with Direction -->
-                            <div class="w-14 h-14 bg-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                @if($transaction['type'] === 'deposit')
-                                    <i class="bi bi-arrow-up-right text-green-600 text-2xl font-bold"></i>
-                                @else
-                                    <i class="bi bi-arrow-down-left text-blue-600 text-2xl font-bold"></i>
-                                @endif
-                            </div>
-                            
-                            <!-- Transaction Details -->
-                            <div class="flex-1">
-                                <h3 class="font-bold text-gray-800 text-base mb-2 flex items-center">
-                                    <i class="bi bi-{{ $transaction['type'] === 'deposit' ? 'recycle' : 'gift' }} text-{{ $transaction['type'] === 'deposit' ? 'green' : 'blue' }}-600 mr-2"></i>
-                                    {{ $transaction['title'] }}
-                                </h3>
-                                <p class="text-sm text-gray-600 mb-2">{{ $transaction['description'] }}</p>
-                                <div class="flex items-center space-x-3 text-sm text-gray-500">
-                                    <span class="flex items-center">
-                                        <i class="bi bi-calendar3 mr-1 text-xs"></i>
-                                        {{ $transaction['date']->format('d M Y, H:i') }}
-                                    </span>
-                                    @if(isset($transaction['weight']))
-                                    <span class="flex items-center">
-                                        <i class="bi bi-box-seam mr-1 text-xs"></i>
-                                        {{ $transaction['weight'] }} kg
-                                    </span>
-                                    @endif
+            <!-- Two Column Layout: Setor (Left) and Tukar (Right) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left Column: Setor Sampah -->
+                <div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-4 mb-4 shadow-lg">
+                        <h3 class="text-white font-bold text-lg flex items-center">
+                            <i class="bi bi-recycle mr-2"></i>
+                            Setor Sampah
+                        </h3>
+                        <p class="text-green-100 text-sm">Riwayat setoran sampah Anda</p>
+                    </div>
+                    
+                    <!-- Scrollable container with max height -->
+                    <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                        @php
+                            $deposits = $transactions->filter(function($t) { return $t['type'] === 'deposit'; });
+                        @endphp
+                        
+                        @forelse($deposits as $transaction)
+                        <a href="{{ route('riwayat.detail', ['id' => $transaction['id'], 'type' => 'deposit']) }}" class="block bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-green-300 transition-all duration-300 cursor-pointer">
+                            <div class="flex items-start justify-between">
+                                <!-- Icon and Details -->
+                                <div class="flex items-start space-x-3 flex-1">
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-arrow-up-right text-green-600 text-xl font-bold"></i>
+                                    </div>
                                     
-                                    <!-- Status Badge -->
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-gray-800 text-sm mb-1">{{ $transaction['title'] }}</h3>
+                                        <p class="text-xs text-gray-600 mb-2">{{ $transaction['description'] }}</p>
+                                        <div class="flex flex-col gap-1 text-xs text-gray-500">
+                                            <span class="flex items-center">
+                                                <i class="bi bi-calendar3 mr-1"></i>
+                                                {{ $transaction['date']->format('d M Y, H:i') }}
+                                            </span>
+                                            @if(isset($transaction['weight']))
+                                            <span class="flex items-center">
+                                                <i class="bi bi-box-seam mr-1"></i>
+                                                {{ $transaction['weight'] }} kg
+                                            </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right: Points and Status -->
+                                <div class="text-right flex-shrink-0 ml-3">
+                                    <div class="font-bold text-green-600 text-base mb-1">
+                                        +{{ number_format($transaction['points'], 0, ',', '.') }}
+                                        <i class="bi bi-coin text-sm"></i>
+                                    </div>
+                                    
                                     @if($transaction['status'] === 'verified' || $transaction['status'] === 'completed')
-                                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
                                             <i class="bi bi-check-circle-fill"></i>
                                             Selesai
                                         </span>
-                                    @elseif($transaction['status'] === 'confirmed')
-                                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                                            <i class="bi bi-check-circle"></i>
-                                            Siap Ambil
-                                        </span>
                                     @elseif($transaction['status'] === 'pending')
-                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
                                             <i class="bi bi-clock"></i>
-                                            Menunggu
-                                        </span>
-                                    @elseif($transaction['status'] === 'rejected')
-                                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                                            <i class="bi bi-x-circle"></i>
-                                            Ditolak
-                                        </span>
-                                    @elseif($transaction['status'] === 'cancelled')
-                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold flex items-center gap-1">
-                                            <i class="bi bi-slash-circle"></i>
-                                            Dibatalkan
+                                            Pending
                                         </span>
                                     @else
-                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
-                                            Unknown
+                                        <span class="inline-block px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                                            {{ ucfirst($transaction['status']) }}
                                         </span>
                                     @endif
                                 </div>
                             </div>
+                        </a>
+                        @empty
+                        <div class="bg-gray-50 rounded-2xl p-8 text-center">
+                            <i class="bi bi-inbox text-gray-300 text-4xl mb-3"></i>
+                            <p class="text-gray-500 text-sm">Belum ada riwayat setoran</p>
                         </div>
-
-                        <!-- Right: Points -->
-                        <div class="text-right ml-4">
-                            <p class="text-xl font-bold {{ $transaction['points'] > 0 ? 'text-green-600' : 'text-red-600' }} flex items-center justify-end mb-1">
-                                {{ $transaction['points'] > 0 ? '+' : '' }}{{ number_format($transaction['points'], 0, ',', '.') }}
-                                <i class="bi bi-coin text-{{ $transaction['points'] > 0 ? 'green' : 'red' }}-500 ml-1 text-lg"></i>
-                            </p>
-                        </div>
+                        @endforelse
                     </div>
-                </a>
-                @endforeach
-            </div>
+                </div>
 
-            <!-- Load More Button -->
-            @if($transactions->count() >= 50)
-            <div class="mt-8 text-center">
-                <button onclick="loadMore()" class="px-8 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-semibold border-2 border-gray-200 hover:border-green-500 transition-all inline-flex items-center space-x-2">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    <span>Muat Lebih Banyak</span>
-                </button>
+                <!-- Right Column: Tukar Poin -->
+                <div>
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 mb-4 shadow-lg">
+                        <h3 class="text-white font-bold text-lg flex items-center">
+                            <i class="bi bi-gift mr-2"></i>
+                            Tukar Poin
+                        </h3>
+                        <p class="text-blue-100 text-sm">Riwayat penukaran poin Anda</p>
+                    </div>
+                    
+                    <!-- Scrollable container with max height -->
+                    <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                        @php
+                            $redemptions = $transactions->filter(function($t) { return $t['type'] === 'redemption'; });
+                        @endphp
+                        
+                        @forelse($redemptions as $transaction)
+                        <a href="{{ route('riwayat.detail', ['id' => $transaction['id'], 'type' => 'redemption']) }}" class="block bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-100 hover:shadow-lg hover:border-blue-300 transition-all duration-300 cursor-pointer">
+                            <div class="flex items-start justify-between">
+                                <!-- Icon and Details -->
+                                <div class="flex items-start space-x-3 flex-1">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <i class="bi bi-arrow-down-left text-blue-600 text-xl font-bold"></i>
+                                    </div>
+                                    
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-gray-800 text-sm mb-1">{{ $transaction['title'] }}</h3>
+                                        <p class="text-xs text-gray-600 mb-2">{{ $transaction['description'] }}</p>
+                                        <div class="flex flex-col gap-1 text-xs text-gray-500">
+                                            <span class="flex items-center">
+                                                <i class="bi bi-calendar3 mr-1"></i>
+                                                {{ $transaction['date']->format('d M Y, H:i') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right: Points and Status -->
+                                <div class="text-right flex-shrink-0 ml-3">
+                                    <div class="font-bold text-blue-600 text-base mb-1">
+                                        -{{ number_format($transaction['points'], 0, ',', '.') }}
+                                        <i class="bi bi-coin text-sm"></i>
+                                    </div>
+                                    
+                                    @if($transaction['status'] === 'completed')
+                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Selesai
+                                        </span>
+                                    @elseif($transaction['status'] === 'confirmed')
+                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                                            <i class="bi bi-check-circle"></i>
+                                            Siap Ambil
+                                        </span>
+                                    @elseif($transaction['status'] === 'pending')
+                                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
+                                            <i class="bi bi-clock"></i>
+                                            Menunggu
+                                        </span>
+                                    @else
+                                        <span class="inline-block px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                                            {{ ucfirst($transaction['status']) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                        @empty
+                        <div class="bg-gray-50 rounded-2xl p-8 text-center">
+                            <i class="bi bi-inbox text-gray-300 text-4xl mb-3"></i>
+                            <p class="text-gray-500 text-sm">Belum ada riwayat penukaran</p>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
-            @endif
         @endif
 
-    </main>
+
 
     <!-- Footer -->
     <footer class="bg-gradient-to-r from-green-50 to-emerald-50 py-8 mt-12 border-t border-green-200">

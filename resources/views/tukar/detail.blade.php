@@ -155,14 +155,13 @@
                         </div>
                         <!-- Dynamic Badge - Will be updated by JavaScript -->
                         <span id="balance-status-badge" class="px-5 py-2.5 bg-green-100 text-green-700 rounded-full font-bold text-sm shadow-md">
-                            <i class="bi bi-check-circle mr-1"></i>
                             <span id="balance-status-text">Saldo Cukup</span>
                         </span>
                     </div>
                 </div>
 
                 <!-- Add to Cart Form -->
-                <form action="{{ route('cart.add', $rewardItem->id) }}" method="POST" class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+                <form id="cartForm" action="{{ route('cart.add', $rewardItem->id) }}" method="POST" class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
                     @csrf
                     
                     <div class="quantity-container" 
@@ -234,27 +233,21 @@
 
                     <!-- Action Buttons -->
                     <div class="space-y-3 pt-4">
-                        <!-- Row 1: Back Button -->
-                        <a href="{{ route('tukar-poin') }}" 
-                            class="block w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all text-center">
-                            <i class="bi bi-arrow-left mr-2"></i>
-                            Kembali ke Katalog
-                        </a>
-
                         @if($rewardItem->stock > 0)
-                            <!-- Row 2: Add to Cart Button -->
-                            <button type="submit"
+                            <!-- Masukkan Keranjang Button -->
+                            <button type="button"
                                 id="btnAddToCart"
+                                onclick="showConfirmModal()"
                                 class="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="bi bi-cart-plus mr-2"></i>
                                 Masukkan Keranjang
                             </button>
 
-                            <!-- Row 3: Instant Redeem Button -->
+                            <!-- Tukar Langsung Button -->
                             <button type="button" 
                                 id="btnInstantRedeem"
                                 onclick="instantRedeem()"
-                                class="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl border-2 border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="bi bi-lightning-charge-fill mr-2"></i>
                                 Tukar Langsung
                             </button>
@@ -299,7 +292,139 @@
 
     </main>
 
+    <!-- Modal Konfirmasi Tambah ke Keranjang -->
+    <div id="confirmModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl transform transition-all">
+            <div class="p-6">
+                <!-- Icon & Title -->
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-cart-check text-green-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Konfirmasi Penukaran</h3>
+                    <p class="text-gray-600">Apakah Anda yakin ingin menambahkan barang ini ke keranjang?</p>
+                </div>
+
+                <!-- Product Info -->
+                <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-16 h-16 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+                            @if($rewardItem->image)
+                                <img src="{{ asset('images/' . $rewardItem->image) }}" alt="{{ $rewardItem->name }}" class="w-12 h-12 object-contain">
+                            @else
+                                <i class="bi bi-gift text-gray-400 text-2xl"></i>
+                            @endif
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800 text-sm">{{ $rewardItem->name }}</h4>
+                            <p class="text-xs text-gray-500">{{ $rewardItem->description ?? 'Produk berkualitas' }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-3 space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Jumlah:</span>
+                            <span class="font-semibold text-gray-800" id="modal-quantity">1 item</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Harga Satuan:</span>
+                            <span class="font-semibold text-green-600">
+                                <i class="bi bi-coin text-xs"></i>
+                                <span id="modal-price">{{ number_format($rewardItem->points_cost, 0, ',', '.') }}</span> poin
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                            <span class="font-semibold text-gray-700">Total:</span>
+                            <span class="text-xl font-bold text-green-600">
+                                <i class="bi bi-coin"></i>
+                                <span id="modal-total">{{ number_format($rewardItem->points_cost, 0, ',', '.') }}</span> poin
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3">
+                    <button type="button" 
+                        onclick="closeConfirmModal()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all">
+                        <i class="bi bi-x-circle mr-2"></i>
+                        Batal
+                    </button>
+                    <button type="button" 
+                        onclick="confirmAddToCart()"
+                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md">
+                        <i class="bi bi-check-circle mr-2"></i>
+                        Lanjut
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ============================================================
+        // MODAL KONFIRMASI FUNCTIONS
+        // ============================================================
+        
+        /**
+         * Show confirmation modal before adding to cart
+         */
+        function showConfirmModal() {
+            // Update modal with current quantity and total
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const price = itemPrice;
+            const total = quantity * price;
+            
+            // Update modal content
+            document.getElementById('modal-quantity').textContent = quantity + ' item';
+            document.getElementById('modal-total').textContent = total.toLocaleString('id-ID');
+            
+            // Show modal
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        /**
+         * Close confirmation modal
+         */
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        /**
+         * Confirm and submit the form to add to cart
+         */
+        function confirmAddToCart() {
+            // Close modal
+            closeConfirmModal();
+            
+            // Submit form to add to cart (no additional confirmation)
+            document.getElementById('cartForm').submit();
+        }
+        
+        /**
+         * Close modal when clicking outside
+         */
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('confirmModal');
+            if (event.target === modal) {
+                closeConfirmModal();
+            }
+        });
+        
+        /**
+         * Close modal with ESC key
+         */
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeConfirmModal();
+            }
+        });
+
         // ============================================================
         // QUANTITY & SUBTOTAL CALCULATOR
         // Tugas 2.1: Quantity Buttons (+/-)
@@ -816,7 +941,7 @@
 
             // TUGAS 1: KONFIRMASI DENGAN SWEETALERT2
             const result = await Swal.fire({
-                title: '🔥 Konfirmasi Penukaran',
+                title: 'Konfirmasi Penukaran',
                 html: `
                     <div class="text-left space-y-2">
                         <p><strong>Item:</strong> {{ $rewardItem->name }}</p>
@@ -945,6 +1070,8 @@
                 }
             });
         }, 3000);
+
+        // Auto checkout disabled - user manually clicks button to checkout
     </script>
 
 </body>

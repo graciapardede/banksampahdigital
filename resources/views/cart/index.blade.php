@@ -96,10 +96,21 @@
                 <!-- Left: Cart Items -->
                 <div class="lg:col-span-2 space-y-4">
                     @foreach($cart as $item)
-                        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                        <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-all cart-item" data-item-id="{{ $item['id'] }}" data-points="{{ $item['points_required'] * $item['quantity'] }}">
                             <div class="flex gap-4">
+                                <!-- Checkbox -->
+                                <div class="flex items-start pt-2" onclick="event.stopPropagation()">
+                                    <input type="checkbox" 
+                                        class="cart-checkbox w-5 h-5 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 cursor-pointer" 
+                                        data-item-id="{{ $item['id'] }}"
+                                        data-points="{{ $item['points_required'] * $item['quantity'] }}"
+                                        data-quantity="{{ $item['quantity'] }}"
+                                        onchange="updateCheckoutSummary()"
+                                        checked>
+                                </div>
+                                
                                 <!-- Image -->
-                                <div class="w-24 h-24 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <div class="w-24 h-24 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer" onclick="window.location.href='{{ route('tukar.detail', $item['id']) }}'">
                                     @if($item['image'])
                                         <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-20 h-20 object-contain">
                                     @else
@@ -109,14 +120,14 @@
 
                                 <!-- Info -->
                                 <div class="flex-1">
-                                    <h3 class="font-bold text-lg text-gray-800 mb-1">{{ $item['name'] }}</h3>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-1 cursor-pointer hover:text-green-600 transition-colors" onclick="window.location.href='{{ route('tukar.detail', $item['id']) }}'">{{ $item['name'] }}</h3>
                                     <div class="flex items-center gap-2 text-green-600 font-semibold mb-3">
                                         <i class="bi bi-coin"></i>
                                         <span>{{ number_format($item['points_required'], 0, ',', '.') }} poin/item</span>
                                     </div>
 
                                     <!-- Quantity Controls -->
-                                    <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-4" onclick="event.stopPropagation()">
                                         <form action="{{ route('cart.update', $item['id']) }}" method="POST" class="flex items-center gap-3">
                                             @csrf
                                             <label class="text-sm text-gray-600 font-semibold">Qty:</label>
@@ -140,7 +151,7 @@
                                 </div>
 
                                 <!-- Actions & Subtotal -->
-                                <div class="flex flex-col items-end justify-between">
+                                <div class="flex flex-col items-end justify-between" onclick="event.stopPropagation()">
                                     <form action="{{ route('cart.remove', $item['id']) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
@@ -160,16 +171,23 @@
                         </div>
                     @endforeach
 
-                    <!-- Clear Cart Button -->
-                    <form action="{{ route('cart.clear') }}" method="POST" class="pt-4">
-                        @csrf
-                        <button type="submit" 
-                            onclick="return confirm('Yakin ingin mengosongkan keranjang?')"
-                            class="text-red-600 hover:text-red-700 font-semibold flex items-center gap-2">
-                            <i class="bi bi-trash"></i>
+                    <!-- Select All & Clear Cart -->
+                    <div class="flex items-center justify-between pt-4 border-t">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="selectAll" class="w-4 h-4 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500" onchange="toggleSelectAll()" checked>
+                            <span class="text-gray-700 font-semibold">Pilih Semua</span>
+                        </label>
+                        
+                        <form action="{{ route('cart.clear') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" 
+                                onclick="return confirm('Yakin ingin mengosongkan keranjang?')"
+                                class="text-red-600 hover:text-red-700 font-semibold flex items-center gap-2">
+                                <i class="bi bi-trash"></i>
                             Kosongkan Keranjang
                         </button>
                     </form>
+                    </div>
                 </div>
 
                 <!-- Right: Summary & Checkout -->
@@ -191,18 +209,18 @@
                         <!-- Cart Summary -->
                         <div class="space-y-3">
                             <div class="flex justify-between text-gray-600">
-                                <span>Total Item</span>
-                                <span class="font-semibold">{{ count($cart) }} item</span>
+                                <span>Item Dipilih</span>
+                                <span class="font-semibold" id="selectedItemCount">{{ count($cart) }} item</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
                                 <span>Total Quantity</span>
-                                <span class="font-semibold">{{ array_sum(array_column($cart, 'quantity')) }} pcs</span>
+                                <span class="font-semibold" id="selectedQuantity">{{ array_sum(array_column($cart, 'quantity')) }} pcs</span>
                             </div>
                             <div class="pt-3 border-t-2 border-gray-200">
                                 <div class="flex justify-between items-center">
                                     <span class="text-gray-700 font-semibold">Total Poin</span>
                                     <div class="text-right">
-                                        <p class="text-3xl font-bold text-green-600">{{ number_format($totalPoints, 0, ',', '.') }}</p>
+                                        <p class="text-3xl font-bold text-green-600" id="selectedTotalPoints">{{ number_format($totalPoints, 0, ',', '.') }}</p>
                                         <p class="text-xs text-gray-500">poin</p>
                                     </div>
                                 </div>
@@ -210,13 +228,14 @@
                         </div>
 
                         <!-- Balance Check -->
+                        <div id="balanceCheck">
                         @if($user->balance_points < $totalPoints)
                             <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
                                 <div class="flex items-center gap-2 text-red-700 mb-2">
                                     <i class="bi bi-exclamation-triangle text-xl"></i>
                                     <span class="font-bold">Saldo Tidak Cukup</span>
                                 </div>
-                                <p class="text-sm text-red-600">
+                                <p class="text-sm text-red-600" id="balanceShortage">
                                     Kurang {{ number_format($totalPoints - $user->balance_points, 0, ',', '.') }} poin
                                 </p>
                             </div>
@@ -228,31 +247,29 @@
                                 </div>
                             </div>
                         @endif
+                        </div>
 
                         <!-- Checkout Form -->
-                        <form action="{{ route('cart.checkout') }}" method="POST" class="space-y-4">
+                        <form id="checkoutForm" action="{{ route('cart.checkout') }}" method="POST" class="space-y-4">
                             @csrf
+                            
+                            <!-- Hidden input for selected items -->
+                            <input type="hidden" name="selected_items" id="selectedItems" value="">
                             
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan (Opsional)</label>
-                                <textarea name="notes" rows="3" 
+                                <textarea id="checkoutNotes" name="notes" rows="3" 
                                     class="w-full border-2 border-gray-200 rounded-xl p-3 text-sm focus:border-green-500 focus:outline-none"
                                     placeholder="Tulis catatan jika ada..."></textarea>
                             </div>
 
-                            @if($user->balance_points >= $totalPoints)
-                                <button type="submit" 
-                                    class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all">
-                                    <i class="bi bi-cart-check mr-2"></i>
-                                    Checkout Sekarang
-                                </button>
-                            @else
-                                <button type="button" disabled
-                                    class="w-full bg-gray-300 text-gray-500 font-bold py-4 rounded-xl cursor-not-allowed">
-                                    <i class="bi bi-x-circle mr-2"></i>
-                                    Saldo Tidak Cukup
-                                </button>
-                            @endif
+                            <button type="button" 
+                                id="checkoutButton"
+                                onclick="showCheckoutModal()"
+                                class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                                <i class="bi bi-cart-check mr-2"></i>
+                                Checkout Sekarang
+                            </button>
                         </form>
 
                         <!-- Info -->
@@ -276,12 +293,281 @@
 
     </main>
 
+    <!-- Modal Konfirmasi Checkout -->
+    <div id="checkoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl transform transition-all">
+            <div class="p-6">
+                <!-- Icon & Title -->
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="bi bi-cart-check-fill text-green-600 text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Konfirmasi Checkout</h3>
+                    <p class="text-gray-600">Pastikan data penukaran Anda sudah benar</p>
+                </div>
+
+                <!-- Summary Info -->
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 mb-6 space-y-4">
+                    <!-- Items -->
+                    <div class="border-b border-gray-300 pb-3">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                            <i class="bi bi-bag-check text-green-600"></i>
+                            Barang yang Ditukar
+                        </h4>
+                        <div class="space-y-2 max-h-40 overflow-y-auto">
+                            @foreach($cart as $item)
+                            <div class="flex items-center justify-between text-sm bg-white rounded-lg p-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        @if($item['image'])
+                                            <img src="{{ asset('images/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-8 h-8 object-contain">
+                                        @else
+                                            <i class="bi bi-gift text-green-600"></i>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-800 text-xs">{{ $item['name'] }}</p>
+                                        <p class="text-xs text-gray-500">{{ $item['quantity'] }} × {{ number_format($item['points_required'], 0, ',', '.') }} poin</p>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-green-600 text-sm">
+                                    {{ number_format($item['points_required'] * $item['quantity'], 0, ',', '.') }}
+                                </span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Point Summary -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-600">Saldo Saat Ini:</span>
+                            <span class="font-semibold text-blue-600">
+                                <i class="bi bi-wallet2 text-xs"></i>
+                                {{ number_format($user->balance_points, 0, ',', '.') }} poin
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-600">Total Penukaran:</span>
+                            <span class="font-semibold text-red-600">
+                                <i class="bi bi-dash-circle text-xs"></i>
+                                {{ number_format($totalPoints, 0, ',', '.') }} poin
+                            </span>
+                        </div>
+                        <div class="pt-3 border-t-2 border-gray-300">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-gray-800">Sisa Saldo:</span>
+                                <span class="text-xl font-bold text-green-600">
+                                    <i class="bi bi-coin"></i>
+                                    {{ number_format($user->balance_points - $totalPoints, 0, ',', '.') }} poin
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes Preview -->
+                    <div id="modalNotesPreview" class="hidden pt-3 border-t border-gray-300">
+                        <p class="text-xs text-gray-600 mb-1">Catatan:</p>
+                        <p id="modalNotesText" class="text-sm text-gray-800 italic bg-white rounded-lg p-2"></p>
+                    </div>
+                </div>
+
+                <!-- Warning -->
+                <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <i class="bi bi-exclamation-triangle-fill text-yellow-600 text-xl flex-shrink-0 mt-0.5"></i>
+                        <div class="text-sm text-yellow-800">
+                            <p class="font-bold mb-1">Perhatian!</p>
+                            <ul class="space-y-1 text-xs">
+                                <li>• Poin akan langsung terpotong setelah checkout</li>
+                                <li>• Penukaran akan diproses oleh admin</li>
+                                <li>• Anda dapat mengambil barang setelah disetujui</li>
+                                <li>• Pastikan data sudah benar sebelum melanjutkan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3">
+                    <button type="button" 
+                        onclick="closeCheckoutModal()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="bi bi-x-circle"></i>
+                        Batal
+                    </button>
+                    <button type="button" 
+                        onclick="confirmCheckout()"
+                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Ya, Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-white py-6 mt-12 border-t">
         <div class="max-w-6xl mx-auto px-4 text-center">
             <p class="text-sm text-gray-600">© 2025 Green Saving. Sistem Bank Sampah Digital</p>
         </div>
     </footer>
+
+    <script>
+        /**
+         * Show checkout confirmation modal
+         */
+        function showCheckoutModal() {
+            // Get notes value
+            const notes = document.getElementById('checkoutNotes').value.trim();
+            
+            // Show/hide notes preview
+            if (notes) {
+                document.getElementById('modalNotesPreview').classList.remove('hidden');
+                document.getElementById('modalNotesText').textContent = notes;
+            } else {
+                document.getElementById('modalNotesPreview').classList.add('hidden');
+            }
+            
+            // Show modal
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        /**
+         * Close checkout modal
+         */
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkoutModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        /**
+         * Confirm and submit checkout
+         */
+        function confirmCheckout() {
+            // Close modal
+            closeCheckoutModal();
+            
+            // Submit form
+            document.getElementById('checkoutForm').submit();
+        }
+        
+        /**
+         * Close modal when clicking outside
+         */
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('checkoutModal');
+            if (event.target === modal) {
+                closeCheckoutModal();
+            }
+        });
+        
+        /**
+         * Close modal with ESC key
+         */
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeCheckoutModal();
+            }
+        });
+
+        /**
+         * Toggle select all checkboxes
+         */
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.cart-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateCheckoutSummary();
+        }
+
+        /**
+         * Update checkout summary based on selected items
+         */
+        function updateCheckoutSummary() {
+            const checkboxes = document.querySelectorAll('.cart-checkbox:checked');
+            const userBalance = {{ $user->balance_points }};
+            
+            let totalPoints = 0;
+            let totalItems = 0;
+            let totalQuantity = 0;
+            let selectedIds = [];
+            
+            checkboxes.forEach(checkbox => {
+                const points = parseInt(checkbox.dataset.points);
+                const quantity = parseInt(checkbox.dataset.quantity);
+                const itemId = checkbox.dataset.itemId;
+                
+                totalPoints += points;
+                totalItems += 1;
+                totalQuantity += quantity;
+                selectedIds.push(itemId);
+            });
+            
+            // Update display
+            document.getElementById('selectedItemCount').textContent = totalItems + ' item';
+            document.getElementById('selectedQuantity').textContent = totalQuantity + ' pcs';
+            document.getElementById('selectedTotalPoints').textContent = totalPoints.toLocaleString('id-ID');
+            
+            // Update hidden input
+            document.getElementById('selectedItems').value = JSON.stringify(selectedIds);
+            
+            // Update balance check
+            const balanceCheckDiv = document.getElementById('balanceCheck');
+            const checkoutButton = document.getElementById('checkoutButton');
+            
+            if (totalItems === 0) {
+                balanceCheckDiv.innerHTML = `
+                    <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
+                        <div class="flex items-center gap-2 text-gray-600">
+                            <i class="bi bi-info-circle text-xl"></i>
+                            <span class="font-bold">Pilih item untuk checkout</span>
+                        </div>
+                    </div>
+                `;
+                checkoutButton.disabled = true;
+                checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else if (userBalance < totalPoints) {
+                balanceCheckDiv.innerHTML = `
+                    <div class="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                        <div class="flex items-center gap-2 text-red-700 mb-2">
+                            <i class="bi bi-exclamation-triangle text-xl"></i>
+                            <span class="font-bold">Saldo Tidak Cukup</span>
+                        </div>
+                        <p class="text-sm text-red-600">
+                            Kurang ${(totalPoints - userBalance).toLocaleString('id-ID')} poin
+                        </p>
+                    </div>
+                `;
+                checkoutButton.disabled = true;
+                checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                balanceCheckDiv.innerHTML = `
+                    <div class="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+                        <div class="flex items-center gap-2 text-green-700">
+                            <i class="bi bi-check-circle text-xl"></i>
+                            <span class="font-bold">Saldo Mencukupi</span>
+                        </div>
+                    </div>
+                `;
+                checkoutButton.disabled = false;
+                checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            // Update select all checkbox state
+            const allCheckboxes = document.querySelectorAll('.cart-checkbox');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            selectAllCheckbox.checked = checkboxes.length === allCheckboxes.length;
+        }
+    </script>
 
 </body>
 </html>
