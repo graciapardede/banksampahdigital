@@ -199,30 +199,42 @@
         <!-- Navigation Tabs -->
         <div class="bg-green-100 px-4 py-4">
             <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-house-door pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Dashboard</span>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-house-door pointer-events-none text-sm lg:text-base"></i>
+                        <span class="hidden lg:inline pointer-events-none">Dashboard</span>
+                        <span class="lg:hidden pointer-events-none">Dashb</span>
                     </a>
-                    <a href="/profil" class="bg-green-500 text-white px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center space-x-2 w-full cursor-default">
-                        <i class="bi bi-person pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Profil</span>
+                    <a href="/profil" class="bg-green-500 text-white px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-1 lg:gap-2 w-full cursor-default">
+                        <i class="bi bi-person pointer-events-none text-sm lg:text-base"></i>
+                        <span class="pointer-events-none">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-recycle pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Setor</span>
+                    <a href="/setor" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-recycle pointer-events-none text-sm lg:text-base"></i>
+                        <span class="pointer-events-none">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-gift pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Tukar Poin</span>
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-gift pointer-events-none text-sm lg:text-base"></i>
+                        <span class="hidden lg:inline pointer-events-none">Tukar Poin</span>
+                        <span class="lg:hidden pointer-events-none">Tukar</span>
                     </a>
-                    <a href="/riwayat" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-clock-history pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Riwayat</span>
+                    <a href="/eco-news" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-newspaper pointer-events-none text-sm lg:text-base"></i>
+                        <span class="hidden lg:inline pointer-events-none">Eco News</span>
+                        <span class="lg:hidden pointer-events-none">Eco</span>
                     </a>
-                    <a href="/notifikasi" class="relative bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2 w-full cursor-pointer">
-                        <i class="bi bi-bell pointer-events-none"></i>
-                        <span class="truncate pointer-events-none">Notifikasi</span>
+                    <a href="/lokasi" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-geo-alt-fill pointer-events-none text-sm lg:text-base"></i>
+                        <span class="pointer-events-none">Lokasi</span>
+                    </a>
+                    <a href="/riwayat" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-clock-history pointer-events-none text-sm lg:text-base"></i>
+                        <span class="pointer-events-none">Riwayat</span>
+                    </a>
+                    <a href="/notifikasi" class="relative bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
+                        <i class="bi bi-bell pointer-events-none text-sm lg:text-base"></i>
+                        <span class="hidden lg:inline pointer-events-none">Notifikasi</span>
+                        <span class="lg:hidden pointer-events-none">Notif</span>
                         @if(isset($unreadNotifications) && $unreadNotifications > 0)
                         <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center pointer-events-none">
                             {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}

@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
+    ],
+
+    'eco_provider' => [
+        'url' => env('ECO_PROVIDER_URL', 'http://localhost:8001/api'),
+        'timeout' => env('ECO_PROVIDER_TIMEOUT', 10),
+    ],
+
 ];

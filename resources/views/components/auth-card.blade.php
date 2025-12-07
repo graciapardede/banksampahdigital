@@ -10,6 +10,6 @@ $maxWidthClass = [
 ][$maxWidth];
 @endphp
 
-<div class="{{ $maxWidthClass }} w-full mx-auto glassmorphism bg-white/70 shadow-2xl rounded-3xl p-8 sm:p-10 border border-white/50 backdrop-blur-xl">
+<div class="{{ $maxWidthClass }} w-full mx-auto glassmorphism bg-white/70 shadow-2xl rounded-3xl p-8 sm:p-10 border border-white/50 backdrop-blur-xl max-h-[90vh] overflow-y-auto">
     {{ $slot }}
 </div>

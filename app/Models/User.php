@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable // implements MustVerifyEmail (Disabled - no email server configured)
 {
     use HasFactory, Notifiable;
 
@@ -27,11 +27,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'branch',
         'branch_id',
         'balance_points',
+        'google_id',
+        'google_token',
+        'google_refresh_token',
+        'avatar',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'google_token',
+        'google_refresh_token',
     ];
 
     protected $casts = [

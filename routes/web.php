@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\EcoNewsController;
 
 // Halaman utama (Home) 
 Route::get('/', function () {
@@ -39,6 +41,23 @@ Route::get('/register', function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Google OAuth Routes
+Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+// Unlink Google Account (authenticated users only)
+Route::post('/auth/google/unlink', [GoogleAuthController::class, 'unlinkGoogle'])
+    ->middleware('auth')
+    ->name('auth.google.unlink');
+
+// Eco News Routes (Public - accessible without login)
+Route::get('/eco-news', [EcoNewsController::class, 'index'])->name('eco.news.index');
+Route::get('/eco-news/{id}', [EcoNewsController::class, 'show'])->name('eco.news.show');
+Route::get('/eco-news-search', [EcoNewsController::class, 'search'])->name('eco.news.search');
+
+// Location Routes (Public - Google Maps integration)
+Route::get('/lokasi', [\App\Http\Controllers\LocationController::class, 'index'])->name('lokasi.index');
 
 // Email Verification Routes
 Route::middleware('auth')->group(function () {
@@ -214,4 +233,5 @@ Route::view('/_dev/tukar-barang','admin.tukar_barang.index');
 Route::view('/_dev/penukaran','admin.penukaran.index');
 Route::view('/_dev/waste-types','admin.waste_types.index');
 
-
+// Include Auth Routes (Email Verification, Password Reset, etc)
+require __DIR__.'/auth.php';
