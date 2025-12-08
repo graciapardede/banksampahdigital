@@ -41,6 +41,32 @@ class EcoNewsService
     }
 
     /**
+     * Get all news and categories from EcoProvider (combined endpoint)
+     */
+    public function getNewsWithCategories()
+    {
+        try {
+            // Use base URL without /api for eco-news-data endpoint
+            $url = 'http://127.0.0.1:8001/eco-news-data';
+            $response = Http::timeout($this->timeout)->get($url);
+
+            if ($response->successful()) {
+                $result = $response->json();
+                return [
+                    'news' => $result['data'] ?? [],
+                    'categories' => $result['categories'] ?? []
+                ];
+            }
+
+            Log::error('EcoProvider eco-news-data API Error: ' . $response->status());
+            return ['news' => [], 'categories' => []];
+        } catch (\Exception $e) {
+            Log::error('EcoProvider eco-news-data Connection Error: ' . $e->getMessage());
+            return ['news' => [], 'categories' => []];
+        }
+    }
+
+    /**
      * Get single news by ID
      */
     public function getNews($id)
@@ -98,6 +124,28 @@ class EcoNewsService
             return $response->successful();
         } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    /**
+     * Get all categories from EcoProvider
+     */
+    public function getCategories()
+    {
+        try {
+            $response = Http::timeout($this->timeout)
+                ->get($this->baseUrl . '/categories');
+
+            if ($response->successful()) {
+                $result = $response->json();
+                return $result['data'] ?? [];
+            }
+
+            Log::error('EcoProvider Categories API Error: ' . $response->status());
+            return [];
+        } catch (\Exception $e) {
+            Log::error('EcoProvider Categories Connection Error: ' . $e->getMessage());
+            return [];
         }
     }
 }

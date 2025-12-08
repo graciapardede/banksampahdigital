@@ -143,7 +143,7 @@
                     <h2 class="text-2xl font-bold text-gray-800">Berita Lingkungan Terkini</h2>
                     <p class="text-gray-600 mt-1">Baca informasi seputar lingkungan hidup dan keberlanjutan</p>
                 </div>
-                <a href="{{ route('eco.news.search') }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+                <a href="{{ url('/eco-news') }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
                     <i class="bi bi-search"></i>
                     Cari Berita
                 </a>

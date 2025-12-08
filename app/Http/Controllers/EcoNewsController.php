@@ -20,19 +20,24 @@ class EcoNewsController extends Controller
     public function index()
     {
         try {
-            $news = $this->ecoNewsService->getAllNews();
+            // Get news and categories from EcoProvider combined endpoint
+            $data = $this->ecoNewsService->getNewsWithCategories();
+            $news = $data['news'];
+            $categories = $data['categories'];
             $isAvailable = !empty($news);
-            $saldoPoin = \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points');
+            $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
 
             return view('eco-news.index', [
                 'news' => $news,
+                'categories' => $categories,
                 'isAvailable' => $isAvailable,
                 'saldoPoin' => $saldoPoin
             ]);
         } catch (\Exception $e) {
-            $saldoPoin = \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points');
+            $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
             return view('eco-news.index', [
                 'news' => [],
+                'categories' => [],
                 'isAvailable' => false,
                 'error' => 'Tidak dapat terhubung ke EcoProvider. Silakan coba lagi nanti.',
                 'saldoPoin' => $saldoPoin
