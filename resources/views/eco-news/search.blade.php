@@ -95,17 +95,22 @@
                 </div>
             @endif
 
-            <!-- Search Results -->
-            @if(!empty($keyword))
-                @if(isset($news) && count($news) > 0)
-                    <!-- Results Count -->
-                    <div class="mb-4">
+            <!-- News List -->
+            @if(isset($news) && count($news) > 0)
+                <!-- Results Count -->
+                <div class="mb-4">
+                    @if(!empty($keyword))
                         <p class="text-gray-700 font-medium">
-                            Ditemukan <span class="text-green-600 font-bold">{{ count($news) }}</span> berita
+                            Ditemukan <span class="text-green-600 font-bold">{{ count($news) }}</span> berita untuk "{{ $keyword }}"
                         </p>
-                    </div>
+                    @else
+                        <p class="text-gray-700 font-medium">
+                            Menampilkan <span class="text-green-600 font-bold">{{ count($news) }}</span> berita terbaru
+                        </p>
+                    @endif
+                </div>
 
-                    <!-- Results List -->
+                <!-- Results List -->
                     <div class="space-y-4">
                         @foreach($news as $item)
                             <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
@@ -114,7 +119,15 @@
                                     <!-- Thumbnail -->
                                     <div class="sm:w-48 h-48 sm:h-auto bg-gradient-to-r from-green-400 to-green-600 flex-shrink-0 overflow-hidden">
                                         @if(isset($item['thumbnail_url']) && !empty($item['thumbnail_url']))
-                                            <img src="{{ $item['thumbnail_url'] }}" 
+                                            @php
+                                                // Build full URL for thumbnail
+                                                $thumbnailUrl = $item['thumbnail_url'];
+                                                // If not already a full URL, prepend EcoProvider storage URL
+                                                if (!str_starts_with($thumbnailUrl, 'http')) {
+                                                    $thumbnailUrl = 'http://localhost:8001/storage/' . $thumbnailUrl;
+                                                }
+                                            @endphp
+                                            <img src="{{ $thumbnailUrl }}" 
                                                  alt="{{ $item['title'] ?? 'News' }}" 
                                                  class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                                  onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><i class=\'bi bi-image text-white text-4xl opacity-50\'></i></div>';">
@@ -174,10 +187,11 @@
                             </div>
                         @endforeach
                     </div>
-                @else
-                    <!-- No Results -->
-                    <div class="bg-white rounded-xl shadow-md p-12 text-center">
-                        <i class="bi bi-search text-gray-400 text-6xl mb-4"></i>
+            @else
+                <!-- No Results -->
+                <div class="bg-white rounded-xl shadow-md p-12 text-center">
+                    <i class="bi bi-search text-gray-400 text-6xl mb-4"></i>
+                    @if(!empty($keyword))
                         <h3 class="text-xl font-semibold text-gray-700 mb-2">Tidak Ada Hasil</h3>
                         <p class="text-gray-500 mb-4">Tidak ditemukan berita dengan kata kunci "{{ $keyword }}"</p>
                         <a href="{{ route('eco.news.search') }}" 
@@ -185,23 +199,25 @@
                             <i class="bi bi-arrow-left"></i>
                             Coba Kata Kunci Lain
                         </a>
-                    </div>
-                @endif
-            @else
-                <!-- Search Suggestions -->
-                <div class="bg-white rounded-xl shadow-md p-8">
+                    @else
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Berita</h3>
+                        <p class="text-gray-500">Belum ada berita tersedia saat ini.</p>
+                    @endif
+                </div>
+            @endif
+
+            <!-- Search Suggestions (always show) -->
+            @if(isset($categories) && count($categories) > 0)
+                <div class="bg-white rounded-xl shadow-md p-8 mt-8">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">
                         <i class="bi bi-lightbulb text-yellow-500 mr-2"></i>
                         Saran Pencarian
                     </h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        @php
-                            $suggestions = ['Perubahan Iklim', 'Energi Terbarukan', 'Daur Ulang', 'Hutan', 'Polusi', 'Konservasi', 'Sampah Plastik', 'Keberlanjutan'];
-                        @endphp
-                        @foreach($suggestions as $suggestion)
-                            <a href="{{ route('eco.news.search', ['q' => $suggestion]) }}" 
+                        @foreach($categories as $category)
+                            <a href="{{ route('eco.news.search', ['q' => $category]) }}" 
                                class="bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg text-center font-medium transition-colors">
-                                {{ $suggestion }}
+                                {{ $category }}
                             </a>
                         @endforeach
                     </div>
