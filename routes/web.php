@@ -52,9 +52,9 @@ Route::post('/auth/google/unlink', [GoogleAuthController::class, 'unlinkGoogle']
     ->name('auth.google.unlink');
 
 // Eco News Routes (Public - accessible without login)
-Route::get('/eco-news', [EcoNewsController::class, 'index'])->name('eco.news.index');
-Route::get('/eco-news/{id}', [EcoNewsController::class, 'show'])->name('eco.news.show');
-Route::get('/eco-news-search', [EcoNewsController::class, 'search'])->name('eco.news.search');
+Route::get('/eco-news/articles', [EcoNewsController::class, 'index'])->name('eco.news.index'); // Halaman daftar semua artikel
+Route::get('/eco-news', [EcoNewsController::class, 'search'])->name('eco.news.search'); // Halaman search/cari berita
+Route::get('/eco-news/{id}', [EcoNewsController::class, 'show'])->name('eco.news.show'); // Detail artikel
 
 // Location Routes (Public - Google Maps integration)
 Route::get('/lokasi', [\App\Http\Controllers\LocationController::class, 'index'])->name('lokasi.index');
