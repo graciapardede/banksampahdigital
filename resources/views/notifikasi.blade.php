@@ -170,7 +170,7 @@
                     @endif
                     hover:shadow-md transition-all {{ $notif->read_at ? 'opacity-60' : '' }}">
                     <div class="flex items-start space-x-4">
-                        <!-- Icon Indicator -->
+                        <!-- Dot Indicator -->
                         <div class="w-3 h-3 rounded-full mt-2 flex-shrink-0
                             @if($notif->data['type'] == 'success') bg-green-500
                             @elseif($notif->data['type'] == 'info') bg-blue-500
@@ -182,14 +182,7 @@
                         <!-- Content -->
                         <div class="flex-1">
                             <div class="flex items-start justify-between mb-1">
-                                <h3 class="font-semibold text-gray-800 text-base flex items-center">
-                                    @if(isset($notif->data['icon']))
-                                        <i class="bi bi-{{ $notif->data['icon'] }} mr-2 
-                                            @if($notif->data['type'] == 'success') text-green-600
-                                            @elseif($notif->data['type'] == 'info') text-blue-600
-                                            @else text-gray-600
-                                            @endif"></i>
-                                    @endif
+                                <h3 class="font-semibold text-gray-800 text-base">
                                     {{ $notif->data['title'] ?? 'Notifikasi' }}
                                 </h3>
                                 @if(!$notif->read_at)

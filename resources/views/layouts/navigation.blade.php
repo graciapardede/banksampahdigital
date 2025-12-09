@@ -39,7 +39,7 @@
                     @endauth
                     
                     {{-- Eco News - Available for All Users (Authenticated and Guest) --}}
-                    <x-nav-link :href="route('eco.news.index')" :active="request()->routeIs('eco.news.*')">
+                    <x-nav-link :href="url('/eco-news')" :active="request()->routeIs('eco.news.*')">
                         🌿 {{ __('Eco News') }}
                     </x-nav-link>
                 </div>
@@ -150,7 +150,7 @@
             @endauth
             
             {{-- Eco News - Available for All --}}
-            <x-responsive-nav-link :href="route('eco.news.index')" :active="request()->routeIs('eco.news.*')">
+            <x-responsive-nav-link :href="url('/eco-news')" :active="request()->routeIs('eco.news.*')">
                 🌿 {{ __('Eco News') }}
             </x-responsive-nav-link>
         </div>

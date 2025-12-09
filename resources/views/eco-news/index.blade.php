@@ -137,16 +137,75 @@
     <div class="py-8">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <!-- Page Title & Search Button -->
-            <div class="mb-8 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Berita Lingkungan Terkini</h2>
-                    <p class="text-gray-600 mt-1">Baca informasi seputar lingkungan hidup dan keberlanjutan</p>
-                </div>
-                <a href="{{ route('eco.news.search') }}" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
-                    <i class="bi bi-search"></i>
-                    Cari Berita
-                </a>
+            <!-- Page Title -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Berita Lingkungan Terkini</h2>
+                <p class="text-gray-600 mt-1">Baca informasi seputar lingkungan hidup dan keberlanjutan</p>
+            </div>
+
+            <!-- Search Form with Category Filter -->
+            <div class="mb-6">
+                <form method="GET" action="{{ route('eco.news.index') }}" class="flex gap-3">
+                    <!-- Category Dropdown -->
+                    @if(isset($categories) && count($categories) > 0)
+                        <div class="w-64">
+                            <select 
+                                name="category" 
+                                class="w-full px-6 py-4 border-2 border-gray-300 rounded-2xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none text-gray-700 bg-white"
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">Semua Kategori</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>
+                                        {{ $cat }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                    
+                    <!-- Search Input -->
+                    <div class="flex-1">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            value="{{ request('q') }}"
+                            placeholder="Cari berita lingkungan, iklim, energi terbarukan..." 
+                            class="w-full px-6 py-4 border-2 border-gray-300 rounded-2xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none text-gray-700"
+                        >
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <button 
+                        type="submit"
+                        class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                    >
+                        <i class="bi bi-search"></i>
+                        Cari
+                    </button>
+                </form>
+                
+                <!-- Active Filters Display -->
+                @if(request('q') || request('category'))
+                    <div class="mt-4 flex items-center gap-2 text-gray-600 flex-wrap">
+                        @if(request('q'))
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                                <i class="bi bi-search text-xs"></i>
+                                "{{ request('q') }}"
+                            </span>
+                        @endif
+                        @if(request('category'))
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                                <i class="bi bi-tag text-xs"></i>
+                                {{ request('category') }}
+                            </span>
+                        @endif
+                        <a href="{{ route('eco.news.index') }}" class="text-sm text-red-500 hover:text-red-700 flex items-center gap-1 ml-2">
+                            <i class="bi bi-x-circle"></i>
+                            Reset Filter
+                        </a>
+                    </div>
+                @endif
             </div>
             
             <!-- Alert jika provider down -->
@@ -187,15 +246,17 @@
                             <div class="h-52 bg-gradient-to-br from-green-400 to-green-600 overflow-hidden relative">
                                 @if(isset($item['thumbnail_url']) && !empty($item['thumbnail_url']))
                                     @php
-                                        // Clean URL - remove double prefix if exists
+                                        // Build full URL for thumbnail
                                         $imageUrl = $item['thumbnail_url'];
-                                        $imageUrl = str_replace('http://localhost:8001/storage/https://', 'https://', $imageUrl);
-                                        $imageUrl = str_replace('http://localhost:8001/storage/http://', 'http://', $imageUrl);
+                                        // If not already a full URL, prepend EcoProvider storage URL
+                                        if (!str_starts_with($imageUrl, 'http')) {
+                                            $imageUrl = 'http://localhost:8001/storage/' . $imageUrl;
+                                        }
                                     @endphp
                                     <img src="{{ $imageUrl }}" 
                                          alt="{{ $item['title'] ?? 'News' }}" 
                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%2310b981%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22white%22 font-size=%2224%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3EEco News%3C/text%3E%3C/svg%3E';">
+                                         onerror="this.src='https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop';">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center">
                                         <i class="bi bi-image text-white text-6xl opacity-40"></i>

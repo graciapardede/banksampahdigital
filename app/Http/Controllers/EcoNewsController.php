@@ -17,22 +17,48 @@ class EcoNewsController extends Controller
     /**
      * Display all news from EcoProvider
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $news = $this->ecoNewsService->getAllNews();
-            $isAvailable = !empty($news);
-            $saldoPoin = \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points');
+            $keyword = $request->input('q', '');
+            $category = $request->input('category', '');
+            
+            // Get news and categories from EcoProvider combined endpoint
+            $data = $this->ecoNewsService->getNewsWithCategories();
+            $allNews = $data['news'];
+            $categories = $data['categories'];
+            
+            // Apply filters
+            $news = $allNews;
+            
+            // Filter by keyword if provided
+            if (!empty($keyword)) {
+                $news = $this->ecoNewsService->searchNews($keyword);
+            }
+            
+            // Filter by category if provided
+            if (!empty($category)) {
+                $news = array_filter($news, function($item) use ($category) {
+                    return isset($item['category']) && $item['category'] === $category;
+                });
+                // Re-index array after filter
+                $news = array_values($news);
+            }
+            
+            $isAvailable = !empty($allNews);
+            $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
 
             return view('eco-news.index', [
                 'news' => $news,
+                'categories' => $categories,
                 'isAvailable' => $isAvailable,
                 'saldoPoin' => $saldoPoin
             ]);
         } catch (\Exception $e) {
-            $saldoPoin = \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points');
+            $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
             return view('eco-news.index', [
                 'news' => [],
+                'categories' => [],
                 'isAvailable' => false,
                 'error' => 'Tidak dapat terhubung ke EcoProvider. Silakan coba lagi nanti.',
                 'saldoPoin' => $saldoPoin
@@ -63,28 +89,13 @@ class EcoNewsController extends Controller
     }
 
     /**
-     * Search news
+     * Search news - redirect to index with search parameter
      */
     public function search(Request $request)
     {
         $keyword = $request->input('q', '');
-        $news = [];
-
-        if (!empty($keyword)) {
-            try {
-                $news = $this->ecoNewsService->searchNews($keyword);
-            } catch (\Exception $e) {
-                return view('eco-news.search', [
-                    'keyword' => $keyword,
-                    'news' => [],
-                    'error' => 'Terjadi kesalahan saat mencari berita.'
-                ]);
-            }
-        }
-
-        return view('eco-news.search', [
-            'keyword' => $keyword,
-            'news' => $news
-        ]);
+        
+        // Redirect to index with search parameter to maintain consistent UI
+        return redirect()->route('eco.news.index', ['q' => $keyword]);
     }
 }
