@@ -58,8 +58,16 @@
                 
                 <!-- Featured Image -->
                 @if(isset($news['thumbnail_url']) && !empty($news['thumbnail_url']))
+                    @php
+                        // Build full URL for thumbnail
+                        $thumbnailUrl = $news['thumbnail_url'];
+                        // If not already a full URL, prepend EcoProvider storage URL
+                        if (!str_starts_with($thumbnailUrl, 'http')) {
+                            $thumbnailUrl = 'http://localhost:8001/storage/' . $thumbnailUrl;
+                        }
+                    @endphp
                     <div class="h-96 bg-gradient-to-r from-green-400 to-green-600 overflow-hidden">
-                        <img src="{{ $news['thumbnail_url'] }}" 
+                        <img src="{{ $thumbnailUrl }}" 
                              alt="{{ $news['title'] ?? 'News' }}" 
                              class="w-full h-full object-cover"
                              onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22400%22%3E%3Crect fill=%2310b981%22 width=%22800%22 height=%22400%22/%3E%3Ctext fill=%22white%22 font-size=%2232%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3EEco News%3C/text%3E%3C/svg%3E';">

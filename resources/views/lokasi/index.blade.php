@@ -146,14 +146,29 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- Page Title -->
-            <div class="mb-8">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="bi bi-geo-alt-fill text-white text-2xl"></i>
+            <div class="mb-8 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-3xl"></div>
+                <div class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                            <i class="bi bi-geo-alt-fill text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                Lokasi Bank Sampah
+                            </h2>
+                            <p class="text-gray-600 mt-1 text-lg">Temukan cabang Bank Sampah terdekat di sekitar Anda</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-3xl font-bold text-gray-800">Lokasi Bank Sampah</h2>
-                        <p class="text-gray-600 mt-1">Temukan cabang Bank Sampah terdekat di sekitar Anda</p>
+                    <div class="flex flex-wrap gap-3 mt-4">
+                        <div class="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full">
+                            <i class="bi bi-check-circle-fill text-green-600"></i>
+                            <span class="text-sm font-medium text-green-700">{{ count($branches) }} Cabang Tersedia</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
+                            <i class="bi bi-clock-fill text-blue-600"></i>
+                            <span class="text-sm font-medium text-blue-700">Buka Setiap Hari</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,33 +177,63 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 @foreach($branches as $index => $branch)
                 <div onclick="showMap({{ $index }})" 
-                     class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02] transform">
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <i class="bi bi-building text-green-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $branch['name'] }}</h3>
-                            <div class="space-y-2 text-sm text-gray-600">
-                                <div class="flex items-center gap-2">
-                                    <i class="bi bi-geo-alt text-green-600"></i>
-                                    <span>{{ $branch['address'] }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <i class="bi bi-telephone text-green-600"></i>
-                                    <span>{{ $branch['phone'] }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <i class="bi bi-pin-map text-green-600"></i>
-                                    <span>{{ $branch['lat'] }}, {{ $branch['lng'] }}</span>
-                                </div>
+                     class="group relative bg-gradient-to-br from-white to-green-50/30 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden transform hover:-translate-y-2">
+                    <!-- Decorative gradient overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-500/0 to-emerald-500/5 group-hover:from-green-500/10 group-hover:to-emerald-500/20 transition-all duration-500"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative p-6">
+                        <div class="flex items-start gap-4">
+                            <!-- Icon with animation -->
+                            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                                <i class="bi bi-building text-white text-2xl"></i>
                             </div>
-                            <div class="mt-4 text-green-600 text-sm font-semibold flex items-center gap-1">
-                                <i class="bi bi-map"></i>
-                                <span>Klik untuk lihat peta</span>
+                            
+                            <div class="flex-1">
+                                <!-- Branch Name -->
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-green-600 transition-colors">
+                                    {{ $branch['name'] }}
+                                </h3>
+                                
+                                <!-- Info List -->
+                                <div class="space-y-3 text-sm text-gray-600">
+                                    <div class="flex items-start gap-3 group/item hover:translate-x-1 transition-transform">
+                                        <i class="bi bi-geo-alt-fill text-green-600 mt-0.5 text-base"></i>
+                                        <span class="flex-1">{{ $branch['address'] }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 group/item hover:translate-x-1 transition-transform">
+                                        <i class="bi bi-telephone-fill text-blue-600 text-base"></i>
+                                        <a href="tel:{{ $branch['phone'] }}" class="hover:text-blue-600 transition-colors" onclick="event.stopPropagation()">
+                                            {{ $branch['phone'] }}
+                                        </a>
+                                    </div>
+                                    <div class="flex items-center gap-3 group/item hover:translate-x-1 transition-transform">
+                                        <i class="bi bi-pin-map-fill text-purple-600 text-base"></i>
+                                        <span class="text-xs font-mono">{{ $branch['lat'] }}, {{ $branch['lng'] }}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- CTA Button -->
+                                <div class="mt-5 flex items-center justify-between">
+                                    <div class="flex items-center gap-2 text-green-600 font-semibold group-hover:text-green-700 transition-colors">
+                                        <i class="bi bi-map text-lg"></i>
+                                        <span class="text-sm">Lihat di Peta</span>
+                                        <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                    </div>
+                                    
+                                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                            <i class="bi bi-cursor-fill"></i>
+                                            Klik
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Animated border effect -->
+                    <div class="absolute inset-0 rounded-3xl ring-2 ring-green-500/0 group-hover:ring-green-500/50 transition-all duration-300"></div>
                 </div>
                 @endforeach
             </div>
