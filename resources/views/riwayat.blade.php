@@ -181,48 +181,35 @@
 
         <!-- Navigation Tabs -->
         <div class="bg-green-100 px-4 py-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-house-door pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Dashboard</span>
-                        <span class="lg:hidden pointer-events-none">Dashb</span>
+            <div class="max-w-6xl mx-auto flex justify-center">
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-house-door pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-person pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/profil" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-person pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-recycle pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/setor" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-recycle pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-gift pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Tukar Poin</span>
-                        <span class="lg:hidden pointer-events-none">Tukar</span>
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-gift pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Tukar Poin</span>
                     </a>
-                    <a href="/eco-news" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-newspaper pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Eco News</span>
-                        <span class="lg:hidden pointer-events-none">Eco</span>
+                    <a href="/eco-news" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-newspaper pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Eco News</span>
                     </a>
-                    <a href="/lokasi" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-geo-alt-fill pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/lokasi" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-geo-alt-fill pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Lokasi</span>
                     </a>
-                    <a href="/riwayat" class="bg-green-500 text-white px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-1 lg:gap-2 w-full cursor-default">
-                        <i class="bi bi-clock-history pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/riwayat" class="bg-green-500 text-white px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-2 cursor-default whitespace-nowrap">
+                        <i class="bi bi-clock-history pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Riwayat</span>
-                    </a>
-                    <a href="/notifikasi" class="relative bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-bell pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Notifikasi</span>
-                        <span class="lg:hidden pointer-events-none">Notif</span>
-                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center pointer-events-none">
-                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
-                        </span>
-                        @endif
                     </a>
                 </div>
             </div>
@@ -276,6 +263,45 @@
         <div class="mb-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Riwayat Transaksi</h2>
             <p class="text-gray-600">Semua aktivitas setoran dan penukaran Anda</p>
+        </div>
+
+        <!-- Statistics Cards for Redemptions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Menunggu Card -->
+            <div class="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-2xl p-6 shadow-lg text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                        <i class="bi bi-hourglass-split text-2xl"></i>
+                    </div>
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">{{ $pendingRedemptions }}</span>
+                </div>
+                <h3 class="font-semibold mb-1">Menunggu</h3>
+                <p class="text-sm text-yellow-50">Bulan {{ now()->format('F Y') }}</p>
+            </div>
+
+            <!-- Dikonfirmasi Card -->
+            <div class="bg-gradient-to-br from-teal-400 to-teal-500 rounded-2xl p-6 shadow-lg text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                        <i class="bi bi-check-circle text-2xl"></i>
+                    </div>
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">{{ $confirmedRedemptions }}</span>
+                </div>
+                <h3 class="font-semibold mb-1">Dikonfirmasi</h3>
+                <p class="text-sm text-teal-50">Bulan {{ now()->format('F Y') }}</p>
+            </div>
+
+            <!-- Total Poin Card -->
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 shadow-lg text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                        <i class="bi bi-coin text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="font-semibold mb-1">Total Poin</h3>
+                <p class="text-3xl font-bold mb-1">{{ number_format($totalPoints, 0, ',', '.') }}</p>
+                <p class="text-sm text-green-50">Bulan {{ now()->format('F Y') }}</p>
+            </div>
         </div>
 
         <!-- Empty State or Transaction List -->

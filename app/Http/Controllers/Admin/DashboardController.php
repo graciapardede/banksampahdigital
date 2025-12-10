@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Models\Redemption;
 use App\Models\User;
+use App\Models\RewardItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -28,6 +29,7 @@ class DashboardController extends Controller
             'total_redemptions' => Redemption::count(),
             'pending_deposits' => Deposit::where('status', 'pending')->count(),
             'pending_redemptions' => Redemption::where('status', 'pending')->count(),
+            'total_reward_stock' => RewardItem::sum('stock') ?? 0,
         ];
 
         // Total setoran per bulan (12 bulan terakhir)
@@ -116,6 +118,7 @@ class DashboardController extends Controller
 
     /**
      * Get redemptions grouped by month (last 12 months)
+     * Only counts completed/delivered redemptions
      */
     private function getRedemptionsByMonth()
     {
@@ -129,6 +132,7 @@ class DashboardController extends Controller
                     DB::raw('COUNT(*) as total')
                 )
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->where('status', 'completed')
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')
@@ -141,6 +145,7 @@ class DashboardController extends Controller
                     DB::raw('COUNT(*) as total')
                 )
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->where('status', 'completed')
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')

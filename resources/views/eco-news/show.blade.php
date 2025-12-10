@@ -43,10 +43,6 @@
                     <i class="bi bi-clock-history pointer-events-none"></i>
                     <span class="truncate pointer-events-none">Riwayat</span>
                 </a>
-                <a href="/notifikasi" class="bg-white text-gray-700 px-4 lg:px-6 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center space-x-2">
-                    <i class="bi bi-bell pointer-events-none"></i>
-                    <span class="truncate pointer-events-none">Notifikasi</span>
-                </a>
             </div>
         </div>
     </div>
