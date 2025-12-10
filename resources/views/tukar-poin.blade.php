@@ -233,6 +233,7 @@
                             onchange="this.form.submit()"
                             class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent font-medium text-gray-800 cursor-pointer"
                         >
+                            <option value="">-- Pilih Cabang --</option>
                             @foreach($branches as $cabang)
                                 <option value="{{ $cabang->id }}" {{ $selectedBranch == $cabang->id ? 'selected' : '' }}>
                                     {{ $cabang->name }}

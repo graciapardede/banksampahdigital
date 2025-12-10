@@ -83,7 +83,7 @@
                 <div class="mb-4">
                     <label class="text-sm font-semibold text-gray-600 block mb-1">Lokasi Pengambilan</label>
                     <p class="text-lg text-gray-800">
-                        <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>{{ $redemption->branch->name }}
+                        <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>{{ $redemption->branch->name ?? 'Belum ditentukan' }}
                     </p>
                     <p class="text-sm text-gray-600 mt-1">{{ $redemption->branch->address ?? '' }}</p>
                 </div>
@@ -180,13 +180,18 @@
                 </h3>
                 <p class="text-yellow-700">Konfirmasi permintaan ini jika stok barang tersedia dan siap disiapkan.</p>
             </div>
-            <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" onsubmit="return confirmAction(event, 'Konfirmasi Permintaan', 'Apakah Anda yakin ingin mengkonfirmasi permintaan penukaran ini? Stok barang akan dikurangi.', 'warning')">
-                @csrf
-                @method('POST')
-                <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition duration-200">
-                    <i class="fas fa-check-circle mr-2"></i>Konfirmasi Permintaan
+            <div class="flex gap-3">
+                <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" onsubmit="return confirmAction(event, 'Konfirmasi Permintaan', 'Apakah Anda yakin ingin mengkonfirmasi permintaan penukaran ini? Stok barang akan dikurangi.', 'warning')">
+                    @csrf
+                    @method('POST')
+                    <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition duration-200">
+                        <i class="fas fa-check-circle mr-2"></i>Konfirmasi
+                    </button>
+                </form>
+                <button type="button" onclick="openRejectModal()" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-lg transition duration-200">
+                    <i class="fas fa-times-circle mr-2"></i>Tolak
                 </button>
-            </form>
+            </div>
         </div>
     </div>
     @elseif($redemption->status === 'confirmed')
@@ -197,6 +202,15 @@
                     <i class="fas fa-box-open mr-2"></i>Barang Siap Diambil
                 </h3>
                 <p class="text-blue-700">Klik tombol "Serahkan Barang" setelah warga mengambil barang di lokasi.</p>
+                <p class="text-sm text-blue-600 mt-2 font-semibold">
+                    <i class="fas fa-hourglass-half"></i> 
+                    Sisa waktu pengambilan: <span id="admin-countdown">--:--:--</span>
+                </p>
+                @if($redemption->isExpired())
+                    <p class="text-sm text-red-600 font-bold mt-1">
+                        <i class="fas fa-exclamation-triangle"></i> Waktu pengambilan sudah expired!
+                    </p>
+                @endif
             </div>
             <form action="{{ route('admin.penukaran.complete', $redemption->id) }}" method="POST" onsubmit="return confirmAction(event, 'Serahkan Barang', 'Apakah Anda yakin barang sudah diserahkan kepada warga?', 'success')">
                 @csrf
@@ -283,6 +297,98 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     @endif
 });
+</script>
+
+<!-- Modal Tolak Penukaran -->
+<div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="bg-red-50 border-b-2 border-red-500 px-6 py-4">
+            <h3 class="text-xl font-bold text-red-800">
+                <i class="fas fa-times-circle mr-2"></i>Tolak Penukaran
+            </h3>
+        </div>
+        
+        <form action="{{ route('admin.penukaran.reject', $redemption->id) }}" method="POST" class="p-6">
+            @csrf
+            @method('POST')
+            
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <i class="fas fa-comment mr-1"></i>Alasan Penolakan
+                </label>
+                <textarea 
+                    name="rejection_reason" 
+                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 resize-none"
+                    rows="4"
+                    placeholder="Jelaskan alasan penolakan penukaran ini (min. 10 karakter)..."
+                    required
+                    minlength="10"
+                ></textarea>
+                @error('rejection_reason')
+                    <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <p class="text-sm text-gray-600 mb-6 bg-red-50 p-3 rounded-lg">
+                <i class="fas fa-info-circle mr-2"></i>
+                Stok barang akan dikembalikan otomatis setelah penolakan.
+            </p>
+            
+            <div class="flex gap-3">
+                <button type="button" onclick="closeRejectModal()" class="flex-1 px-4 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg transition">
+                    Batal
+                </button>
+                <button type="submit" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition">
+                    <i class="fas fa-check mr-2"></i>Tolak Penukaran
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openRejectModal() {
+    document.getElementById('rejectModal').classList.remove('hidden');
+}
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').classList.add('hidden');
+}
+
+// Close modal saat klik di luar
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRejectModal();
+    }
+});
+
+// Countdown timer untuk admin penukaran
+@if($redemption->status === 'confirmed' && $redemption->expires_at)
+document.addEventListener('DOMContentLoaded', function() {
+    const expiresAt = new Date('{{ $redemption->expires_at->toIso8601String() }}').getTime();
+    const countdownEl = document.getElementById('admin-countdown');
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const remaining = expiresAt - now;
+        
+        if (remaining <= 0) {
+            countdownEl.textContent = '⏰ Waktu habis!';
+            countdownEl.classList.add('text-red-700', 'font-bold');
+            return;
+        }
+        
+        const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+        const seconds = Math.floor((remaining / 1000) % 60);
+        
+        countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+});
+@endif
 </script>
 
 </body>

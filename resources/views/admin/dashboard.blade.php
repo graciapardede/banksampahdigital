@@ -36,9 +36,6 @@
                     <h2 class="text-2xl font-bold mb-2">Selamat Datang, Administrator!</h2>
                     <p class="text-green-100 mb-4">Kelola Bank Sampah Digital dengan mudah</p>
                     <div class="flex flex-wrap items-center gap-4 mt-4">
-                        <div class="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
-                            <i class="bi bi-shield-check mr-2"></i>Admin Cabang
-                        </div>
                         @php
                             $adminBranch = Auth::user()->branch_id ? \App\Models\Branch::find(Auth::user()->branch_id) : null;
                         @endphp

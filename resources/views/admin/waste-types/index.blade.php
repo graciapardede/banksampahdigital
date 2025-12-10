@@ -165,7 +165,7 @@
                 <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <i class="bi bi-currency-dollar text-2xl"></i>
+                            <i class="bi bi-coin text-2xl"></i>
                         </div>
                     </div>
                     <div class="text-sm font-medium opacity-90">Rata-rata Harga</div>
@@ -234,7 +234,7 @@
 
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                                     <div class="flex items-center gap-2 text-sm">
-                                                        <i class="bi bi-currency-dollar text-lime-600"></i>
+                                                        <i class="bi bi-coin text-lime-600"></i>
                                                         <span class="text-gray-600">Harga:</span>
                                                         <span class="font-bold text-lime-600">Rp {{ number_format($waste->price_per_kg, 0, ',', '.') }}/kg</span>
                                                     </div>

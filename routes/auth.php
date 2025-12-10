@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -22,16 +23,36 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
+    // Custom Forgot Password Flow
+    Route::get('forgot-password', [ForgotPasswordController::class, 'showForm'])
+        ->name('password.forgot');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email');
+    Route::post('forgot-password/send', [ForgotPasswordController::class, 'sendReset'])
+        ->name('password.send-reset');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+    Route::get('verify-reset-code', [ForgotPasswordController::class, 'showVerifyCode'])
+        ->name('password.verify-code');
+
+    Route::post('verify-reset-code', [ForgotPasswordController::class, 'verifyCode'])
+        ->name('password.verify-code');
+
+    Route::get('reset-password-form', [ForgotPasswordController::class, 'showResetForm'])
+        ->name('password.reset-form');
+
+    Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])
         ->name('password.reset');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
+    // Old routes (fallback)
+    Route::get('forgot-password-old', [PasswordResetLinkController::class, 'create'])
+        ->name('password.request');
+
+    Route::post('forgot-password-old', [PasswordResetLinkController::class, 'store'])
+        ->name('password.email');
+
+    Route::get('reset-password-old/{token}', [NewPasswordController::class, 'create'])
+        ->name('password.reset-old');
+
+    Route::post('reset-password-old', [NewPasswordController::class, 'store'])
         ->name('password.store');
 });
 

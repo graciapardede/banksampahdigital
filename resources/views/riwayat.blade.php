@@ -430,10 +430,15 @@
                                             Selesai
                                         </span>
                                     @elseif($transaction['status'] === 'confirmed')
-                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
-                                            <i class="bi bi-check-circle"></i>
-                                            Siap Ambil
-                                        </span>
+                                        <div class="flex flex-col gap-1 items-end">
+                                            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                                                <i class="bi bi-check-circle"></i>
+                                                Siap Ambil
+                                            </span>
+                                            <span class="text-xs text-red-600 font-semibold countdown-timer" data-redemption-id="{{ $transaction['id'] }}">
+                                                ⏱️ Hitung mundur...
+                                            </span>
+                                        </div>
                                     @elseif($transaction['status'] === 'pending')
                                         <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
                                             <i class="bi bi-clock"></i>
@@ -488,6 +493,47 @@
             // Implement pagination logic here
             alert('Fitur pagination akan segera ditambahkan');
         }
+
+        // Countdown timer untuk confirmed redemptions
+        document.addEventListener('DOMContentLoaded', function() {
+            const countdownElements = document.querySelectorAll('.countdown-timer');
+            
+            countdownElements.forEach(element => {
+                const redemptionId = element.getAttribute('data-redemption-id');
+                
+                // Fetch data redemption dari server
+                fetch(`/riwayat/redemption/${redemptionId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.expires_at) {
+                            const expiresAt = new Date(data.expires_at).getTime();
+                            
+                            function updateCountdown() {
+                                const now = new Date().getTime();
+                                const remaining = expiresAt - now;
+                                
+                                if (remaining <= 0) {
+                                    element.textContent = '⏰ Waktu habis!';
+                                    element.classList.add('text-red-700', 'font-bold');
+                                    // Refresh halaman untuk update status
+                                    setTimeout(() => location.reload(), 3000);
+                                    return;
+                                }
+                                
+                                const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+                                const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+                                const seconds = Math.floor((remaining / 1000) % 60);
+                                
+                                element.textContent = `⏱️ ${hours}j ${minutes}m ${seconds}d`;
+                            }
+                            
+                            updateCountdown();
+                            setInterval(updateCountdown, 1000);
+                        }
+                    })
+                    .catch(error => console.log('Error:', error));
+            });
+        });
     </script>
 
 </body>

@@ -61,15 +61,15 @@
                             <div class="flex items-start gap-4">
                                 <!-- Icon -->
                                 <div class="flex-shrink-0">
-                                    @if($data['type'] === 'success')
+                                    @if(($data['type'] ?? null) === 'success')
                                         <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                                             <i class="bi bi-check-circle-fill text-green-600 text-xl"></i>
                                         </div>
-                                    @elseif($data['type'] === 'info')
+                                    @elseif(($data['type'] ?? null) === 'info')
                                         <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                                             <i class="bi bi-info-circle-fill text-blue-600 text-xl"></i>
                                         </div>
-                                    @elseif($data['type'] === 'warning')
+                                    @elseif(($data['type'] ?? null) === 'warning')
                                         <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
                                             <i class="bi bi-exclamation-triangle-fill text-yellow-600 text-xl"></i>
                                         </div>

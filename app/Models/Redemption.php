@@ -57,4 +57,44 @@ class Redemption extends Model
             return $item->quantity * ($item->rewardItem->points_required ?? 0);
         });
     }
+
+    /**
+     * Hitung sisa waktu pengambilan (dalam detik)
+     * Return: sisa detik, atau 0 jika sudah expired
+     */
+    public function getRemainingTimeInSeconds()
+    {
+        if (!$this->expires_at || $this->status !== 'confirmed') {
+            return 0;
+        }
+
+        $remaining = $this->expires_at->diffInSeconds(now(), false);
+        return max(0, $remaining);
+    }
+
+    /**
+     * Format sisa waktu untuk display (HH:MM:SS)
+     */
+    public function getFormattedRemainingTime()
+    {
+        $seconds = $this->getRemainingTimeInSeconds();
+        
+        if ($seconds <= 0) {
+            return 'Waktu habis';
+        }
+
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        $secs = $seconds % 60;
+
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $secs);
+    }
+
+    /**
+     * Check apakah sudah expired
+     */
+    public function isExpired()
+    {
+        return $this->status === 'confirmed' && now()->isAfter($this->expires_at);
+    }
 }

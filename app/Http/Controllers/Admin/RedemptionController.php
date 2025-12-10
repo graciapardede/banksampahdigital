@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Notifications\BarangSiapDiambil;
 use App\Notifications\PenukaranBerhasil;
+use App\Notifications\PenolakanTukarPoin;
 
 class RedemptionController extends Controller
 {
@@ -131,26 +132,18 @@ class RedemptionController extends Controller
                 return back()->with('error', 'Poin user tidak cukup!');
             }
 
-            // Cek dan kurangi stok untuk setiap item
-            foreach ($redemption->items as $item) {
-                $rewardItem = $item->rewardItem;
-                
-                if ($rewardItem->stock < $item->quantity) {
-                    DB::rollBack();
-                    return back()->with('error', "Stok {$rewardItem->name} tidak mencukupi. Stok tersedia: {$rewardItem->stock}");
-                }
-
-                // Kurangi stok
-                $rewardItem->decrement('stock', $item->quantity);
-            }
+            // Stok sudah dikurangi saat warga melakukan tukar poin
+            // Jadi tidak perlu dikurangi lagi di sini
 
             // Kurangi poin user
             $user->decrement('balance_points', $totalPoints);
 
             // Update status redemption ke 'confirmed' (barang siap diambil)
+            // Set expires_at ke 24 jam dari sekarang untuk pengambilan
             $redemption->update([
                 'status' => 'confirmed',
                 'processed_at' => Carbon::now(),
+                'expires_at' => Carbon::now()->addHours(24),
             ]);
 
             // Catat di point ledger
@@ -176,7 +169,7 @@ class RedemptionController extends Controller
     }
 
     /**
-     * Reject penukaran -> kembalikan poin (jika sudah dikurangi) + wajib isi alasan
+     * Reject penukaran -> kembalikan stok + poin
      */
     public function reject(Request $request, $id)
     {
@@ -187,7 +180,7 @@ class RedemptionController extends Controller
             'rejection_reason.min' => 'Alasan penolakan minimal 10 karakter.',
         ]);
 
-        $redemption = Redemption::with('user')->findOrFail($id);
+        $redemption = Redemption::with(['user', 'redemptionItems.rewardItem'])->findOrFail($id);
 
         if ($redemption->status !== 'pending') {
             return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
@@ -195,6 +188,11 @@ class RedemptionController extends Controller
 
         DB::beginTransaction();
         try {
+            // Kembalikan stok semua items
+            foreach ($redemption->redemptionItems as $item) {
+                $item->rewardItem->increment('stock', $item->quantity);
+            }
+
             // Update status redemption dengan alasan
             $redemption->update([
                 'status' => 'rejected',
@@ -202,12 +200,12 @@ class RedemptionController extends Controller
                 'processed_at' => Carbon::now(),
             ]);
 
-            // Poin tidak dikurangi saat pending, jadi tidak perlu dikembalikan
-            // (Sesuai requirement: poin baru dikurangi saat approve)
+            // Kirim notifikasi ke warga tentang penolakan
+            $redemption->user->notify(new PenolakanTukarPoin($redemption));
 
             DB::commit();
 
-            return back()->with('success', 'Penukaran berhasil ditolak.');
+            return back()->with('success', 'Penukaran berhasil ditolak. Stok barang sudah dikembalikan dan notifikasi telah dikirim ke warga.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menolak penukaran: ' . $e->getMessage());

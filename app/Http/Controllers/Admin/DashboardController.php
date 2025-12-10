@@ -21,19 +21,13 @@ class DashboardController extends Controller
         $admin = auth()->user()->load('branch');
         $branchId = $admin->branch_id;
         
-        // Total statistik
+        // Total statistik (tampilkan data global, warga bebas ke cabang manapun)
         $stats = [
-            'total_users' => User::whereIn('role', ['user', 'warga'])
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->count(),
-            'total_deposits' => Deposit::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
-            'total_redemptions' => Redemption::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
-            'pending_deposits' => Deposit::where('status', 'pending')
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->count(),
-            'pending_redemptions' => Redemption::where('status', 'pending')
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->count(),
+            'total_users' => User::whereIn('role', ['user', 'warga'])->count(),
+            'total_deposits' => Deposit::count(),
+            'total_redemptions' => Redemption::count(),
+            'pending_deposits' => Deposit::where('status', 'pending')->count(),
+            'pending_redemptions' => Redemption::where('status', 'pending')->count(),
         ];
 
         // Total setoran per bulan (12 bulan terakhir)
@@ -51,26 +45,15 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact('stats', 'depositsByMonth', 'redemptionsByMonth', 'recentActivities', 'systemStatus'));
     }
 
-    /**
-     * API endpoint untuk data dashboard
-     */
     public function getData()
     {
-        $adminBranchId = auth()->user()->branch_id;
-        
         return response()->json([
             'stats' => [
-                'total_users' => User::whereIn('role', ['user', 'warga'])
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
-                    ->count(),
-                'total_deposits' => Deposit::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
-                'total_redemptions' => Redemption::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
-                'pending_deposits' => Deposit::where('status', 'pending')
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
-                    ->count(),
-                'pending_redemptions' => Redemption::where('status', 'pending')
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
-                    ->count(),
+                'total_users' => User::whereIn('role', ['user', 'warga'])->count(),
+                'total_deposits' => Deposit::count(),
+                'total_redemptions' => Redemption::count(),
+                'pending_deposits' => Deposit::where('status', 'pending')->count(),
+                'pending_redemptions' => Redemption::where('status', 'pending')->count(),
             ],
             'deposits_by_month' => $this->getDepositsByMonth(),
             'redemptions_by_month' => $this->getRedemptionsByMonth(),
