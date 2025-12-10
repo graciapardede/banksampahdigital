@@ -138,6 +138,20 @@ Route::middleware('auth')->group(function () {
         ->name('riwayat.detail')
         ->middleware('no.cache');
     
+    // API: Get redemption data untuk countdown timer
+    Route::get('/riwayat/redemption/{id}', function($id) {
+        $redemption = \App\Models\Redemption::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->select('id', 'expires_at', 'status')
+            ->first();
+        
+        if (!$redemption) {
+            return response()->json(['error' => 'Not found'], 404);
+        }
+        
+        return response()->json($redemption);
+    })->name('riwayat.redemption-api');
+    
     // Notifikasi
     Route::get('/notifikasi', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifikasi');
     Route::get('/notifikasi/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifikasi.read');

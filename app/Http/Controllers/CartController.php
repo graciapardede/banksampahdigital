@@ -8,6 +8,7 @@ use App\Models\RedemptionItem;
 use App\Models\PointLedger;
 use App\Models\User;
 use App\Notifications\NewRedemptionRequest;
+use App\Notifications\PermintaanTukarPoin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -223,7 +224,7 @@ class CartController extends Controller
             ]);
 
             // ============================================================
-            // STEP 3: CREATE REDEMPTION ITEMS (JANGAN KURANGI STOK DULU)
+            // STEP 3: CREATE REDEMPTION ITEMS & KURANGI STOK
             // ============================================================
             foreach ($items as $item) {
                 // Create redemption item
@@ -234,8 +235,9 @@ class CartController extends Controller
                     'points' => $item['rewardItem']->points_cost,
                 ]);
 
-                // STOK TIDAK DIKURANGI DI SINI
-                // Stok akan dikurangi saat admin approve/confirm
+                // STOK DIKURANGI LANGSUNG
+                // Jika admin reject, stok akan dikembalikan
+                $item['rewardItem']->decrement('stock', $item['quantity']);
             }
 
             // ============================================================
@@ -264,10 +266,11 @@ class CartController extends Controller
             
             if ($admins->isEmpty()) {
                 // Fallback: jika tidak ada admin di cabang tersebut, kirim ke semua admin
-                $admins = User::where('role', 'admin')->get();
-                foreach ($admins as $admin) {
-                    $admin->notify(new NewRedemptionRequest($redemption));
-                }
+                $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+            }
+            
+            foreach ($admins as $admin) {
+                $admin->notify(new PermintaanTukarPoin($redemption, Auth::user()));
             }
 
             DB::commit();
@@ -380,10 +383,13 @@ class CartController extends Controller
                 $admins = User::where('role', 'admin')
                     ->where('branch_id', $branchId)
                     ->get();
-                
-                foreach ($admins as $admin) {
-                    $admin->notify(new NewRedemptionRequest($redemption));
-                }
+            } else {
+                // Jika tidak ada branch, kirim ke semua admin
+                $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+            }
+            
+            foreach ($admins as $admin) {
+                $admin->notify(new PermintaanTukarPoin($redemption, Auth::user()));
             }
 
             DB::commit();

@@ -162,16 +162,16 @@
             <!-- Notification List -->
             <div class="space-y-4">
                 @foreach($notifications as $notif)
-                <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 
-                    @if($notif->data['type'] == 'success') border-green-500
-                    @elseif($notif->data['type'] == 'info') border-blue-500
-                    @elseif($notif->data['type'] == 'warning') border-yellow-500
-                    @else border-gray-400
+                <div class="bg-gradient-to-r from-white to-green-50 rounded-xl p-5 shadow-md border-l-4 
+                    @if($notif->data['type'] == 'success') border-green-500 hover:from-green-50 hover:to-green-100
+                    @elseif($notif->data['type'] == 'info') border-blue-500 hover:from-blue-50 hover:to-blue-100
+                    @elseif($notif->data['type'] == 'warning') border-yellow-500 hover:from-yellow-50 hover:to-yellow-100
+                    @else border-gray-400 hover:from-gray-50 hover:to-gray-100
                     @endif
-                    hover:shadow-md transition-all {{ $notif->read_at ? 'opacity-60' : '' }}">
+                    transition-all hover:shadow-lg">
                     <div class="flex items-start space-x-4">
                         <!-- Dot Indicator -->
-                        <div class="w-3 h-3 rounded-full mt-2 flex-shrink-0
+                        <div class="w-4 h-4 rounded-full mt-1 flex-shrink-0 shadow-sm
                             @if($notif->data['type'] == 'success') bg-green-500
                             @elseif($notif->data['type'] == 'info') bg-blue-500
                             @elseif($notif->data['type'] == 'warning') bg-yellow-500
@@ -181,16 +181,16 @@
                         
                         <!-- Content -->
                         <div class="flex-1">
-                            <div class="flex items-start justify-between mb-1">
-                                <h3 class="font-semibold text-gray-800 text-base">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="font-bold text-gray-800 text-base">
                                     {{ $notif->data['title'] ?? 'Notifikasi' }}
                                 </h3>
                                 @if(!$notif->read_at)
-                                <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">Baru</span>
+                                <span class="bg-gradient-to-r from-green-400 to-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Baru</span>
                                 @endif
                             </div>
-                            <p class="text-sm text-gray-600 mb-2">{{ $notif->data['message'] ?? 'Pesan notifikasi' }}</p>
-                            <span class="text-xs text-gray-400">
+                            <p class="text-gray-700 text-sm font-medium mb-2">{{ $notif->data['message'] ?? 'Pesan notifikasi' }}</p>
+                            <span class="text-xs text-gray-500 font-medium">
                                 <i class="bi bi-clock mr-1"></i>
                                 {{ $notif->created_at->diffForHumans() }}
                             </span>
