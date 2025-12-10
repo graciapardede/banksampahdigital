@@ -62,22 +62,9 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 **Testing Scenario:**
 
 #### Scenario 1: Admin Berhasil Login dengan Kredensial Valid
-
-**HTTP Method: GET → POST → 302 Redirect**
-
-**Step 1: Admin Membuka Halaman Login [GET /login]**
+**Step 1: User Membuka Halaman Login**
 - Admin membuka browser
 - Admin navigate ke `http://127.0.0.1:8000/login`
-- **HTTP Request:**
-  ```
-  GET /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  ```
-- **HTTP Response:**
-  ```
-  HTTP/1.1 200 OK
-  Content-Type: text/html
-  ```
 - Halaman login ditampilkan dengan form yang berisi email input, password input, remember me checkbox, dan login button
 
 **Step 2: Admin Mengisi Form Login**
@@ -86,19 +73,10 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 - Admin klik pada field "Password"
 - Admin ketik: `password`
 - Admin dapat melihat kedua field terisi dengan benar
-- Password field menampilkan dots/asterisks (*) untuk keamanan
 
-**Step 3: Admin Melakukan Login [POST /login]**
+**Step 3: Admin Melakukan Login**
 - Admin klik tombol "Login" atau tekan Enter
-- Browser mengirimkan **POST request** ke `/login`:
-  ```
-  POST /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  Content-Type: application/x-www-form-urlencoded
-  
-  email=admin.sitoluama@greensaving.com&password=password
-  ```
-  atau dalam JSON format:
+- Browser mengirimkan POST request ke `/login` dengan body:
   ```json
   {
     "email": "admin.sitoluama@greensaving.com",
@@ -107,67 +85,19 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
   ```
 
 **Step 4: Server Melakukan Verifikasi**
-- Server menerima POST request
-- Server validate CSRF token (if using Laravel)
-- Server query database: 
-  ```sql
-  SELECT * FROM users WHERE email = 'admin.sitoluama@greensaving.com' LIMIT 1
-  ```
-- Server menemukan user di database (user ID = 1)
-- Server retrieve password hash dari database: `$2y$10$...`
-- Server membandingkan password yang dikirim dengan password hash menggunakan bcrypt:
-  ```php
-  bcrypt_verify('password', '$2y$10$...') → TRUE
-  ```
-- Password match berhasil ✓
-- Server check role user: 
-  ```sql
-  SELECT role FROM users WHERE id = 1
-  ```
-- Role = 'admin' ✓ Valid
+- Server menerima request
+- Server query database: `SELECT * FROM users WHERE email = 'admin.sitoluama@greensaving.com'`
+- Server menemukan user di database
+- Server membandingkan password yang dikirim dengan password hash di database menggunakan bcrypt
+- Password match berhasil
+- Server check role user: role = 'admin' ✓
 
-**Step 5: Server Membuat Session dan Redirect [302 Found]**
-- Server membuat session baru dengan session_id unik: `abc123def456ghi789`
-- Server menyimpan di database:
-  ```sql
-  INSERT INTO sessions (id, user_id, payload, last_activity)
-  VALUES ('abc123def456ghi789', 1, 'serialized_session_data', NOW())
-  ```
-- Server set cookie:
-  ```
-  Set-Cookie: PHPSESSID=abc123def456ghi789; Path=/; HttpOnly; SameSite=Lax
-  ```
-- Server mengirimkan **302 Redirect response**:
-  ```
-  HTTP/1.1 302 Found
-  Location: http://127.0.0.1:8000/admin/dashboard
-  Set-Cookie: PHPSESSID=abc123def456ghi789; Path=/; HttpOnly
-  ```
-
-**Step 6: Browser Redirect dan Fetch Dashboard [GET /admin/dashboard]**
-- Browser otomatis follow redirect ke `/admin/dashboard`
-- Browser mengirimkan **GET request** dengan session cookie:
-  ```
-  GET /admin/dashboard HTTP/1.1
-  Host: 127.0.0.1:8000
-  Cookie: PHPSESSID=abc123def456ghi789
-  ```
-- Auth middleware verify session:
-  ```php
-  session_start();
-  if (isset($_SESSION['user_id'])) → TRUE ✓
-  ```
-
-**Step 7: Admin Dashboard Loaded**
-- Server menampilkan dashboard dengan status 200 OK:
-  ```
-  HTTP/1.1 200 OK
-  Content-Type: text/html
-  ```
-- Dashboard render dengan admin data: "Sitolu Ama" (admin name)
-- Navbar menampilkan admin name dan logout button
-- Stats visible: Total Users, Total Deposits, Total Redemptions, Total Points
-- Status: ✅ LOGIN BERHASIL
+**Step 5: Server Membuat Session dan Redirect**
+- Server membuat session baru dengan session_id unik
+- Server menyimpan user_id, email, role, name di session
+- Server set cookie PHPSESSID dengan session_id
+- Server mengirimkan response 200 OK dengan redirect ke `/admin/dashboard`
+- Browser redirect ke `/admin/dashboard`
 
 **Step 6: Admin Dashboard Ditampilkan**
 - Browser navigate ke `/admin/dashboard`
@@ -179,117 +109,51 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 ---
 
 #### Scenario 2: Admin Login dengan Email Tidak Terdaftar
-
-**HTTP Method: GET /login → POST /login → 401 Unauthorized**
-
-**Step 1: Admin Membuka Login Page [GET /login]**
+**Step 1: Admin Membuka Login Page**
 - Admin navigate ke `http://127.0.0.1:8000/login`
-- **HTTP Request:**
-  ```
-  GET /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  ```
-- **HTTP Response:**
-  ```
-  HTTP/1.1 200 OK
-  Content-Type: text/html
-  ```
 
 **Step 2: Admin Isi Form dengan Email Tidak Terdaftar**
 - Admin ketik email: `notexist@example.com`
 - Admin ketik password: `password`
 
-**Step 3: Admin Submit Form [POST /login]**
+**Step 3: Admin Submit Form**
 - Admin klik tombol "Login"
-- Browser mengirimkan **POST request** ke `/login`:
-  ```
-  POST /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  Content-Type: application/x-www-form-urlencoded
-  
-  email=notexist@example.com&password=password
-  ```
+- Browser mengirimkan POST request ke `/login`
 
 **Step 4: Server Query Database**
 - Server cari user dengan email `notexist@example.com`
-- Server query:
-  ```sql
-  SELECT * FROM users WHERE email = 'notexist@example.com' LIMIT 1
-  ```
-- Result: NULL (user tidak ditemukan di database)
-- Authentication process stops
+- Server: `SELECT * FROM users WHERE email = 'notexist@example.com'` → NO RESULT
+- User tidak ditemukan di database
 
-**Step 5: Server Return Error [401 Unauthorized]**
-- Server mengirimkan **401 Unauthorized response**:
-  ```
-  HTTP/1.1 401 Unauthorized
-  Content-Type: application/json
-  
-  {
-    "errors": {
-      "email": ["Email atau password salah"]
-    }
-  }
-  ```
-- Browser tetap di halaman `/login` (tidak redirect)
+**Step 5: Server Return Error**
+- Server mengirimkan response 401 Unauthorized
+- Server return JSON error: `{"message": "Email atau password salah"}`
+- Browser tetap di halaman `/login`
 - Admin melihat error message: "Email atau password salah"
-- Field email terisi: `notexist@example.com`
-- Field password di-clear untuk security
-- Status: ✅ EMAIL VALIDATION BEKERJA
+- Field email dan password tetap terisi (kecuali password di-clear untuk security)
+- Status: ✅ ERROR HANDLING BEKERJA
 
 ---
 
 #### Scenario 3: Admin Login dengan Password Salah
-
-**HTTP Method: GET /login → POST /login → 401 Unauthorized**
-
-**Step 1: Admin Buka Login Page [GET /login]**
-- Admin navigate ke `http://127.0.0.1:8000/login`
-
-**Step 2: Admin Isi Form dengan Password Salah**
+**Step 1: Admin Isi Form dengan Password Salah**
 - Admin ketik email: `admin.sitoluama@greensaving.com` (benar)
 - Admin ketik password: `wrongpassword` (salah)
 
-**Step 3: Admin Submit Form [POST /login]**
+**Step 2: Admin Submit Form**
 - Admin klik tombol "Login"
-- Browser kirim **POST request**:
-  ```
-  POST /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  Content-Type: application/x-www-form-urlencoded
-  
-  email=admin.sitoluama@greensaving.com&password=wrongpassword
-  ```
 
-**Step 4: Server Verifikasi Email dan Password**
-- Server query database:
-  ```sql
-  SELECT * FROM users WHERE email = 'admin.sitoluama@greensaving.com' LIMIT 1
-  ```
-- User ditemukan (ID=1)
-- Server retrieve password hash: `$2y$10$abcdef...` (bcrypt hash)
-- Server compare password input dengan hash menggunakan bcrypt:
-  ```php
-  bcrypt_verify('wrongpassword', '$2y$10$abcdef...') → FALSE
-  ```
-- Password tidak match ✗
+**Step 3: Server Verifikasi**
+- Server cari user dengan email `admin.sitoluama@greensaving.com` → FOUND
+- Server ambil password hash dari database: `$2y$10$...` (bcrypt hash)
+- Server bandingkan password input "wrongpassword" dengan hash
+- Comparison: `bcrypt_verify('wrongpassword', '$2y$10$...')` → FALSE
+- Password tidak cocok
 
-**Step 5: Server Return Error [401 Unauthorized]**
-- Server mengirimkan **401 Unauthorized response**:
-  ```
-  HTTP/1.1 401 Unauthorized
-  Content-Type: application/json
-  
-  {
-    "errors": {
-      "email": ["Email atau password salah"]
-    }
-  }
-  ```
-- Admin tetap di halaman `/login` (tidak redirect)
-- Admin lihat error message: "Email atau password salah"
-- Field email: `admin.sitoluama@greensaving.com`
-- Field password: di-clear (empty)
+**Step 4: Server Return Error**
+- Server response 401 Unauthorized
+- Server return: `{"message": "Email atau password salah"}`
+- Admin tetap di halaman `/login`
 - Status: ✅ PASSWORD VALIDATION BEKERJA
 
 ---
@@ -508,79 +372,55 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 **Testing Scenario:**
 
 #### Scenario 1: Admin Logout Normal
-
-**HTTP Method: POST /logout → 302 Redirect → GET /login → 200 OK**
-
-**Step 1: Admin Sudah Login [Session Active]**
+**Step 1: Admin Sudah Login**
 - Admin sudah di `/admin/dashboard`
-- Session cookie ada di browser: `PHPSESSID=abc123def456`
 - Admin dapat melihat nama di navbar (authenticated)
-- Admin dapat melihat tombol "Logout" atau menu dropdown
+- Admin dapat melihat tombol "Logout" atau menu dropdown dengan opsi logout
 
-**Step 2: Admin Klik Logout Button**
-- Admin lihat navbar/menu area
+**Step 2: Admin Klik Logout**
+- Admin lihat navbar/menu
 - Admin klik tombol "Logout" atau klik menu → "Keluar"
+- Sistem akan menampilkan loading indicator atau langsung process
 
-**Step 3: Browser Mengirim Logout Request [POST /logout]**
-- Browser mengirimkan **POST request** ke `/logout`:
-  ```
-  POST /logout HTTP/1.1
-  Host: 127.0.0.1:8000
-  Cookie: PHPSESSID=abc123def456
-  X-CSRF-TOKEN: token_value (if using CSRF protection)
-  ```
+**Step 3: Browser Mengirim Logout Request**
+- Browser mengirimkan POST request ke `/logout`
+- Request header berisi session cookie dengan session_id
+- Request body: (POST request, bisa kosong atau dengan CSRF token)
 
-**Step 4: Server Proses Logout [Delete Session & Token]**
+**Step 4: Server Proses Logout**
 - Server menerima logout request
-- Server identify user dari session: user_id = 1
-- Server verify session is valid: `SELECT * FROM sessions WHERE id = 'abc123def456'`
+- Server verify session adalah valid
 - Server execute logout logic:
-  ```sql
-  -- Delete session dari database
-  DELETE FROM sessions WHERE id = 'abc123def456'
+  ```php
+  // Destroy session di database jika menggunakan database sessions
+  DELETE FROM sessions WHERE id = '{session_id}'
   
-  -- Clear remember token
-  UPDATE users SET remember_token = NULL WHERE id = 1
+  // Atau jika menggunakan file sessions
+  unlink('/tmp/sess_{session_id}')
   
-  -- Update last logout time (optional)
-  UPDATE users SET last_logout = NOW() WHERE id = 1
+  // Clear remember token dari database
+  UPDATE users SET remember_token = NULL WHERE id = {user_id}
+  
+  // Session variables dihapus
+  $_SESSION = []
   ```
-- Server memastikan tidak ada cache data user di session
 
-**Step 5: Server Set Cookie Expiration Headers [302 Found]**
-- Server mengirimkan response dengan expired cookies:
-  ```
-  HTTP/1.1 302 Found
-  Location: http://127.0.0.1:8000/login
-  Set-Cookie: PHPSESSID=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; HttpOnly
-  Set-Cookie: remember_me=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; HttpOnly
-  ```
-- Expired date di masa lalu = browser akan delete cookie
+**Step 5: Server Set Response Headers**
+- Server delete session cookie dengan:
+  - Set-Cookie: PHPSESSID=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/
+  - (Expired date di masa lalu untuk delete cookie)
+- Server delete remember_token cookie dengan cara sama
 
-**Step 6: Browser Redirect ke Login**
-- Browser menerima **302 Redirect response**
-- Browser delete session cookies (karena sudah expired)
+**Step 6: Server Redirect ke Login**
+- Server send redirect response 302 Found
+- Location header: `/login`
+- Response body: Success message atau auto-redirect
+
+**Step 7: Browser Redirect**
+- Browser menerima redirect response
 - Browser navigate ke `/login` automatically
-- Browser mengirimkan **GET request** ke `/login`:
-  ```
-  GET /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  ```
-- (No session cookie dalam request ini)
-
-**Step 7: Server Return Login Page [200 OK]**
-- Server menampilkan login page:
-  ```
-  HTTP/1.1 200 OK
-  Content-Type: text/html
-  
-  <html>
-    ...login form...
-  </html>
-  ```
-- Browser render login page
-- Admin lihat login form (kosong)
-- Optional: Flash message "Anda telah logout berhasil" ditampilkan
+- User lihat login page
+- Admin melihat message: "Anda telah logout" (jika ada flash message)
 - Status: ✅ LOGOUT BERHASIL
 
 ---
@@ -598,94 +438,38 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 - Admin buka URL bar
 - Admin ketik: `http://127.0.0.1:8000/admin/dashboard`
 - Admin tekan Enter
-- Browser mengirimkan **GET request**:
-  ```
-  GET /admin/dashboard HTTP/1.1
-  Host: 127.0.0.1:8000
-  ```
-- (No session cookie dalam request)
 
-**Step 3: Auth Middleware Check Session [Unauthenticated]**
-- Server middleware intercept request
-- Middleware execute: `auth()->check()` → FALSE
-- Middleware verify session_id di database:
-  ```sql
-  SELECT * FROM sessions WHERE id = NULL → NO RESULT
-  ```
-- User not authenticated ✗
+**Step 3: Server Check Session**
+- Browser mengirimkan request ke `/admin/dashboard`
+- Browser NOT mengirimkan session cookie (sudah dihapus)
+- Server check middleware: `Auth::check()` → FALSE
+- Server tidak menemukan user yang authenticated
 
-**Step 4: Server Redirect ke Login [302 Found]**
-- Middleware return redirect response:
-  ```
-  HTTP/1.1 302 Found
-  Location: http://127.0.0.1:8000/login
-  ```
+**Step 4: Server Check Remember Token**
+- Server check remember token cookie: NOT FOUND
+- Server tidak bisa auto-authenticate
 
-**Step 5: Browser Redirect ke Login**
-- Browser follow redirect
-- Browser mengirimkan **GET request** ke `/login`:
-  ```
-  GET /login HTTP/1.1
-  Host: 127.0.0.1:8000
-  ```
-
-**Step 6: Server Return Login Page [200 OK]**
-- Server menampilkan login form
+**Step 5: Server Redirect ke Login**
+- Server response redirect ke `/login`
+- Browser navigate ke `/login`
 - Admin harus login ulang
 - Status: ✅ SESSION INVALIDATION BEKERJA
 
 ---
 
 #### Scenario 3: Verify Remember Token Dihapus
-
-**HTTP Method: POST /logout → DELETE token → GET / → Redirect to /login**
-
 **Step 1: Admin Logout**
-- Admin klik logout button
-- Server execute POST /logout
-- Server delete session dan clear remember_token:
-  ```sql
-  DELETE FROM sessions WHERE user_id = 1
-  UPDATE users SET remember_token = NULL WHERE id = 1
-  ```
+- Admin sudah logout
+- Server execute: `UPDATE users SET remember_token = NULL`
 
-**Step 2: Server Delete Remember Cookie [302 Redirect]**
-- Server response dengan expired remember_me cookie:
-  ```
-  HTTP/1.1 302 Found
-  Location: /login
-  Set-Cookie: remember_me=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/
-  ```
-- Browser delete remember_me cookie
+**Step 2: Beberapa Hari Kemudian**
+- Admin buka browser
+- Browser masih punya cookie remember_token yang expired atau yang didelete
 
-**Step 3: Beberapa Hari Kemudian - Admin Buka Browser**
-- Browser tidak punya valid session cookie (sudah expired)
-- Browser tidak punya remember_me cookie (sudah deleted)
-- Admin buka aplikasi: `http://127.0.0.1:8000`
-
-**Step 4: Server Check for Remember Token [GET /]**
-- Browser mengirimkan **GET request** tanpa cookies:
-  ```
-  GET / HTTP/1.1
-  Host: 127.0.0.1:8000
-  ```
-- Server middleware check remember_me cookie: NOT FOUND
-- Server check database for remember token:
-  ```sql
-  SELECT * FROM users WHERE remember_token = ? AND remember_token IS NOT NULL
-  ```
-- Result: NULL (token tidak ada)
-- Auto-login FAILED
-
-**Step 5: Server Redirect ke Login [302 Found]**
-- Server response:
-  ```
-  HTTP/1.1 302 Found
-  Location: /login
-  ```
-- Browser redirect ke login page
-- Admin harus login ulang (auto-login tidak berfungsi)
-- Status: ✅ REMEMBER TOKEN CLEARED
+**Step 3: Server Check Remember Token**
+- Server query: `SELECT * FROM users WHERE remember_token = ?`
+- Tidak ada result (token sudah NULL)
+- Server tidak bisa authenticate dari remember token
 
 **Step 4: Server Redirect**
 - Server redirect ke `/login`
@@ -1051,112 +835,13 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 **Testing Scenario:**
 
 #### Scenario 1: Edit User Cabang
-
-**HTTP Method: GET /users/{id}/edit → PUT /users/{id} → 200 OK**
-
-1. **Admin Open User Detail Page [GET /users/5]**
-   - Admin navigate ke user detail: `/users/5`
-   - Browser send **GET request**:
-     ```
-     GET /users/5 HTTP/1.1
-     Host: 127.0.0.1:8000
-     Cookie: PHPSESSID=admin_session_123
-     ```
-   - Server fetch user data:
-     ```sql
-     SELECT * FROM users WHERE id = 5 LIMIT 1
-     ```
-   - Result: User found (name: "Gracia Pardede", branch_id: 1, email: "gracia@example.com", balance: 5000)
-   - Server return 200 OK dengan user detail page HTML
-
-2. **Admin Click Edit Button**
-   - User detail page display dengan button "Edit"
-   - Admin click "Edit" button
-   - Browser navigate to edit form: `/users/5/edit`
-   - Browser send **GET request**:
-     ```
-     GET /users/5/edit HTTP/1.1
-     Host: 127.0.0.1:8000
-     Cookie: PHPSESSID=admin_session_123
-     ```
-   - Server fetch user data dan branches:
-     ```sql
-     SELECT * FROM users WHERE id = 5
-     SELECT id, name FROM branches ORDER BY name
-     ```
-   - Server return 200 OK dengan edit form HTML
-   - Form display:
-     - Name field: "Gracia Pardede" (readonly)
-     - Email field: "gracia@example.com" (readonly)
-     - Branch dropdown: Currently selected = "Cabang Utama" (ID=1)
-     - Balance points field: 5000
-     - Submit button: "Update"
-
-3. **Admin Change Branch**
-   - Admin click branch dropdown
-   - Admin select "Cabang B" (ID=2)
-   - Form now show: Branch dropdown = "Cabang B"
-
-4. **Admin Submit Update [PUT /users/5]**
-   - Admin click "Update" button
-   - Browser send **PUT request**:
-     ```
-     PUT /users/5 HTTP/1.1
-     Host: 127.0.0.1:8000
-     Content-Type: application/x-www-form-urlencoded
-     Cookie: PHPSESSID=admin_session_123
-     X-HTTP-Method-Override: PUT
-     
-     branch_id=2&balance=5000
-     ```
-     atau dengan JSON:
-     ```json
-     {
-       "branch_id": 2,
-       "balance": 5000
-     }
-     ```
-
-5. **Server Validate Input**
-   - Server validate: branch_id exist
-     ```sql
-     SELECT * FROM branches WHERE id = 2
-     ```
-     Result: Found ✓
-   - Server validate: balance >= 0
-     Result: 5000 >= 0 = true ✓
-   - All validation PASS ✓
-
-6. **Server Update User [UPDATE Query]**
-   - Server execute UPDATE:
-     ```sql
-     UPDATE users SET branch_id = 2 WHERE id = 5
-     ```
-   - Rows affected: 1
-
-7. **Server Return Success [200 OK]**
-   - Server response:
-     ```
-     HTTP/1.1 200 OK
-     Content-Type: application/json
-     
-     {
-       "id": 5,
-       "name": "Gracia Pardede",
-       "email": "gracia@example.com",
-       "branch_id": 2,
-       "branch": "Cabang B",
-       "balance": 5000,
-       "message": "User berhasil diupdate"
-     }
-     ```
-
-8. **Browser Redirect or Show Success Message**
-   - Browser display success message: ✅ "User berhasil diupdate"
-   - Redirect to user list: `/users` (optional)
-   - User detail updated:
-     - Branch: "Cabang B" (changed from "Cabang Utama")
-   - Status: ✅ UPDATE SUCCESSFUL
+- Admin buka user detail
+- Admin klik "Edit"
+- Admin ubah cabang dari "Cabang A" ke "Cabang B"
+- Admin klik "Save"
+- Sistem validate input
+- Sistem update database
+- Sistem show success message
 
 **Test Case:**
 
@@ -1228,100 +913,13 @@ Endpoint `/login` menerima POST request dengan email dan password. Sistem memver
 **Testing Scenario:**
 
 #### Scenario 1: Delete User
-
-**HTTP Method: GET /users/{id} → DELETE /users/{id} → 200 OK → Redirect GET /users**
-
-1. **Admin Open User Detail Page [GET /users/8]**
-   - Admin navigate to user detail: `/users/8`
-   - Browser send **GET request**:
-     ```
-     GET /users/8 HTTP/1.1
-     Host: 127.0.0.1:8000
-     Cookie: PHPSESSID=admin_session_123
-     ```
-   - Server fetch user:
-     ```sql
-     SELECT * FROM users WHERE id = 8
-     ```
-     Result: User found (name: "Test User", email: "testuser@example.com")
-   - Server return 200 OK dengan user detail page
-   - User detail display dengan button "Delete" (biasanya red button)
-
-2. **Admin Click Delete Button**
-   - Admin click red "Delete" button atau "Hapus User"
-   - JavaScript confirmation dialog show:
-     ```
-     "Apakah Anda yakin ingin menghapus user ini?
-      Data historis akan tetap tersimpan."
-      [Cancel]  [Confirm]
-     ```
-
-3. **Admin Confirm Delete**
-   - Admin click "Confirm" button di dialog
-   - Browser send **DELETE request**:
-     ```
-     DELETE /users/8 HTTP/1.1
-     Host: 127.0.0.1:8000
-     Cookie: PHPSESSID=admin_session_123
-     X-CSRF-TOKEN: token_value
-     Content-Type: application/json
-     
-     {}
-     ```
-
-4. **Server Process Delete [DELETE Query]**
-   - Server verify user exist:
-     ```sql
-     SELECT * FROM users WHERE id = 8
-     ```
-   - User found ✓
-   - Server check if user has associated data:
-     ```sql
-     SELECT COUNT(*) FROM deposits WHERE user_id = 8
-     SELECT COUNT(*) FROM redemptions WHERE user_id = 8
-     ```
-   - Server soft-delete atau hard-delete:
-     - Option 1 (Soft Delete):
-       ```sql
-       UPDATE users SET deleted_at = NOW() WHERE id = 8
-       ```
-     - Option 2 (Hard Delete):
-       ```sql
-       DELETE FROM users WHERE id = 8
-       ```
-     - Deposits & Redemptions tetap ada di database (no cascade delete)
-
-5. **Server Return Success [200 OK]**
-   - Server response:
-     ```
-     HTTP/1.1 200 OK
-     Content-Type: application/json
-     
-     {
-       "message": "User berhasil dihapus",
-       "redirect": "/users"
-     }
-     ```
-
-6. **Browser Redirect to User List [GET /users]**
-   - Browser navigate to user list: `/users`
-   - Browser send **GET request**:
-     ```
-     GET /users HTTP/1.1
-     Host: 127.0.0.1:8000
-     Cookie: PHPSESSID=admin_session_123
-     ```
-   - Server fetch user list:
-     ```sql
-     SELECT * FROM users WHERE deleted_at IS NULL ORDER BY name
-     ```
-   - Server return 200 OK dengan updated user list
-
-7. **User List Updated**
-   - User list display tanpa user yang dihapus (ID=8 tidak ada)
-   - Success message show: ✅ "User berhasil dihapus"
-   - User yang lain tetap ada di list
-   - Status: ✅ DELETE SUCCESSFUL
+- Admin buka user detail
+- Admin klik "Delete"
+- Sistem tampilkan confirmation dialog: "Apakah Anda yakin?"
+- Admin klik "Yes"
+- Sistem delete user dari DB
+- Admin redirect ke user list
+- User tidak muncul di list
 
 **Test Case:**
 

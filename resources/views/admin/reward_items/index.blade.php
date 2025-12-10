@@ -411,12 +411,7 @@
 
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Kelola Stok</label>
-                                            <div class="flex items-center gap-2">
-                                                <button type="button" class="w-12 h-12 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold text-xl transition-colors flex items-center justify-center" x-on:click="editForm.stock = Math.max(0, Number(editForm.stock) - 1)">−</button>
-                                                <input type="number" name="stock" x-model="editForm.stock" min="0" class="flex-1 text-center rounded-lg border-2 border-gray-300 px-4 py-3 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                                <button type="button" class="w-12 h-12 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold text-xl transition-colors flex items-center justify-center" x-on:click="editForm.stock = Number(editForm.stock) + 1">+</button>
-                                            </div>
-                                            <p class="text-xs text-gray-500 mt-1">Klik - untuk mengurangi atau + untuk menambah stok</p>
+                                            <input type="number" name="stock" x-model="editForm.stock" min="0" class="block w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                         </div>
 
                                         <div>

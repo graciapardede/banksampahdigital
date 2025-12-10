@@ -174,35 +174,35 @@
                             Jumlah / Kuantitas
                         </label>
                         
-                        <!-- TUGAS 2: PERCANTIK INPUT QUANTITY (Gaya E-Commerce) -->
+                        <!-- Input Quantity dengan Spinner (Up/Down) -->
                         <div class="flex items-center justify-center">
-                            <div class="inline-flex items-center border-2 border-gray-300 rounded-lg overflow-hidden shadow-sm hover:border-green-500 transition-all">
-                                <!-- Tombol Minus -->
-                                <button type="button" 
-                                    id="btnDecrease"
-                                    class="px-4 py-3 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-r border-gray-300">
-                                    <i class="bi bi-dash text-xl font-bold text-gray-700"></i>
-                                </button>
-                                
-                                <!-- Input Angka -->
-                                <input type="number" 
-                                    name="quantity" 
-                                    id="quantity" 
-                                    value="1" 
-                                    min="1" 
-                                    max="{{ $rewardItem->stock }}"
-                                    data-price="{{ $rewardItem->points_cost }}"
-                                    class="w-20 text-center text-2xl font-bold border-0 focus:ring-0 focus:outline-none bg-white"
-                                    readonly>
-                                
-                                <!-- Tombol Plus -->
-                                <button type="button" 
-                                    id="btnIncrease"
-                                    class="px-4 py-3 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-l border-gray-300">
-                                    <i class="bi bi-plus text-xl font-bold text-gray-700"></i>
-                                </button>
-                            </div>
+                            <input type="number" 
+                                name="quantity" 
+                                id="quantity" 
+                                value="1" 
+                                min="1" 
+                                max="{{ $rewardItem->stock }}"
+                                data-price="{{ $rewardItem->points_cost }}"
+                                class="w-32 px-4 py-3 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all hover:border-green-500"
+                                style="
+                                    /* Hide default spinner in Chrome, Safari */
+                                    -webkit-outer-spin-button: none;
+                                    -webkit-inner-spin-button: none;
+                                    /* For Firefox */
+                                    -moz-appearance: textfield;
+                                ">
                         </div>
+                        
+                        <style>
+                            /* Show spinner for number input */
+                            #quantity::-webkit-outer-spin-button,
+                            #quantity::-webkit-inner-spin-button {
+                                -webkit-appearance: inner-spin-button;
+                                display: block;
+                                width: auto;
+                                height: auto;
+                            }
+                        </style>
                         
                         <p class="text-xs text-gray-500 mt-3 text-center">
                             <i class="bi bi-info-circle mr-1"></i>
@@ -526,8 +526,6 @@
                 }
                 
                 // TUGAS 2.2: Disable semua tombol aksi
-                disablePlusButton();
-                
                 if (btnAddToCart) {
                     btnAddToCart.disabled = true;
                     btnAddToCart.classList.add('opacity-50', 'cursor-not-allowed');
@@ -550,12 +548,7 @@
                     balanceStatusText.innerHTML = '<i class="bi bi-check-circle mr-1"></i>Saldo Cukup';
                 }
                 
-                // TUGAS 2.2: Enable semua tombol aksi (selama tidak melebihi stok)
-                const currentQty = parseInt(quantityInput.value) || 1;
-                if (currentQty < itemStock) {
-                    enablePlusButton();
-                }
-                
+                // TUGAS 2.2: Enable semua tombol aksi
                 if (btnAddToCart) {
                     btnAddToCart.disabled = false;
                     btnAddToCart.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -564,28 +557,6 @@
                     btnInstantRedeem.disabled = false;
                     btnInstantRedeem.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
-            }
-        }
-
-        /**
-         * TUGAS 1: Helper function - Disable tombol +
-         */
-        function disablePlusButton() {
-            if (btnIncrease) {
-                btnIncrease.disabled = true;
-                btnIncrease.classList.add('opacity-50', 'cursor-not-allowed');
-                console.log('🔒 Plus button disabled');
-            }
-        }
-
-        /**
-         * TUGAS 1: Helper function - Enable tombol +
-         */
-        function enablePlusButton() {
-            if (btnIncrease) {
-                btnIncrease.disabled = false;
-                btnIncrease.classList.remove('opacity-50', 'cursor-not-allowed');
-                console.log('🔓 Plus button enabled');
             }
         }
 
@@ -608,112 +579,6 @@
                 alertDiv.style.opacity = '0';
                 setTimeout(() => alertDiv.remove(), 300);
             }, 2500);
-        }
-
-        /**
-         * TUGAS 1.2: Fungsi Tombol '+' (Increase Quantity)
-         * Logika Baru:
-         * - Cek apakah nextSubtotal masih dalam batas saldo
-         * - JANGAN naikkan jika melebihi saldo
-         * - Disable tombol + jika sudah max budget
-         */
-        function increaseQty() {
-            if (!quantityInput) {
-                console.error('❌ Quantity input not found');
-                return;
-            }
-            
-            const currentValue = parseInt(quantityInput.value) || 1;
-            
-            // TUGAS 1.1: Dapatkan availableBalance dan itemPrice
-            const availableBalance = userBalance;
-            const pricePerItem = itemPrice;
-            
-            // TUGAS 1.2: Hitung nextSubtotal SEBELUM menaikkan
-            const nextQuantity = currentValue + 1;
-            const nextSubtotal = nextQuantity * pricePerItem;
-            
-            console.log('🔼 Attempting to increase:', {
-                current: currentValue,
-                next: nextQuantity,
-                nextSubtotal: nextSubtotal,
-                availableBalance: availableBalance,
-                itemStock: itemStock
-            });
-            
-            // Cek stok terlebih dahulu
-            if (currentValue >= itemStock) {
-                showStockAlert();
-                console.warn('⚠️ Cannot increase: Maximum stock reached');
-                return;
-            }
-            
-            // TUGAS 1.2: Cek apakah nextSubtotal melebihi saldo
-            if (nextSubtotal > availableBalance) {
-                // JANGAN naikkan kuantitas
-                console.warn('⚠️ Cannot increase: Insufficient balance!', {
-                    needed: nextSubtotal,
-                    available: availableBalance
-                });
-                
-                // Panggil fungsi disable tombol +
-                disablePlusButton();
-                
-                // Show alert
-                showBalanceAlert();
-                return;
-            }
-            
-            // Jika lolos semua validasi, naikkan kuantitas
-            quantityInput.value = nextQuantity;
-            
-            // Visual feedback
-            if (btnIncrease) {
-                btnIncrease.classList.add('scale-95');
-                setTimeout(() => btnIncrease.classList.remove('scale-95'), 100);
-            }
-            
-            console.log('✅ Quantity increased to:', nextQuantity);
-            
-            // TUGAS 1.2: Update subtotal dan check balance
-            updateSubtotalAndCheckBalance();
-        }
-
-        /**
-         * TUGAS 1.3: Fungsi Tombol '-' (Decrease Quantity)
-         * Logika Baru:
-         * - Selalu turunkan kuantitas (jika > 1)
-         * - Setelah turun, SELALU enable tombol + (pasti ada sisa saldo)
-         */
-        function decreaseQty() {
-            if (!quantityInput) {
-                console.error('❌ Quantity input not found');
-                return;
-            }
-            
-            const currentValue = parseInt(quantityInput.value) || 1;
-            
-            // Cek apakah masih bisa dikurangi (tidak kurang dari 1)
-            if (currentValue > 1) {
-                const nextQuantity = currentValue - 1;
-                quantityInput.value = nextQuantity;
-                
-                // Visual feedback
-                if (btnDecrease) {
-                    btnDecrease.classList.add('scale-95');
-                    setTimeout(() => btnDecrease.classList.remove('scale-95'), 100);
-                }
-                
-                console.log('✅ Quantity decreased to:', nextQuantity);
-                
-                // TUGAS 1.3: Update subtotal dan check balance
-                updateSubtotalAndCheckBalance();
-                
-                // TUGAS 1.3: Setelah turun, SELALU enable tombol + (pasti ada sisa saldo)
-                enablePlusButton();
-            } else {
-                console.warn('⚠️ Cannot decrease: Minimum quantity is 1');
-            }
         }
 
         /**
@@ -785,8 +650,6 @@
             subtotalDisplay = document.getElementById('subtotal');
             qtyDisplay = document.getElementById('qty-display');
             priceDisplay = document.getElementById('price-display');
-            btnIncrease = document.getElementById('btnIncrease');
-            btnDecrease = document.getElementById('btnDecrease');
             quantityContainer = document.querySelector('.quantity-container');
             
             // TUGAS 1: Ambil elemen untuk balance check
@@ -848,9 +711,7 @@
                 quantityInput: !!quantityInput,
                 subtotalDisplay: !!subtotalDisplay,
                 qtyDisplay: !!qtyDisplay,
-                priceDisplay: !!priceDisplay,
-                btnIncrease: !!btnIncrease,
-                btnDecrease: !!btnDecrease
+                priceDisplay: !!priceDisplay
             });
 
             console.log('💰 Item Data:', {
@@ -859,24 +720,13 @@
                 stock: itemStock
             });
 
-            // STEP 4: TUGAS 2.1 - Event Listeners untuk tombol +/-
-            if (btnIncrease) {
-                btnIncrease.addEventListener('click', increaseQty);
-                console.log('✅ Button (+) listener attached');
-            } else {
-                console.warn('⚠️ Button increase (#btnIncrease) not found');
-            }
-            
-            if (btnDecrease) {
-                btnDecrease.addEventListener('click', decreaseQty);
-                console.log('✅ Button (-) listener attached');
-            } else {
-                console.warn('⚠️ Button decrease (#btnDecrease) not found');
-            }
-
-            // STEP 5: Event listener untuk manual input
+            // STEP 4: Event listener untuk number input (spinner/manual input)
             quantityInput.addEventListener('input', validateAndUpdateQty);
-            console.log('✅ Manual input validation attached');
+            console.log('✅ Input validation attached');
+            
+            // STEP 5: Event listener untuk change (saat up/down arrow digunakan)
+            quantityInput.addEventListener('change', updateSubtotalAndCheckBalance);
+            console.log('✅ Change event listener attached');
 
             // STEP 6: TUGAS 2.2 - Initial calculation saat form dimuat
             console.log('🔄 Running initial subtotal calculation...');
