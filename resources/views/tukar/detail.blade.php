@@ -174,35 +174,37 @@
                             Jumlah / Kuantitas
                         </label>
                         
-                        <!-- Input Quantity dengan Spinner (Up/Down) -->
-                        <div class="flex items-center justify-center">
-                            <input type="number" 
+                        <!-- Input Quantity - Text Input untuk manual entry -->
+                        <div class="flex items-center justify-center gap-3">
+                            <!-- Minus Button -->
+                            <button type="button"
+                                id="btnMinus"
+                                onclick="decrementQuantity()"
+                                class="w-12 h-12 bg-red-100 hover:bg-red-200 text-red-600 font-bold rounded-lg transition-all text-xl flex items-center justify-center">
+                                −
+                            </button>
+
+                            <!-- Input Field -->
+                            <input type="text" 
                                 name="quantity" 
                                 id="quantity" 
                                 value="1" 
-                                min="1" 
-                                max="{{ $rewardItem->stock }}"
                                 data-price="{{ $rewardItem->points_cost }}"
-                                class="w-32 px-4 py-3 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all hover:border-green-500"
-                                style="
-                                    /* Hide default spinner in Chrome, Safari */
-                                    -webkit-outer-spin-button: none;
-                                    -webkit-inner-spin-button: none;
-                                    /* For Firefox */
-                                    -moz-appearance: textfield;
-                                ">
+                                data-max="{{ $rewardItem->stock }}"
+                                class="w-24 px-4 py-3 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all hover:border-green-500"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                placeholder="1"
+                                onfocus="this.select()">
+
+                            <!-- Plus Button -->
+                            <button type="button"
+                                id="btnPlus"
+                                onclick="incrementQuantity()"
+                                class="w-12 h-12 bg-green-100 hover:bg-green-200 text-green-600 font-bold rounded-lg transition-all text-xl flex items-center justify-center">
+                                +
+                            </button>
                         </div>
-                        
-                        <style>
-                            /* Show spinner for number input */
-                            #quantity::-webkit-outer-spin-button,
-                            #quantity::-webkit-inner-spin-button {
-                                -webkit-appearance: inner-spin-button;
-                                display: block;
-                                width: auto;
-                                height: auto;
-                            }
-                        </style>
                         
                         <p class="text-xs text-gray-500 mt-3 text-center">
                             <i class="bi bi-info-circle mr-1"></i>
@@ -561,6 +563,40 @@
         }
 
         /**
+         * Fungsi untuk menambah kuantitas (tombol +)
+         */
+        function incrementQuantity() {
+            if (!quantityInput) return;
+            
+            let value = parseInt(quantityInput.value) || 1;
+            value++;
+            
+            if (value > itemStock) {
+                value = itemStock;
+                showStockAlert();
+                return;
+            }
+            
+            quantityInput.value = value;
+            validateAndUpdateQty();
+        }
+
+        /**
+         * Fungsi untuk mengurangi kuantitas (tombol -)
+         */
+        function decrementQuantity() {
+            if (!quantityInput) return;
+            
+            let value = parseInt(quantityInput.value) || 1;
+            value--;
+            
+            if (value < 1) value = 1;
+            
+            quantityInput.value = value;
+            validateAndUpdateQty();
+        }
+
+        /**
          * Alert jika saldo tidak cukup untuk tambah qty
          */
         function showBalanceAlert() {
@@ -579,24 +615,6 @@
                 alertDiv.style.opacity = '0';
                 setTimeout(() => alertDiv.remove(), 300);
             }, 2500);
-        }
-
-        /**
-         * Validasi dan update qty jika user edit manual
-         */
-        function validateAndUpdateQty() {
-            if (!quantityInput) return;
-            
-            let value = parseInt(quantityInput.value) || 1;
-            
-            if (value < 1) value = 1;
-            if (value > maxStock) {
-                value = maxStock;
-                showStockAlert();
-            }
-            
-            quantityInput.value = value;
-            updateSubtotal();
         }
 
         /**
@@ -720,15 +738,37 @@
                 stock: itemStock
             });
 
-            // STEP 4: Event listener untuk number input (spinner/manual input)
-            quantityInput.addEventListener('input', validateAndUpdateQty);
-            console.log('✅ Input validation attached');
+            // STEP 4: Event listener untuk text input (filter hanya angka + validasi)
+            quantityInput.addEventListener('input', function(e) {
+                // Ambil value dan hapus karakter non-angka
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                
+                // Update input dengan value yang sudah difilter
+                e.target.value = value;
+                
+                // Jika kosong, jangan langsung set ke 1 (biarkan user ketik)
+                if (value === '') {
+                    return;
+                }
+                
+                // Validasi dan update
+                validateAndUpdateQty();
+            });
+            console.log('✅ Text input validation attached');
             
-            // STEP 5: Event listener untuk change (saat up/down arrow digunakan)
-            quantityInput.addEventListener('change', updateSubtotalAndCheckBalance);
-            console.log('✅ Change event listener attached');
+            // STEP 5: Event listener untuk blur (saat user keluar dari input field)
+            quantityInput.addEventListener('blur', function(e) {
+                // Jika kosong saat blur, set ke 1
+                if (e.target.value === '') {
+                    e.target.value = '1';
+                    updateSubtotal();
+                } else {
+                    validateAndUpdateQty();
+                }
+            });
+            console.log('✅ Blur event listener attached');
 
-            // STEP 6: TUGAS 2.2 - Initial calculation saat form dimuat
+            // STEP 6: Initial calculation saat form dimuat
             console.log('🔄 Running initial subtotal calculation...');
             updateSubtotal();
             

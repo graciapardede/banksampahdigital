@@ -28,14 +28,31 @@ class SetoranBaru extends Notification
 
     public function toDatabase($notifiable)
     {
+        // Load relationships
+        $this->deposit->load('depositItems.wasteType', 'branch');
+        
+        // Ambil ringkasan item
+        $itemsDescription = $this->deposit->depositItems->map(function ($item) {
+            return $item->wasteType->name . ' (' . $item->weight . ' kg)';
+        })->take(2)->join(', ');
+        
+        if ($this->deposit->depositItems->count() > 2) {
+            $itemsDescription .= ', ...';
+        }
+        
+        $branchName = $this->deposit->branch?->name ?? 'Cabang';
+        
         return [
-            'title' => 'Setoran Sampah Baru',
-            'message' => "{$this->warga->name} telah melakukan setoran sampah",
+            'title' => '📦 Setoran Sampah Baru',
+            'message' => "{$this->warga->name} telah melakukan setoran sampah ({$itemsDescription}). Total: {$this->deposit->total_points} poin.",
+            'type' => 'info',
+            'icon' => 'inbox-fill',
             'deposit_id' => $this->deposit->id,
             'user_name' => $this->warga->name,
             'total_points' => $this->deposit->total_points,
-            'branch_name' => $this->deposit->branch?->name,
-            'action_url' => route('admin.setoran.show', $this->deposit->id),
+            'branch_name' => $branchName,
+            'items' => $itemsDescription,
+            'link' => route('admin.setoran.show', $this->deposit->id),
         ];
     }
 }

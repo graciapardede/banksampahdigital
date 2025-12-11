@@ -122,6 +122,7 @@ class DepositController extends Controller
                     'date' => $redemption->created_at,
                     'points' => $redemption->total_points,
                     'status' => $redemption->status,
+                    'expires_at' => $redemption->expires_at,
                 ];
             });
             $transactions = $transactions->merge($redemptionData);

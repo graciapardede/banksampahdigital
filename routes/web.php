@@ -149,7 +149,13 @@ Route::middleware('auth')->group(function () {
             return response()->json(['error' => 'Not found'], 404);
         }
         
-        return response()->json($redemption);
+        return response()->json([
+            'id' => $redemption->id,
+            'status' => $redemption->status,
+            'expires_at' => $redemption->expires_at ? $redemption->expires_at->toIso8601String() : null,
+        ], 200, [
+            'Content-Type' => 'application/json; charset=UTF-8',
+        ]);
     })->name('riwayat.redemption-api');
     
     // Notifikasi

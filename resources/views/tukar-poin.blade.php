@@ -60,10 +60,10 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
+                        <button @click="open = !open; markNotificationsAsRead()" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span data-notif-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
                                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                             </span>
                             @endif
@@ -640,6 +640,28 @@
         console.log('- Current Points:', currentPoints);
         console.log('- Selected Branch ID:', selectedBranchId);
         console.log('- Available Rewards:', allRewards.length);
+
+        // Function to mark all notifications as read
+        async function markNotificationsAsRead() {
+            const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+            const badgeElement = document.querySelector('[data-notif-badge]');
+            
+            try {
+                const response = await fetch('{{ route('notifikasi.read-all') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok && badgeElement) {
+                    badgeElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+            }
+        }
     </script>
 
 </body>

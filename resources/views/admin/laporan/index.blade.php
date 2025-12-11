@@ -141,20 +141,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Net Poin -->
-            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-orange-100 text-sm font-medium mb-1">Net Poin</p>
-                        <h3 class="text-4xl font-bold">{{ number_format($stats['net_points']) }}</h3>
-                        <p class="text-orange-100 text-xs mt-2">poin beredar</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 rounded-full p-4">
-                        <i class="bi bi-bar-chart text-4xl"></i>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Detail Statistics -->

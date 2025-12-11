@@ -202,10 +202,6 @@
             <h3>{{ $stats['active_users'] }}</h3>
             <p>Pengguna Aktif</p>
         </div>
-        <div class="stat-card">
-            <h3>{{ number_format($stats['net_points']) }}</h3>
-            <p>Net Poin</p>
-        </div>
     </div>
 
     <!-- Waste Composition -->
@@ -375,7 +371,6 @@
     <div class="info-box" style="margin-top: 20px;">
         <p><strong>Total Poin Diberikan:</strong> {{ number_format($stats['total_points_given']) }} poin</p>
         <p><strong>Total Poin Ditukar:</strong> {{ number_format($stats['total_points_redeemed']) }} poin</p>
-        <p><strong>Net Poin (Beredar):</strong> {{ number_format($stats['net_points']) }} poin</p>
         <p><strong>Total Berat Sampah:</strong> {{ number_format($stats['total_waste_weight'], 2) }} kg</p>
     </div>
 

@@ -225,18 +225,11 @@ class ReportController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
 
-        // Total poin ditukar (hitung dari redemption_items)
-        $redemptions = Redemption::where('branch_id', $branchId)
+        // Total poin ditukar (dari field total_points di redemption)
+        $totalPointsRedeemed = Redemption::where('branch_id', $branchId)
             ->whereIn('status', ['approved', 'completed'])
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->with('redemptionItems.rewardItem')
-            ->get();
-        
-        $totalPointsRedeemed = $redemptions->sum(function($redemption) {
-            return $redemption->redemptionItems->sum(function($item) {
-                return $item->quantity * $item->rewardItem->points_required;
-            });
-        });
+            ->sum('total_points');
 
         // Pengguna aktif (yang melakukan setoran atau penukaran)
         // Ambil user_id dari deposits
@@ -257,13 +250,11 @@ class ReportController extends Controller
             ->unique()
             ->count();
 
-        // Net poin (poin diberikan - poin ditukar)
+        // Total poin diberikan
         $totalPointsGiven = Deposit::where('branch_id', $branchId)
             ->where('status', 'verified')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_points');
-
-        $netPoints = $totalPointsGiven - $totalPointsRedeemed;
 
         return [
             'total_deposits' => $totalDeposits,
@@ -271,7 +262,6 @@ class ReportController extends Controller
             'total_redemptions' => $totalRedemptions,
             'total_points_redeemed' => $totalPointsRedeemed,
             'active_users' => $activeUsers,
-            'net_points' => $netPoints,
             'total_points_given' => $totalPointsGiven,
         ];
     }

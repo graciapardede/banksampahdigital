@@ -80,10 +80,10 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
+                        <button @click="open = !open; markNotificationsAsRead()" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span data-notif-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
                                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                             </span>
                             @endif
@@ -450,20 +450,19 @@
                                         <i class="bi bi-coin text-sm"></i>
                                     </div>
                                     
-                                    @if($transaction['status'] === 'completed')
-                                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                            <i class="bi bi-check-circle-fill"></i>
-                                            Selesai
-                                        </span>
-                                    @elseif($transaction['status'] === 'confirmed')
+                                    @if($transaction['status'] === 'confirmed')
                                         <div class="flex flex-col gap-1 items-end">
                                             <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
                                                 <i class="bi bi-check-circle"></i>
                                                 Siap Ambil
                                             </span>
-                                            <span class="text-xs text-red-600 font-semibold countdown-timer" data-redemption-id="{{ $transaction['id'] }}">
-                                                ⏱️ Hitung mundur...
-                                            </span>
+                                            @if($transaction['expires_at'])
+                                                <span class="text-xs text-red-600 font-semibold countdown-timer" 
+                                                      data-redemption-id="{{ $transaction['id'] }}"
+                                                      data-expires-at="{{ $transaction['expires_at']->toIso8601String() }}">
+                                                    ⏱️ Hitung mundur...
+                                                </span>
+                                            @endif
                                         </div>
                                     @elseif($transaction['status'] === 'pending')
                                         <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
@@ -525,41 +524,86 @@
             const countdownElements = document.querySelectorAll('.countdown-timer');
             
             countdownElements.forEach(element => {
+                const expiresAtStr = element.getAttribute('data-expires-at');
                 const redemptionId = element.getAttribute('data-redemption-id');
                 
-                // Fetch data redemption dari server
-                fetch(`/riwayat/redemption/${redemptionId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.expires_at) {
-                            const expiresAt = new Date(data.expires_at).getTime();
-                            
-                            function updateCountdown() {
-                                const now = new Date().getTime();
-                                const remaining = expiresAt - now;
-                                
-                                if (remaining <= 0) {
-                                    element.textContent = '⏰ Waktu habis!';
-                                    element.classList.add('text-red-700', 'font-bold');
-                                    // Refresh halaman untuk update status
-                                    setTimeout(() => location.reload(), 3000);
-                                    return;
-                                }
-                                
-                                const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
-                                const minutes = Math.floor((remaining / (1000 * 60)) % 60);
-                                const seconds = Math.floor((remaining / 1000) % 60);
-                                
-                                element.textContent = `⏱️ ${hours}j ${minutes}m ${seconds}d`;
-                            }
-                            
-                            updateCountdown();
-                            setInterval(updateCountdown, 1000);
+                if (!expiresAtStr) {
+                    console.warn(`No expires_at for redemption ${redemptionId}`);
+                    return;
+                }
+                
+                const expiresAt = new Date(expiresAtStr).getTime();
+                
+                if (isNaN(expiresAt)) {
+                    console.error(`Invalid date format for redemption ${redemptionId}: ${expiresAtStr}`);
+                    element.textContent = '⏱️ Format tanggal invalid';
+                    return;
+                }
+                
+                function updateCountdown() {
+                    const now = new Date().getTime();
+                    const remaining = expiresAt - now;
+                    
+                    if (remaining <= 0) {
+                        element.textContent = '⏰ Waktu habis!';
+                        element.classList.remove('text-red-600');
+                        element.classList.add('text-red-700', 'font-bold');
+                        // Refresh halaman untuk update status
+                        setTimeout(() => location.reload(), 3000);
+                        return;
+                    }
+                    
+                    const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+                    const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+                    const seconds = Math.floor((remaining / 1000) % 60);
+                    
+                    // Format display dengan padding
+                    const hoursStr = String(hours).padStart(2, '0');
+                    const minutesStr = String(minutes).padStart(2, '0');
+                    const secondsStr = String(seconds).padStart(2, '0');
+                    
+                    if (days > 0) {
+                        element.textContent = `⏱️ ${days}h ${hoursStr}j ${minutesStr}m ${secondsStr}d`;
+                    } else {
+                        element.textContent = `⏱️ ${hoursStr}j ${minutesStr}m ${secondsStr}d`;
+                        
+                        // Warn jika kurang dari 1 jam
+                        if (remaining < 3600000) {
+                            element.classList.remove('text-red-600');
+                            element.classList.add('text-red-700', 'font-bold');
                         }
-                    })
-                    .catch(error => console.log('Error:', error));
+                    }
+                }
+                
+                // Update immediately
+                updateCountdown();
+                // Update every second
+                setInterval(updateCountdown, 1000);
             });
         });
+
+        // Function to mark all notifications as read
+        async function markNotificationsAsRead() {
+            const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+            const badgeElement = document.querySelector('[data-notif-badge]');
+            
+            try {
+                const response = await fetch('{{ route('notifikasi.read-all') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok && badgeElement) {
+                    badgeElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+            }
+        }
     </script>
 
 </body>

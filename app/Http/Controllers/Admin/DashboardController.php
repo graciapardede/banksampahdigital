@@ -22,14 +22,26 @@ class DashboardController extends Controller
         $admin = auth()->user()->load('branch');
         $branchId = $admin->branch_id;
         
+        // Get current month and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
         // Total statistik (tampilkan data global, warga bebas ke cabang manapun)
+        // Pending count HANYA untuk bulan ini (sesuai dengan admin penukaran page logic)
+        // Total stok reward hanya untuk branch admin tersebut
         $stats = [
             'total_users' => User::whereIn('role', ['user', 'warga'])->count(),
             'total_deposits' => Deposit::count(),
             'total_redemptions' => Redemption::count(),
-            'pending_deposits' => Deposit::where('status', 'pending')->count(),
-            'pending_redemptions' => Redemption::where('status', 'pending')->count(),
-            'total_reward_stock' => RewardItem::sum('stock') ?? 0,
+            'pending_deposits' => Deposit::where('status', 'pending')
+                ->whereMonth('created_at', $currentMonth)
+                ->whereYear('created_at', $currentYear)
+                ->count(),
+            'pending_redemptions' => Redemption::where('status', 'pending')
+                ->whereMonth('created_at', $currentMonth)
+                ->whereYear('created_at', $currentYear)
+                ->count(),
+            'total_reward_stock' => RewardItem::when($branchId, fn($q) => $q->where('branch_id', $branchId))->sum('stock') ?? 0,
         ];
 
         // Total setoran per bulan (12 bulan terakhir)
@@ -49,13 +61,23 @@ class DashboardController extends Controller
 
     public function getData()
     {
+        // Get current month and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
         return response()->json([
             'stats' => [
                 'total_users' => User::whereIn('role', ['user', 'warga'])->count(),
                 'total_deposits' => Deposit::count(),
                 'total_redemptions' => Redemption::count(),
-                'pending_deposits' => Deposit::where('status', 'pending')->count(),
-                'pending_redemptions' => Redemption::where('status', 'pending')->count(),
+                'pending_deposits' => Deposit::where('status', 'pending')
+                    ->whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
+                    ->count(),
+                'pending_redemptions' => Redemption::where('status', 'pending')
+                    ->whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
+                    ->count(),
             ],
             'deposits_by_month' => $this->getDepositsByMonth(),
             'redemptions_by_month' => $this->getRedemptionsByMonth(),

@@ -20,6 +20,7 @@ class RedemptionController extends Controller
     {
         $redemptions = Redemption::with('items.rewardItem')
             ->where('user_id', Auth::id())
+            ->select('id', 'user_id', 'branch_id', 'total_points', 'status', 'expires_at', 'created_at', 'updated_at')
             ->latest()
             ->get();
 

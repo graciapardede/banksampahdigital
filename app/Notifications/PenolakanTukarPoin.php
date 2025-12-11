@@ -26,16 +26,29 @@ class PenolakanTukarPoin extends Notification
 
     public function toDatabase($notifiable)
     {
+        // Load relationships
+        $this->redemption->load('items.rewardItem');
+        
+        // Ambil ringkasan item
+        $itemsDescription = $this->redemption->items->map(function ($item) {
+            return $item->rewardItem->name . ' (x' . $item->quantity . ')';
+        })->take(2)->join(', ');
+        
+        if ($this->redemption->items->count() > 2) {
+            $itemsDescription .= ', ...';
+        }
+        
+        $reason = $this->redemption->rejection_reason ?? 'Stok tidak tersedia atau terjadi kesalahan sistem.';
+        
         return [
             'title' => '❌ Penolakan Tukar Poin',
-            'message' => "Permintaan tukar poin Anda ditolak. Alasan: {$this->redemption->rejection_reason}",
+            'message' => "Permintaan tukar poin Anda ({$itemsDescription}) ditolak. Poin {$this->redemption->total_points} telah dikembalikan. Alasan: {$reason}",
             'type' => 'warning',
+            'icon' => 'exclamation-triangle-fill',
             'redemption_id' => $this->redemption->id,
             'total_points' => $this->redemption->total_points,
-            'items' => $this->redemption->redemptionItems->map(function($item) {
-                return $item->rewardItem->name . ' (x' . $item->quantity . ')';
-            })->join(', '),
-            'rejection_reason' => $this->redemption->rejection_reason,
+            'items' => $itemsDescription,
+            'rejection_reason' => $reason,
             'link' => route('riwayat'),
         ];
     }
