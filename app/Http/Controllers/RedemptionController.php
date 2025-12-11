@@ -7,7 +7,9 @@ use App\Models\Redemption;
 use App\Models\RedemptionItem;
 use App\Models\RewardItem;
 use App\Models\PointLedger;
+use App\Models\User;
 use App\Notifications\PenukaranBerhasil;
+use App\Notifications\NewRedemptionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -130,6 +132,12 @@ class RedemptionController extends Controller
 
             // Kirim notifikasi ke user
             $user->notify(new PenukaranBerhasil($redemption));
+
+            // Kirim notifikasi ke semua admin
+            $admins = User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new NewRedemptionRequest($redemption));
+            }
 
             DB::commit();
 

@@ -120,7 +120,7 @@ class DepositController extends Controller
                         return $item->rewardItem->name . ' (x' . $item->quantity . ')';
                     })->join(', '),
                     'date' => $redemption->created_at,
-                    'points' => -$redemption->total_points,
+                    'points' => $redemption->total_points,
                     'status' => $redemption->status,
                 ];
             });

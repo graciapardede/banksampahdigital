@@ -20,7 +20,7 @@
         }
     </script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
+<body class="min-h-screen bg-green-50 font-poppins">
 
     <!-- Header -->
     <header class="bg-white shadow-sm">
@@ -162,23 +162,14 @@
             <!-- Notification List -->
             <div class="space-y-4">
                 @foreach($notifications as $notif)
-                <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 
+                <div class="bg-white rounded-xl p-4 shadow-md border-l-4 
                     @if($notif->data['type'] == 'success') border-green-500
                     @elseif($notif->data['type'] == 'info') border-blue-500
                     @elseif($notif->data['type'] == 'warning') border-yellow-500
                     @else border-gray-400
                     @endif
-                    hover:shadow-md transition-all {{ $notif->read_at ? 'opacity-60' : '' }}">
+                    hover:shadow-lg transition-all">
                     <div class="flex items-start space-x-4">
-                        <!-- Dot Indicator -->
-                        <div class="w-3 h-3 rounded-full mt-2 flex-shrink-0
-                            @if($notif->data['type'] == 'success') bg-green-500
-                            @elseif($notif->data['type'] == 'info') bg-blue-500
-                            @elseif($notif->data['type'] == 'warning') bg-yellow-500
-                            @else bg-gray-400
-                            @endif">
-                        </div>
-                        
                         <!-- Content -->
                         <div class="flex-1">
                             <div class="flex items-start justify-between mb-1">

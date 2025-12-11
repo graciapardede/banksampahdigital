@@ -80,6 +80,6 @@ class User extends Authenticatable // implements MustVerifyEmail (Disabled - no 
     // Compatibility helper required by the controllers
     public function isWarga(): bool
     {
-        return $this->role === self::ROLE_WARGA || $this->role === 'user';
+        return $this->role === self::ROLE_WARGA;
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
+use GuzzleHttp\Client as GuzzleClient;
 
 class GoogleAuthController extends Controller
 {
@@ -27,8 +28,10 @@ class GoogleAuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            // Get user info from Google
-            $googleUser = Socialite::driver('google')->user();
+            // Get user info from Google with SSL verification disabled (development only)
+            $googleUser = Socialite::driver('google')
+                ->setHttpClient(new GuzzleClient(['verify' => false]))
+                ->user();
             
             // Check if user already exists
             $user = User::where('google_id', $googleUser->getId())->first();

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Notifications\BarangSiapDiambil;
 use App\Notifications\PenukaranBerhasil;
+use App\Notifications\RedemptionRejected;
 
 class RedemptionController extends Controller
 {
@@ -202,6 +203,9 @@ class RedemptionController extends Controller
                 'processed_at' => Carbon::now(),
             ]);
 
+            // Kirim notifikasi ke user tentang rejection
+            $redemption->user->notify(new RedemptionRejected($redemption, $request->rejection_reason));
+
             // Poin tidak dikurangi saat pending, jadi tidak perlu dikembalikan
             // (Sesuai requirement: poin baru dikurangi saat approve)
 
@@ -215,7 +219,8 @@ class RedemptionController extends Controller
     }
 
     /**
-     * Batalkan penukaran yang sudah expired (lewat 24 jam)
+     * Batalkan/Tolak penukaran (sama-sama set status jadi rejected)
+     * Bisa dipanggil dari cancel button atau reject form
      */
     public function cancel($id)
     {
@@ -227,18 +232,21 @@ class RedemptionController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update status redemption
+            // Update status redemption ke rejected (sama seperti reject)
             $redemption->update([
-                'status' => 'cancelled',
+                'status' => 'rejected',
                 'rejection_reason' => 'Penukaran dibatalkan karena melewati batas waktu 24 jam.',
                 'processed_at' => Carbon::now(),
             ]);
+
+            // Kirim notifikasi ke user
+            $redemption->user->notify(new RedemptionRejected($redemption, 'Penukaran dibatalkan karena melewati batas waktu 24 jam.'));
 
             // Poin tidak dikurangi saat pending, jadi tidak perlu dikembalikan
 
             DB::commit();
 
-            return back()->with('success', 'Penukaran expired berhasil dibatalkan.');
+            return back()->with('success', 'Penukaran berhasil dibatalkan.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal membatalkan penukaran: ' . $e->getMessage());

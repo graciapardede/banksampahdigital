@@ -127,46 +127,46 @@
 
             {{-- Stats Summary - Bulan Ini --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-white shadow-lg">
+                <div class="bg-gradient-to-br from-amber-200 to-yellow-200 rounded-2xl p-6 shadow-md border border-amber-300">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="w-12 h-12 bg-white bg-opacity-60 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         @if($pending > 0)
-                            <span class="w-6 h-6 bg-white text-orange-600 rounded-full flex items-center justify-center text-xs font-bold animate-pulse">{{ $pending }}</span>
+                            <span class="w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-xs font-bold animate-pulse">{{ $pending }}</span>
                         @endif
                     </div>
-                    <div class="text-sm font-medium opacity-90">Menunggu</div>
-                    <div class="text-3xl font-bold mt-1">{{ $pending }}</div>
-                    <div class="text-xs opacity-80 mt-1">Bulan {{ now()->format('F Y') }}</div>
+                    <div class="text-sm font-medium text-amber-800">Menunggu</div>
+                    <div class="text-3xl font-bold mt-1 text-amber-950">{{ $pending }}</div>
+                    <div class="text-xs text-amber-700 mt-1">Bulan {{ now()->format('F Y') }}</div>
                 </div>
 
-                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="bg-gradient-to-br from-emerald-200 to-teal-200 rounded-2xl p-6 shadow-md border border-emerald-300">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="w-12 h-12 bg-white bg-opacity-60 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                     </div>
-                    <div class="text-sm font-medium opacity-90">Dikonfirmasi</div>
-                    <div class="text-3xl font-bold mt-1">{{ $confirmed }}</div>
-                    <div class="text-xs opacity-80 mt-1">Bulan {{ now()->format('F Y') }}</div>
+                    <div class="text-sm font-medium text-emerald-800">Dikonfirmasi</div>
+                    <div class="text-3xl font-bold mt-1 text-emerald-950">{{ $confirmed }}</div>
+                    <div class="text-xs text-emerald-700 mt-1">Bulan {{ now()->format('F Y') }}</div>
                 </div>
 
-                <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl p-6 text-white shadow-lg">
+                <div class="bg-gradient-to-br from-lime-200 to-green-200 rounded-2xl p-6 shadow-md border border-lime-300">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="w-12 h-12 bg-white bg-opacity-60 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                     </div>
-                    <div class="text-sm font-medium opacity-90">Total Poin</div>
-                    <div class="text-3xl font-bold mt-1">{{ number_format($totalPoints, 0, ',', '.') }}</div>
-                    <div class="text-xs opacity-80 mt-1">Bulan {{ now()->format('F Y') }}</div>
+                    <div class="text-sm font-medium text-green-800">Total Poin</div>
+                    <div class="text-3xl font-bold mt-1 text-green-950">{{ number_format($totalPoints, 0, ',', '.') }}</div>
+                    <div class="text-xs text-green-700 mt-1">Bulan {{ now()->format('F Y') }}</div>
                 </div>
             </div>
 
@@ -255,92 +255,96 @@
 
                 <div class="p-6">
                     @if($redemptions->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($redemptions as $redemption)
-                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 {{ $redemption->status === 'pending' ? 'border-yellow-300' : ($redemption->status === 'confirmed' ? 'border-emerald-200' : 'border-gray-200') }} p-6 hover:shadow-lg transition-all">
-                                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                        <!-- User Info -->
-                                        <div class="flex items-start gap-4 flex-1">
-                                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
-                                                {{ substr($redemption->user->name, 0, 1) }}
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                                                    <h4 class="font-bold text-gray-800 text-lg">{{ $redemption->user->name }}</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50 border-b-2 border-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">WARGA</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">BARANG</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">TOTAL POIN</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">STATUS</th>
+                                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">TANGGAL</th>
+                                        <th class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">AKSI</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($redemptions as $redemption)
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {{ $redemption->id }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ $redemption->user->name }}</div>
+                                                <div class="text-sm text-gray-500">{{ $redemption->user->email }}</div>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm text-gray-900">
+                                                    @foreach($redemption->items as $item)
+                                                        <div>{{ $item->rewardItem->name }} (x{{ $item->quantity }})</div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-800">
+                                                    <i class="bi bi-coin mr-1"></i>
+                                                    {{ number_format($redemption->total_points, 0, ',', '.') }} poin
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($redemption->status === 'pending')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800">
+                                                        <i class="bi bi-clock mr-1"></i>
+                                                        Menunggu
+                                                    </span>
+                                                @elseif($redemption->status === 'confirmed')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                                        <i class="bi bi-check-circle mr-1"></i>
+                                                        Dikonfirmasi
+                                                    </span>
+                                                @elseif($redemption->status === 'completed')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                                                        <i class="bi bi-check-all mr-1"></i>
+                                                        Selesai
+                                                    </span>
+                                                @elseif($redemption->status === 'rejected')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                                                        <i class="bi bi-x-circle mr-1"></i>
+                                                        Ditolak
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ $redemption->created_at->format('d M Y, H:i') }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <div class="flex items-center justify-end flex-col gap-1">
+                                                    <a href="{{ route('admin.penukaran.show', $redemption->id) }}" 
+                                                        class="w-full inline-flex items-center justify-center px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-semibold transition-colors">
+                                                        <i class="bi bi-eye mr-1"></i>Detail
+                                                    </a>
+                                                    
                                                     @if($redemption->status === 'pending')
-                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-sm">
-                                                            <i class="bi bi-clock"></i>
-                                                            Menunggu
-                                                        </span>
+                                                        <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" class="w-full">
+                                                            @csrf
+                                                            <button type="button" onclick="confirmApprove(this)" class="w-full inline-flex items-center justify-center px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-xs font-semibold transition-colors">
+                                                                <i class="bi bi-check-circle mr-1"></i>Konfirmasi
+                                                            </button>
+                                                        </form>
                                                     @elseif($redemption->status === 'confirmed')
-                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm">
-                                                            <i class="bi bi-check-circle"></i>
-                                                            Dikonfirmasi
-                                                        </span>
-                                                    @elseif($redemption->status === 'rejected')
-                                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm">
-                                                            <i class="bi bi-x-circle"></i>
-                                                            Ditolak
-                                                        </span>
+                                                        <form action="{{ route('admin.penukaran.complete', $redemption->id) }}" method="POST" class="w-full">
+                                                            @csrf
+                                                            <button type="button" onclick="confirmComplete(this)" class="w-full inline-flex items-center justify-center px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-semibold transition-colors">
+                                                                <i class="bi bi-check-all mr-1"></i>Diserahkan
+                                                            </button>
+                                                        </form>
                                                     @endif
                                                 </div>
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                                                    <div class="flex items-center gap-2 text-sm">
-                                                        <i class="bi bi-gift text-emerald-600"></i>
-                                                        <span class="font-semibold text-gray-700">
-                                                            @foreach($redemption->items as $item)
-                                                                {{ $item->rewardItem->name }}@if(!$loop->last), @endif
-                                                            @endforeach
-                                                        </span>
-                                                    </div>
-                                                    <div class="flex items-center gap-2 text-sm">
-                                                        <i class="bi bi-calendar text-gray-400"></i>
-                                                        <span class="text-gray-600">{{ $redemption->created_at->format('d M Y, H:i') }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="flex items-center gap-2 text-sm mt-2">
-                                                    <i class="bi bi-geo-alt text-gray-400"></i>
-                                                    <span class="text-gray-600">Ambil di Cabang ({{ $redemption->branch ? $redemption->branch->name : 'Belum ditentukan' }})</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Points & Actions -->
-                                        <div class="flex items-center gap-4 lg:flex-shrink-0">
-                                            <div class="bg-gradient-to-br from-green-500 to-lime-600 rounded-2xl px-6 py-4 text-white shadow-lg">
-                                                <div class="text-xs font-medium opacity-90">Poin</div>
-                                                <div class="text-3xl font-bold">{{ $redemption->total_points }}</div>
-                                            </div>
-                                            
-                                            <div class="flex flex-col gap-2">
-                                                <a href="{{ route('admin.penukaran.show', $redemption->id) }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-xl text-gray-700 font-semibold text-sm shadow-sm hover:shadow-md transition-all" title="Lihat Detail">
-                                                    <i class="bi bi-eye"></i>
-                                                    Detail
-                                                </a>
-                                                
-                                                @if($redemption->status === 'pending')
-                                                    <form action="{{ route('admin.penukaran.approve', $redemption->id) }}" method="POST" class="inline-block">
-                                                        @csrf
-                                                        @method('POST')
-                                                        <button type="button" onclick="confirmApprove(this)" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
-                                                            <i class="bi bi-check-circle"></i>
-                                                            Konfirmasi
-                                                        </button>
-                                                    </form>
-                                                @elseif($redemption->status === 'confirmed')
-                                                    <form action="{{ route('admin.penukaran.complete', $redemption->id) }}" method="POST">
-                                                        @csrf
-                                                        <button type="button" onclick="confirmComplete(this)" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 rounded-xl text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
-                                                        <i class="bi bi-check-all"></i>
-                                                        Diserahkan
-                                                    </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @else
                         <div class="text-center py-12">
