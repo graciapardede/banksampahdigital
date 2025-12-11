@@ -36,9 +36,6 @@
                     <h2 class="text-2xl font-bold mb-2">Selamat Datang, Administrator!</h2>
                     <p class="text-green-100 mb-4">Kelola Bank Sampah Digital dengan mudah</p>
                     <div class="flex flex-wrap items-center gap-4 mt-4">
-                        <div class="bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-semibold">
-                            <i class="bi bi-shield-check mr-2"></i>Admin Cabang
-                        </div>
                         @php
                             $adminBranch = Auth::user()->branch_id ? \App\Models\Branch::find(Auth::user()->branch_id) : null;
                         @endphp
@@ -86,19 +83,16 @@
                 <p class="text-xs text-gray-500 mt-1">Semua transaksi setoran</p>
             </div>
 
-            <!-- Setoran Pending -->
+            <!-- Jumlah Stok Barang -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-yellow-500">
                 <div class="flex items-center justify-between mb-4">
                     <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                        <i class="bi bi-clock text-yellow-600 text-2xl"></i>
+                        <i class="bi bi-boxes text-yellow-600 text-2xl"></i>
                     </div>
-                    @if($stats['pending_deposits'] > 0)
-                    <span class="text-yellow-600 text-sm font-semibold">{{ $stats['pending_deposits'] }} Pending</span>
-                    @endif
                 </div>
-                <h3 class="text-gray-500 text-sm mb-1">Setoran Pending</h3>
-                <p class="text-2xl font-bold text-gray-800">{{ $stats['pending_deposits'] ?? 0 }}</p>
-                <p class="text-xs text-gray-500 mt-1">Menunggu konfirmasi</p>
+                <h3 class="text-gray-500 text-sm mb-1">Jumlah Stok Barang</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ $stats['total_reward_stock'] ?? 0 }}</p>
+                <p class="text-xs text-gray-500 mt-1">Total stok reward items</p>
             </div>
 
             <!-- Penukaran Pending -->

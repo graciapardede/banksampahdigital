@@ -37,28 +37,28 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
-                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="bi bi-recycle text-white text-3xl"></i>
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="bi bi-recycle text-white text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-2xl text-gray-800">Green Saving</h1>
+                        <h1 class="font-bold text-xl text-gray-800">Green Saving</h1>
                         <p class="text-sm text-green-600">Halo, {{ Auth::check() ? Auth::user()->name : 'Guest' }}</p>
                     </div>
                 </div>
 
                 <!-- Points & Actions -->
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-4">
                     @auth
                     <!-- Points Display -->
-                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-8 py-3 rounded-full border-2 border-green-200 shadow-sm">
+                    <div class="bg-gradient-to-r from-green-100 to-green-50 px-6 py-3 rounded-full border-2 border-green-300 shadow-md">
                         <div class="flex items-center space-x-2">
-                            <i class="bi bi-coin text-green-600 text-2xl"></i>
-                            <span class="font-bold text-green-700 text-xl">{{ number_format($saldoPoin ?? 0, 0, ',', '.') }} poin</span>
+                            <i class="bi bi-coin text-green-600 text-xl"></i>
+                            <span class="font-bold text-green-700 text-lg">{{ number_format($saldoPoin ?? 0, 0, ',', '.') }} poin</span>
                         </div>
                     </div>
 
                     <!-- Cart Button -->
-                    <a href="{{ route('cart.index') }}" class="relative w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                    <a href="{{ route('cart.index') }}" class="relative w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all">
                         <i class="bi bi-cart3 text-white text-xl"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
@@ -67,20 +67,30 @@
                         @endif
                     </a>
 
+                    <!-- Notification Bell -->
+                    <a href="{{ route('notifikasi') }}" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all shadow-lg">
+                        <i class="bi bi-bell text-gray-700 text-xl"></i>
+                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
+                        </span>
+                        @endif
+                    </a>
+
                     <!-- Profile Button -->
-                    <a href="/profil" class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center transition-all hover:scale-105 overflow-hidden shadow-lg">
+                    <a href="/profil" class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center transition-all overflow-hidden shadow-lg">
                         @if(Auth::user()->profile_photo)
                             <img src="/{{ Auth::user()->profile_photo }}" alt="Profile" class="w-full h-full object-cover">
                         @else
-                            <i class="bi bi-person-fill text-white text-2xl"></i>
+                            <i class="bi bi-person-fill text-white text-xl"></i>
                         @endif
                     </a>
 
                     <!-- Logout Button -->
                     <form method="POST" action="/logout" class="inline">
                         @csrf
-                        <button type="submit" class="w-14 h-14 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg">
-                            <i class="bi bi-box-arrow-right text-red-600 text-2xl"></i>
+                        <button type="submit" class="w-12 h-12 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-all shadow-lg">
+                            <i class="bi bi-box-arrow-right text-red-600 text-xl"></i>
                         </button>
                     </form>
                     @else
@@ -98,43 +108,35 @@
 
         <!-- Navigation Tabs -->
         <div class="bg-green-100 px-4 py-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-house-door pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Dashboard</span>
-                        <span class="lg:hidden pointer-events-none">Dashb</span>
+            <div class="max-w-6xl mx-auto flex justify-center">
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-house-door pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-person pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/profil" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-person pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-recycle pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/setor" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-recycle pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-gift pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Tukar Poin</span>
-                        <span class="lg:hidden pointer-events-none">Tukar</span>
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-gift pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Tukar Poin</span>
                     </a>
-                    <a href="/eco-news" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-newspaper pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Eco News</span>
-                        <span class="lg:hidden pointer-events-none">Eco</span>
+                    <a href="/eco-news" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-newspaper pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Eco News</span>
                     </a>
-                    <a href="/lokasi" class="bg-green-500 text-white px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-1 lg:gap-2 w-full cursor-default">
-                        <i class="bi bi-geo-alt-fill pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/lokasi" class="bg-green-500 text-white px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-2 cursor-default whitespace-nowrap">
+                        <i class="bi bi-geo-alt-fill pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Lokasi</span>
                     </a>
-                    <a href="/riwayat" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-clock-history pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/riwayat" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-clock-history pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Riwayat</span>
-                    </a>
-                    <a href="/notifikasi" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-bell pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Notifikasi</span>
-                        <span class="lg:hidden pointer-events-none">Notif</span>
                     </a>
                 </div>
             </div>

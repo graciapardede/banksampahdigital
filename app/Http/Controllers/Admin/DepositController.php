@@ -10,6 +10,7 @@ use App\Models\Branch;
 use App\Models\WasteType;
 use App\Models\PointLedger;
 use App\Notifications\SetoranDiverifikasi;
+use App\Notifications\SetoranBaru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -172,6 +173,15 @@ class DepositController extends Controller
             // ✅ Warga langsung dapat notif "Setoran Diverifikasi"
             // ============================================================
             $user->notify(new SetoranDiverifikasi($deposit));
+
+            // ============================================================
+            // STEP 7: KIRIM NOTIFIKASI KE ADMIN
+            // ✅ Admin dapat notif ada setoran baru
+            // ============================================================
+            $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new SetoranBaru($deposit, $user));
+            }
 
             // Commit transaksi jika semua berhasil
             DB::commit();

@@ -34,14 +34,10 @@ class ReportController extends Controller
         
         // Get waste composition
         $wasteComposition = $this->getWasteComposition($branchId, $startDate, $endDate);
-        
-        // Get top users
-        $topUsers = $this->getTopUsers($branchId, $startDate, $endDate);
 
         return view('admin.laporan.index', compact(
             'stats',
             'wasteComposition',
-            'topUsers',
             'period',
             'startDate',
             'endDate'
@@ -119,7 +115,6 @@ class ReportController extends Controller
 
         $stats = $this->getStatistics($branchId, $startDate, $endDate);
         $wasteComposition = $this->getWasteComposition($branchId, $startDate, $endDate);
-        $topUsers = $this->getTopUsers($branchId, $startDate, $endDate);
         $branch = \App\Models\Branch::find($branchId);
 
         // Get detail data
@@ -140,7 +135,6 @@ class ReportController extends Controller
         $pdf = \PDF::loadView('admin.laporan.pdf', compact(
             'stats',
             'wasteComposition',
-            'topUsers',
             'period',
             'startDate',
             'endDate',
@@ -225,18 +219,11 @@ class ReportController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
 
-        // Total poin ditukar (hitung dari redemption_items)
-        $redemptions = Redemption::where('branch_id', $branchId)
+        // Total poin ditukar (dari field total_points di redemption)
+        $totalPointsRedeemed = Redemption::where('branch_id', $branchId)
             ->whereIn('status', ['approved', 'completed'])
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->with('redemptionItems.rewardItem')
-            ->get();
-        
-        $totalPointsRedeemed = $redemptions->sum(function($redemption) {
-            return $redemption->redemptionItems->sum(function($item) {
-                return $item->quantity * $item->rewardItem->points_required;
-            });
-        });
+            ->sum('total_points');
 
         // Pengguna aktif (yang melakukan setoran atau penukaran)
         // Ambil user_id dari deposits
@@ -257,13 +244,11 @@ class ReportController extends Controller
             ->unique()
             ->count();
 
-        // Net poin (poin diberikan - poin ditukar)
+        // Total poin diberikan
         $totalPointsGiven = Deposit::where('branch_id', $branchId)
             ->where('status', 'verified')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_points');
-
-        $netPoints = $totalPointsGiven - $totalPointsRedeemed;
 
         return [
             'total_deposits' => $totalDeposits,
@@ -271,7 +256,6 @@ class ReportController extends Controller
             'total_redemptions' => $totalRedemptions,
             'total_points_redeemed' => $totalPointsRedeemed,
             'active_users' => $activeUsers,
-            'net_points' => $netPoints,
             'total_points_given' => $totalPointsGiven,
         ];
     }
@@ -289,24 +273,6 @@ class ReportController extends Controller
             ->whereBetween('deposits.created_at', [$startDate, $endDate])
             ->groupBy('waste_types.id', 'waste_types.name')
             ->orderByDesc('total_weight')
-            ->get();
-    }
-
-    /**
-     * Get top users by total deposits
-     */
-    private function getTopUsers($branchId, $startDate, $endDate, $limit = 5)
-    {
-        return User::select('users.id', 'users.name', 'users.phone')
-            ->whereIn('users.role', ['user', 'warga'])
-            ->where('users.branch_id', $branchId)
-            ->withCount(['deposits as total_deposits' => function($q) use ($startDate, $endDate) {
-                $q->where('status', 'verified')
-                  ->whereBetween('created_at', [$startDate, $endDate]);
-            }])
-            ->having('total_deposits', '>', 0)
-            ->orderByDesc('total_deposits')
-            ->limit($limit)
             ->get();
     }
 }

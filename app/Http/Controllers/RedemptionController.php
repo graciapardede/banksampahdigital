@@ -8,7 +8,8 @@ use App\Models\RedemptionItem;
 use App\Models\RewardItem;
 use App\Models\PointLedger;
 use App\Models\User;
-use App\Notifications\PenukaranBerhasil;
+use App
+Notifications\PenukaranBerhasil;
 use App\Notifications\NewRedemptionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,7 @@ class RedemptionController extends Controller
     {
         $redemptions = Redemption::with('items.rewardItem')
             ->where('user_id', Auth::id())
+            ->select('id', 'user_id', 'branch_id', 'total_points', 'status', 'expires_at', 'created_at', 'updated_at')
             ->latest()
             ->get();
 
@@ -31,12 +33,14 @@ class RedemptionController extends Controller
      */
     public function create(Request $request)
     {
-        // Ambil cabang yang dipilih, default cabang user
-        $selectedBranch = $request->input('branch_id', Auth::user()->branch_id);
+        // Ambil cabang yang dipilih, default null (user harus pilih)
+        $selectedBranch = $request->input('branch_id', null);
         
         // Ambil daftar reward sesuai cabang terpilih
-        $rewardItems = RewardItem::where('branch_id', $selectedBranch)
-            ->where('stock', '>', 0)
+        $rewardItems = RewardItem::where('stock', '>', 0)
+            ->when($selectedBranch, function($q) use ($selectedBranch) {
+                return $q->where('branch_id', $selectedBranch);
+            })
             ->orderBy('name')
             ->get();
         
@@ -134,7 +138,7 @@ class RedemptionController extends Controller
             $user->notify(new PenukaranBerhasil($redemption));
 
             // Kirim notifikasi ke semua admin
-            $admins = User::where('role', 'admin')->get();
+            $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
             foreach ($admins as $admin) {
                 $admin->notify(new NewRedemptionRequest($redemption));
             }

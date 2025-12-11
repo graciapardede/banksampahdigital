@@ -97,10 +97,10 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
+                        <button @click="open = !open; markNotificationsAsRead()" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span data-notif-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
                                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                             </span>
                             @endif
@@ -198,48 +198,35 @@
 
         <!-- Navigation Tabs -->
         <div class="bg-green-100 px-4 py-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                    <a href="/dashboard" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-house-door pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Dashboard</span>
-                        <span class="lg:hidden pointer-events-none">Dashb</span>
+            <div class="max-w-6xl mx-auto flex justify-center">
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <a href="/dashboard" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-house-door pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-green-500 text-white px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-1 lg:gap-2 w-full cursor-default">
-                        <i class="bi bi-person pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/profil" class="bg-green-500 text-white px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-2 cursor-default whitespace-nowrap">
+                        <i class="bi bi-person pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-recycle pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/setor" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-recycle pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-gift pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Tukar Poin</span>
-                        <span class="lg:hidden pointer-events-none">Tukar</span>
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-gift pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Tukar Poin</span>
                     </a>
-                    <a href="/eco-news" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-newspaper pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Eco News</span>
-                        <span class="lg:hidden pointer-events-none">Eco</span>
+                    <a href="/eco-news" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-newspaper pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Eco News</span>
                     </a>
-                    <a href="/lokasi" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-geo-alt-fill pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/lokasi" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-geo-alt-fill pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Lokasi</span>
                     </a>
-                    <a href="/riwayat" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-clock-history pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/riwayat" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-clock-history pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Riwayat</span>
-                    </a>
-                    <a href="/notifikasi" class="relative bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-bell pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Notifikasi</span>
-                        <span class="lg:hidden pointer-events-none">Notif</span>
-                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center pointer-events-none">
-                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
-                        </span>
-                        @endif
                     </a>
                 </div>
             </div>
@@ -302,30 +289,6 @@
                     <div class="flex-1">
                         <p class="text-sm text-gray-600 mb-1">Email</p>
                         <p class="font-semibold text-gray-900">{{ $user->email }}</p>
-                        
-                        <!-- Email Verification Status -->
-                        <div class="mt-2">
-                            @if($user->hasVerifiedEmail())
-                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-semibold">
-                                    <i class="bi bi-check-circle-fill"></i>
-                                    Terverifikasi
-                                </span>
-                            @else
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-xs font-semibold">
-                                        <i class="bi bi-exclamation-triangle-fill"></i>
-                                        Belum Verifikasi
-                                    </span>
-                                    <form method="POST" action="{{ route('verification.send') }}" class="inline">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-xs font-semibold transition-colors">
-                                            <i class="bi bi-send-fill"></i>
-                                            Kirim Ulang Link
-                                        </button>
-                                    </form>
-                                </div>
-                            @endif
-                        </div>
                     </div>
                 </div>
 
@@ -371,6 +334,30 @@
         </div>
 
     </main>
+
+    <script>
+        // Function to mark all notifications as read
+        async function markNotificationsAsRead() {
+            const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+            const badgeElement = document.querySelector('[data-notif-badge]');
+            
+            try {
+                const response = await fetch('{{ route('notifikasi.read-all') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok && badgeElement) {
+                    badgeElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+            }
+        }
+    </script>
 
 </body>
 </html>

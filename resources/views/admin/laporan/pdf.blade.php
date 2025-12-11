@@ -202,10 +202,6 @@
             <h3>{{ $stats['active_users'] }}</h3>
             <p>Pengguna Aktif</p>
         </div>
-        <div class="stat-card">
-            <h3>{{ number_format($stats['net_points']) }}</h3>
-            <p>Net Poin</p>
-        </div>
     </div>
 
     <!-- Waste Composition -->
@@ -243,33 +239,6 @@
             </tr>
         </tfoot>
         @endif
-    </table>
-
-    <!-- Top Users -->
-    <h3 class="section-title">PENGGUNA TERAKTIF</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Peringkat</th>
-                <th>Nama Warga</th>
-                <th>No. Telepon</th>
-                <th class="text-right">Jumlah Transaksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($topUsers as $index => $user)
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->phone }}</td>
-                <td class="text-right">{{ $user->total_deposits }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="4" class="text-center">Tidak ada data</td>
-            </tr>
-            @endforelse
-        </tbody>
     </table>
 
     <!-- Page Break -->
@@ -375,7 +344,6 @@
     <div class="info-box" style="margin-top: 20px;">
         <p><strong>Total Poin Diberikan:</strong> {{ number_format($stats['total_points_given']) }} poin</p>
         <p><strong>Total Poin Ditukar:</strong> {{ number_format($stats['total_points_redeemed']) }} poin</p>
-        <p><strong>Net Poin (Beredar):</strong> {{ number_format($stats['net_points']) }} poin</p>
         <p><strong>Total Berat Sampah:</strong> {{ number_format($stats['total_waste_weight'], 2) }} kg</p>
     </div>
 

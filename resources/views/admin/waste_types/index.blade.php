@@ -252,24 +252,20 @@
 
             <!-- Search and filters -->
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg mb-4">
-                <form method="GET" action="{{ route('admin.waste-types.index') }}" class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <form method="GET" action="{{ route('admin.waste-types.index') }}" class="flex gap-3">
                     <div class="flex-1">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari jenis sampah..." class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari jenis sampah..." class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
                     </div>
-                    <div class="flex items-center gap-3">
-                        <select name="category" class="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">Semua Kategori</option>
-                            <option value="Plastik" {{ request('category') === 'Plastik' ? 'selected' : '' }}>Plastik</option>
-                            <option value="Kertas" {{ request('category') === 'Kertas' ? 'selected' : '' }}>Kertas</option>
-                            <option value="Logam" {{ request('category') === 'Logam' ? 'selected' : '' }}>Logam</option>
-                            <option value="Kaca" {{ request('category') === 'Kaca' ? 'selected' : '' }}>Kaca</option>
-                            <option value="Organik" {{ request('category') === 'Organik' ? 'selected' : '' }}>Organik</option>
-                            <option value="Elektronik" {{ request('category') === 'Elektronik' ? 'selected' : '' }}>Elektronik</option>
-                        </select>
-                        <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            <i class="bi bi-search"></i> Cari
-                        </button>
-                    </div>
+                    <button type="submit" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow-md">
+                        <i class="bi bi-search"></i>
+                        <span>Cari</span>
+                    </button>
+                    @if(request('search'))
+                    <a href="{{ route('admin.waste-types.index') }}" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-colors flex items-center gap-2 whitespace-nowrap">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        <span>Reset</span>
+                    </a>
+                    @endif
                 </form>
             </div>
 

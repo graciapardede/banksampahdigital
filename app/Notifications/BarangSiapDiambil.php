@@ -53,11 +53,14 @@ class BarangSiapDiambil extends Notification
         $branchName = $this->redemption->branch->name ?? 'Cabang';
 
         return [
-            'title' => '🎉 Barang Siap Diambil!',
-            'message' => "Penukaran Anda ({$itemsDescription}) telah disetujui dan siap diambil di {$branchName}. Total poin yang dipotong: {$this->redemption->total_points}.",
+            'title' => '✅ Barang Siap Diambil!',
+            'message' => "Penukaran Anda ({$itemsDescription}) telah disetujui dan siap diambil di {$branchName}. Ambil dalam 24 jam! ⏰",
             'type' => 'success',
-            'icon' => 'check-circle',
-            'link' => url('/riwayat'),
+            'icon' => 'check-circle-fill',
+            'redemption_id' => $this->redemption->id,
+            'total_points' => $this->redemption->total_points,
+            'branch_name' => $branchName,
+            'link' => route('riwayat'),
             'redemption_id' => $this->redemption->id,
             'total_points' => $this->redemption->total_points,
             'items_count' => $this->redemption->items->count(),

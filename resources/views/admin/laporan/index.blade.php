@@ -141,20 +141,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Net Poin -->
-            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-orange-100 text-sm font-medium mb-1">Net Poin</p>
-                        <h3 class="text-4xl font-bold">{{ number_format($stats['net_points']) }}</h3>
-                        <p class="text-orange-100 text-xs mt-2">poin beredar</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 rounded-full p-4">
-                        <i class="bi bi-bar-chart text-4xl"></i>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Detail Statistics -->
@@ -190,38 +176,6 @@
                     </div>
                 </div>
                 @endif
-            </div>
-
-            <!-- Pengguna Teraktif -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="bi bi-trophy-fill text-yellow-500 mr-2"></i>
-                    Pengguna Teraktif
-                </h3>
-                <div class="space-y-3">
-                    @forelse($topUsers as $index => $user)
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white font-bold">
-                                {{ $index + 1 }}
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-700">{{ $user->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $user->phone }}</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-green-600">{{ $user->total_deposits }}</p>
-                            <p class="text-xs text-gray-500">setoran</p>
-                        </div>
-                    </div>
-                    @empty
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="bi bi-person-x text-4xl mb-2"></i>
-                        <p>Belum ada pengguna aktif</p>
-                    </div>
-                    @endforelse
-                </div>
             </div>
         </div>
 

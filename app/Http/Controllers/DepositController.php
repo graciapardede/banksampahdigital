@@ -122,6 +122,7 @@ class DepositController extends Controller
                     'date' => $redemption->created_at,
                     'points' => $redemption->total_points,
                     'status' => $redemption->status,
+                    'expires_at' => $redemption->expires_at,
                 ];
             });
             $transactions = $transactions->merge($redemptionData);
@@ -130,9 +131,23 @@ class DepositController extends Controller
         // Sort by date descending
         $transactions = $transactions->sortByDesc('date')->take(50);
         
+        // Hitung statistik penukaran poin
+        $pendingRedemptions = \App\Models\Redemption::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->count();
+        
+        $confirmedRedemptions = \App\Models\Redemption::where('user_id', $user->id)
+            ->where('status', 'confirmed')
+            ->count();
+        
+        $totalPoints = $user->balance_points ?? 0;
+        
         return view('riwayat', [
             'transactions' => $transactions,
             'userBalance' => $user->balance_points ?? 0,
+            'pendingRedemptions' => $pendingRedemptions,
+            'confirmedRedemptions' => $confirmedRedemptions,
+            'totalPoints' => $totalPoints,
         ]);
     }
 

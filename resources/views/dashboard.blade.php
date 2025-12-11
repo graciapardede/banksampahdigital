@@ -60,10 +60,10 @@
 
                     <!-- Notification Bell with Dropdown -->
                     <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
+                        <button @click="open = !open; markNotificationsAsRead()" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all">
                             <i class="bi bi-bell text-gray-700 text-xl"></i>
                             @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                            <span data-notif-badge class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
                                 {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
                             </span>
                             @endif
@@ -168,48 +168,35 @@
 
         <!-- Navigation Tabs -->
         <div class="bg-green-100 px-4 py-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                    <a href="/dashboard" class="bg-green-500 text-white px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-1 lg:gap-2 w-full cursor-default">
-                        <i class="bi bi-house-door pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Dashboard</span>
-                        <span class="lg:hidden pointer-events-none">Dashb</span>
+            <div class="max-w-6xl mx-auto flex justify-center">
+                <div class="flex flex-wrap gap-3 justify-center">
+                    <a href="/dashboard" class="bg-green-500 text-white px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold shadow-md flex items-center justify-center gap-2 cursor-default whitespace-nowrap">
+                        <i class="bi bi-house-door pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Dashboard</span>
                     </a>
-                    <a href="/profil" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-person pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/profil" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-person pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Profil</span>
                     </a>
-                    <a href="/setor" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-recycle pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/setor" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-recycle pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Setor</span>
                     </a>
-                    <a href="/tukar-poin" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-gift pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Tukar Poin</span>
-                        <span class="lg:hidden pointer-events-none">Tukar</span>
+                    <a href="/tukar-poin" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-gift pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Tukar Poin</span>
                     </a>
-                    <a href="/eco-news" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-newspaper pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Eco News</span>
-                        <span class="lg:hidden pointer-events-none">Eco</span>
+                    <a href="/eco-news" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-newspaper pointer-events-none text-base"></i>
+                        <span class="pointer-events-none">Eco News</span>
                     </a>
-                    <a href="/lokasi" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-geo-alt-fill pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/lokasi" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-geo-alt-fill pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Lokasi</span>
                     </a>
-                    <a href="/riwayat" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-clock-history pointer-events-none text-sm lg:text-base"></i>
+                    <a href="/riwayat" class="bg-white text-gray-700 px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="bi bi-clock-history pointer-events-none text-base"></i>
                         <span class="pointer-events-none">Riwayat</span>
-                    </a>
-                    <a href="/notifikasi" class="relative bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-bell pointer-events-none text-sm lg:text-base"></i>
-                        <span class="hidden lg:inline pointer-events-none">Notifikasi</span>
-                        <span class="lg:hidden pointer-events-none">Notif</span>
-                        @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center pointer-events-none">
-                            {{ $unreadNotifications > 9 ? '9+' : $unreadNotifications }}
-                        </span>
-                        @endif
                     </a>
                 </div>
             </div>
@@ -329,7 +316,7 @@
     </footer>
 
     <!-- Modal Detail -->
-    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" data-user-role="{{ Auth::user()->role }}">
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div class="p-6">
                 <!-- Modal Header -->
@@ -530,6 +517,14 @@
                         : `${totalPoints.toLocaleString('id-ID')}`;
                     const pointsColor = showDeduction ? 'text-blue-600' : 'text-gray-500';
 
+                    // Countdown timer untuk confirmed status
+                    let countdownHtml = '';
+                    if (activity.status === 'confirmed' && activity.expires_at) {
+                        countdownHtml = `<span class="text-xs text-red-600 font-semibold countdown-timer-dashboard" data-redemption-id="${activity.id}" data-expires-at="${activity.expires_at}">
+                            ⏱️ Hitung mundur...
+                        </span>`;
+                    }
+
                     return `
                         <div onclick="showDetail('redemption', ${activity.id})" 
                              class="p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border-l-4 border-blue-500 cursor-pointer hover:shadow-md transition-shadow">
@@ -547,12 +542,16 @@
                                     <div class="font-bold ${pointsColor} text-sm">${pointsDisplay} <i class="bi bi-coin text-xs"></i></div>
                                 </div>
                             </div>
-                            <div class="flex items-center justify-end text-xs">
+                            <div class="flex items-center justify-between text-xs">
+                                <div>${countdownHtml}</div>
                                 <span class="${status.bg} ${status.text} px-2 py-1 rounded-full font-semibold">${status.label}</span>
                             </div>
                         </div>
                     `;
                 }).join('');
+
+                // Initialize countdown timers for dashboard
+                initializeDashboardCountdowns();
             }
         }
 
@@ -744,9 +743,87 @@
                         `).join('') || '<p class="text-gray-500 text-center py-4">Tidak ada item</p>'}
                     </div>
                 </div>
+
+                ${data.status === 'pending' && document.getElementById('detail-modal').getAttribute('data-user-role') === 'admin' ? `
+                    <div class="mt-6 flex gap-3">
+                        <button onclick="approveRedemption(${data.id})" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                            <i class="bi bi-check-circle"></i>
+                            Setujui
+                        </button>
+                        <button onclick="rejectRedemption(${data.id})" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                            <i class="bi bi-x-circle"></i>
+                            Tolak
+                        </button>
+                    </div>
+                ` : ''}
             `;
 
             document.getElementById('modal-content').innerHTML = content;
+        }
+
+        // Approve redemption
+        function approveRedemption(redemptionId) {
+            if (!confirm('Apakah Anda yakin ingin menyetujui penukaran ini?')) {
+                return;
+            }
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            fetch(`/admin/penukaran/${redemptionId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert('✅ Penukaran berhasil disetujui!');
+                    closeModal();
+                    location.reload(); // Refresh untuk update data
+                } else {
+                    alert('❌ Gagal menyetujui penukaran');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('❌ Terjadi kesalahan');
+            });
+        }
+
+        // Reject redemption
+        function rejectRedemption(redemptionId) {
+            const reason = prompt('Masukkan alasan penolakan:');
+            if (reason === null) {
+                return; // User cancel
+            }
+
+            if (!reason.trim()) {
+                alert('Alasan penolakan tidak boleh kosong!');
+                return;
+            }
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            fetch(`/admin/penukaran/${redemptionId}/reject`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    rejection_reason: reason
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('✅ Penukaran berhasil ditolak!');
+                    closeModal();
+                    location.reload(); // Refresh untuk update data
+                } else {
+                    alert('❌ Gagal menolak penukaran');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('❌ Terjadi kesalahan');
+            });
         }
 
         // Close modal
@@ -761,6 +838,46 @@
             }
         });
 
+        // Initialize countdown timers for dashboard
+        function initializeDashboardCountdowns() {
+            const countdownElements = document.querySelectorAll('.countdown-timer-dashboard');
+            
+            countdownElements.forEach(element => {
+                const expiresAtStr = element.getAttribute('data-expires-at');
+                if (!expiresAtStr) return;
+                
+                const expiresAt = new Date(expiresAtStr).getTime();
+                
+                function updateCountdown() {
+                    const now = new Date().getTime();
+                    const remaining = expiresAt - now;
+                    
+                    if (remaining <= 0) {
+                        element.textContent = '⏰ Waktu habis!';
+                        element.classList.remove('text-red-600');
+                        element.classList.add('text-red-700', 'font-bold');
+                        return;
+                    }
+                    
+                    const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+                    const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+                    const seconds = Math.floor((remaining / 1000) % 60);
+                    
+                    const hoursStr = String(hours).padStart(2, '0');
+                    const minutesStr = String(minutes).padStart(2, '0');
+                    const secondsStr = String(seconds).padStart(2, '0');
+                    
+                    element.textContent = `⏱️ ${hoursStr}j ${minutesStr}m ${secondsStr}d`;
+                }
+                
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            });
+        }
+
+        // Initial load
+        fetchDashboardData();
+
         // Initial load
         document.addEventListener('DOMContentLoaded', function() {
             fetchDashboardData();
@@ -768,6 +885,28 @@
             // Auto refresh every 30 seconds
             setInterval(fetchDashboardData, 30000);
         });
+
+        // Function to mark all notifications as read
+        async function markNotificationsAsRead() {
+            const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+            const badgeElement = document.querySelector('[data-notif-badge]');
+            
+            try {
+                const response = await fetch('{{ route('notifikasi.read-all') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok && badgeElement) {
+                    badgeElement.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+            }
+        }
     </script>
 
 </body>

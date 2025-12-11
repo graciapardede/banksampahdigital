@@ -106,7 +106,8 @@ class RedemptionController extends Controller
     }
 
     /**
-     * Approve penukaran -> kurangi poin user & stok barang
+     * Approve penukaran -> set expires_at 24 jam
+     * Poin sudah dikurangi saat warga melakukan tukar poin (pending status)
      */
     public function approve(Request $request, $id)
     {
@@ -116,60 +117,25 @@ class RedemptionController extends Controller
             return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
         }
 
-        // Cek apakah sudah expired (lewat 24 jam)
-        if ($redemption->expires_at && Carbon::now()->isAfter($redemption->expires_at)) {
-            return back()->with('error', 'Penukaran sudah kadaluarsa (lewat 24 jam). Silakan batalkan penukaran ini.');
-        }
-
         DB::beginTransaction();
         try {
             $user = $redemption->user;
             $totalPoints = $redemption->total_points;
 
-            // Cek saldo poin user
-            if ($user->balance_points < $totalPoints) {
-                DB::rollBack();
-                return back()->with('error', 'Poin user tidak cukup!');
-            }
-
-            // Cek dan kurangi stok untuk setiap item
-            foreach ($redemption->items as $item) {
-                $rewardItem = $item->rewardItem;
-                
-                if ($rewardItem->stock < $item->quantity) {
-                    DB::rollBack();
-                    return back()->with('error', "Stok {$rewardItem->name} tidak mencukupi. Stok tersedia: {$rewardItem->stock}");
-                }
-
-                // Kurangi stok
-                $rewardItem->decrement('stock', $item->quantity);
-            }
-
-            // Kurangi poin user
-            $user->decrement('balance_points', $totalPoints);
-
             // Update status redemption ke 'confirmed' (barang siap diambil)
+            // Set expires_at ke 24 jam dari sekarang untuk pengambilan
             $redemption->update([
                 'status' => 'confirmed',
                 'processed_at' => Carbon::now(),
+                'expires_at' => Carbon::now()->addHours(24),
             ]);
 
-            // Catat di point ledger
-            PointLedger::create([
-                'user_id' => $user->id,
-                'redemption_id' => $redemption->id,
-                'type' => 'debit',
-                'amount' => $totalPoints,
-                'balance_after' => $user->balance_points,
-                'description' => 'Penukaran poin dengan barang',
-            ]);
-
-            // KIRIM NOTIFIKASI KE USER: Barang siap diambil
+            // KIRIM NOTIFIKASI KE USER: Barang siap diambil (dalam 24 jam)
             $user->notify(new BarangSiapDiambil($redemption));
 
             DB::commit();
 
-            return back()->with('success', "Penukaran berhasil dikonfirmasi! Barang siap diambil. Poin {$user->full_name} telah dikurangi {$totalPoints}.");
+            return back()->with('success', "Penukaran berhasil dikonfirmasi! Barang siap diambil dalam 24 jam. Poin {$user->full_name} telah dipotong {$totalPoints}.");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menyetujui penukaran: ' . $e->getMessage());
@@ -177,7 +143,7 @@ class RedemptionController extends Controller
     }
 
     /**
-     * Reject penukaran -> kembalikan poin (jika sudah dikurangi) + wajib isi alasan
+     * Reject penukaran -> kembalikan stok + poin
      */
     public function reject(Request $request, $id)
     {
@@ -188,7 +154,7 @@ class RedemptionController extends Controller
             'rejection_reason.min' => 'Alasan penolakan minimal 10 karakter.',
         ]);
 
-        $redemption = Redemption::with('user')->findOrFail($id);
+        $redemption = Redemption::with(['user', 'redemptionItems.rewardItem'])->findOrFail($id);
 
         if ($redemption->status !== 'pending') {
             return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
@@ -196,6 +162,27 @@ class RedemptionController extends Controller
 
         DB::beginTransaction();
         try {
+            $user = $redemption->user;
+            $totalPoints = $redemption->total_points;
+
+            // Kembalikan stok semua items
+            foreach ($redemption->redemptionItems as $item) {
+                $item->rewardItem->increment('stock', $item->quantity);
+            }
+
+            // KEMBALIKAN POIN KE USER (poin sudah dikurangi saat pending)
+            $user->increment('balance_points', $totalPoints);
+
+            // Catat reversal di point ledger
+            \App\Models\PointLedger::create([
+                'user_id' => $user->id,
+                'type' => 'credit',
+                'amount' => $totalPoints, // Amount = absolute value
+                'balance_after' => $user->balance_points, // Balance setelah dikembalikan
+                'description' => "Pengembalian poin (Penolakan) - Redemption ID: {$redemption->id}",
+                'redemption_id' => $redemption->id,
+            ]);
+
             // Update status redemption dengan alasan
             $redemption->update([
                 'status' => 'rejected',
@@ -211,7 +198,7 @@ class RedemptionController extends Controller
 
             DB::commit();
 
-            return back()->with('success', 'Penukaran berhasil ditolak.');
+            return back()->with('success', "Penukaran berhasil ditolak. Stok barang dan poin ({$totalPoints}) sudah dikembalikan ke user.");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menolak penukaran: ' . $e->getMessage());
@@ -219,27 +206,55 @@ class RedemptionController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * Batalkan/Tolak penukaran (sama-sama set status jadi rejected)
      * Bisa dipanggil dari cancel button atau reject form
+=======
+     * Batalkan penukaran yang sudah expired (lewat 24 jam setelah confirm)
+>>>>>>> 276701dbcde6517b1b66e8631f27fb3d900290d9
      */
     public function cancel($id)
     {
         $redemption = Redemption::with('user')->findOrFail($id);
 
-        if ($redemption->status !== 'pending') {
-            return back()->with('error', 'Penukaran sudah diproses sebelumnya.');
+        if ($redemption->status !== 'confirmed') {
+            return back()->with('error', 'Hanya penukaran yang sudah dikonfirmasi dan expired yang bisa dibatalkan.');
         }
 
         DB::beginTransaction();
         try {
+<<<<<<< HEAD
             // Update status redemption ke rejected (sama seperti reject)
             $redemption->update([
                 'status' => 'rejected',
                 'rejection_reason' => 'Penukaran dibatalkan karena melewati batas waktu 24 jam.',
+=======
+            $user = $redemption->user;
+            $totalPoints = $redemption->total_points;
+
+            // KEMBALIKAN POIN KE USER (poin sudah dikurangi saat pending)
+            $user->increment('balance_points', $totalPoints);
+
+            // Catat reversal di point ledger
+            \App\Models\PointLedger::create([
+                'user_id' => $user->id,
+                'type' => 'credit',
+                'amount' => $totalPoints, // Amount = absolute value
+                'balance_after' => $user->balance_points, // Balance setelah dikembalikan
+                'description' => "Pengembalian poin (Expired 24 jam) - Redemption ID: {$redemption->id}",
+                'redemption_id' => $redemption->id,
+            ]);
+
+            // Update status redemption
+            $redemption->update([
+                'status' => 'cancelled',
+                'rejection_reason' => 'Penukaran dibatalkan karena melewati batas waktu 24 jam pengambilan barang.',
+>>>>>>> 276701dbcde6517b1b66e8631f27fb3d900290d9
                 'processed_at' => Carbon::now(),
             ]);
 
             // Kirim notifikasi ke user
+<<<<<<< HEAD
             $redemption->user->notify(new RedemptionRejected($redemption, 'Penukaran dibatalkan karena melewati batas waktu 24 jam.'));
 
             // Poin tidak dikurangi saat pending, jadi tidak perlu dikembalikan
@@ -247,6 +262,13 @@ class RedemptionController extends Controller
             DB::commit();
 
             return back()->with('success', 'Penukaran berhasil dibatalkan.');
+=======
+            $user->notify(new \App\Notifications\PenolakanTukarPoin($redemption));
+
+            DB::commit();
+
+            return back()->with('success', "Penukaran expired berhasil dibatalkan. Poin ({$totalPoints}) sudah dikembalikan ke user.");
+>>>>>>> 276701dbcde6517b1b66e8631f27fb3d900290d9
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal membatalkan penukaran: ' . $e->getMessage());

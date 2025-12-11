@@ -55,7 +55,7 @@ class PenukaranBerhasil extends Notification
             'message' => "Barang Anda ({$itemsDescription}) telah diserahkan. Terima kasih telah menggunakan Green Saving!",
             'type' => 'success',
             'icon' => 'check-circle-fill',
-            'link' => url('/riwayat'),
+            'link' => route('riwayat'),
             'redemption_id' => $this->penukaran->id,
             'points_used' => $this->penukaran->total_points,
             'items_count' => $this->penukaran->items->count(),

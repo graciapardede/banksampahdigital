@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Models\Redemption;
 use App\Models\User;
+use App\Models\RewardItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -21,19 +22,26 @@ class DashboardController extends Controller
         $admin = auth()->user()->load('branch');
         $branchId = $admin->branch_id;
         
-        // Total statistik
+        // Get current month and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+        
+        // Total statistik (tampilkan data global, warga bebas ke cabang manapun)
+        // Pending count HANYA untuk bulan ini (sesuai dengan admin penukaran page logic)
+        // Total stok reward hanya untuk branch admin tersebut
         $stats = [
-            'total_users' => User::whereIn('role', ['user', 'warga'])
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->count(),
-            'total_deposits' => Deposit::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
-            'total_redemptions' => Redemption::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count(),
+            'total_users' => User::whereIn('role', ['user', 'warga'])->count(),
+            'total_deposits' => Deposit::count(),
+            'total_redemptions' => Redemption::count(),
             'pending_deposits' => Deposit::where('status', 'pending')
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->whereMonth('created_at', $currentMonth)
+                ->whereYear('created_at', $currentYear)
                 ->count(),
             'pending_redemptions' => Redemption::where('status', 'pending')
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->whereMonth('created_at', $currentMonth)
+                ->whereYear('created_at', $currentYear)
                 ->count(),
+            'total_reward_stock' => RewardItem::when($branchId, fn($q) => $q->where('branch_id', $branchId))->sum('stock') ?? 0,
         ];
 
         // Total setoran per bulan (12 bulan terakhir)
@@ -51,25 +59,24 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact('stats', 'depositsByMonth', 'redemptionsByMonth', 'recentActivities', 'systemStatus'));
     }
 
-    /**
-     * API endpoint untuk data dashboard
-     */
     public function getData()
     {
-        $adminBranchId = auth()->user()->branch_id;
+        // Get current month and year
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
         
         return response()->json([
             'stats' => [
-                'total_users' => User::whereIn('role', ['user', 'warga'])
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
-                    ->count(),
-                'total_deposits' => Deposit::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
-                'total_redemptions' => Redemption::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))->count(),
+                'total_users' => User::whereIn('role', ['user', 'warga'])->count(),
+                'total_deposits' => Deposit::count(),
+                'total_redemptions' => Redemption::count(),
                 'pending_deposits' => Deposit::where('status', 'pending')
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
+                    ->whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
                     ->count(),
                 'pending_redemptions' => Redemption::where('status', 'pending')
-                    ->when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId))
+                    ->whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
                     ->count(),
             ],
             'deposits_by_month' => $this->getDepositsByMonth(),
@@ -133,6 +140,7 @@ class DashboardController extends Controller
 
     /**
      * Get redemptions grouped by month (last 12 months)
+     * Only counts completed/delivered redemptions
      */
     private function getRedemptionsByMonth()
     {
@@ -146,6 +154,7 @@ class DashboardController extends Controller
                     DB::raw('COUNT(*) as total')
                 )
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->where('status', 'completed')
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')
@@ -158,6 +167,7 @@ class DashboardController extends Controller
                     DB::raw('COUNT(*) as total')
                 )
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
+                ->where('status', 'completed')
                 ->where('created_at', '>=', Carbon::now()->subMonths(12))
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'asc')
