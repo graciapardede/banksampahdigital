@@ -241,33 +241,6 @@
         @endif
     </table>
 
-    <!-- Top Users -->
-    <h3 class="section-title">PENGGUNA TERAKTIF</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Peringkat</th>
-                <th>Nama Warga</th>
-                <th>No. Telepon</th>
-                <th class="text-right">Jumlah Transaksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($topUsers as $index => $user)
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->phone }}</td>
-                <td class="text-right">{{ $user->total_deposits }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="4" class="text-center">Tidak ada data</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-
     <!-- Page Break -->
     <div class="page-break"></div>
 
