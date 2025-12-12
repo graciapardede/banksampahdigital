@@ -2,6 +2,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Api\EcoProviderStatusController;
+
+// Health Check Endpoints (public)
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok'], 200);
+});
+
+Route::get('/eco-provider/status', [EcoProviderStatusController::class, 'checkStatus']);
 
 // Simple API Register (No Request class)
 Route::post('/register', function (Request $request) {
