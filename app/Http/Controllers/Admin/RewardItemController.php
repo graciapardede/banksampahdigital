@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RewardItem;
+use App\Models\RedemptionItem;
+use App\Models\User;
+use App\Notifications\StokMenipis;
 use Illuminate\Http\Request;
 
 class RewardItemController extends Controller
@@ -39,12 +42,18 @@ class RewardItemController extends Controller
         
         // Calculate statistics
         $allItems = RewardItem::when($adminBranchId, fn($q) => $q->where('branch_id', $adminBranchId));
+        
+        // Calculate total redeemed from redemption_items
+        $totalRedeemed = RedemptionItem::whereIn('reward_item_id', 
+            $allItems->pluck('id')->toArray()
+        )->sum('quantity');
+        
         $stats = [
             'total' => $allItems->count(),
             'active' => $allItems->where('stock', '>', 0)->count(),
             'total_stock' => $allItems->sum('stock'),
             'low_stock' => $allItems->where('stock', '>', 0)->where('stock', '<', 10)->count(),
-            'total_redeemed' => 0, // TODO: calculate from redemptions
+            'total_redeemed' => $totalRedeemed,
         ];
         
         return view('admin.reward_items.index', compact('rewardItems', 'stats'));
@@ -162,7 +171,19 @@ class RewardItemController extends Controller
             $validated['image'] = $imageName;
         }
 
+        // Check if stock is becoming low
+        $oldStock = $rewardItem->stock;
+        $newStock = $validated['stock'];
+        
         $rewardItem->update($validated);
+
+        // Send notification if stock becomes low (< 10 items) and was previously higher
+        if ($newStock < 10 && $oldStock >= 10) {
+            $admin = User::where('role', 'admin')->first();
+            if ($admin) {
+                $admin->notify(new StokMenipis($rewardItem, $newStock));
+            }
+        }
 
         return redirect()->route('admin.reward-items.index')
             ->with('success', 'Barang reward berhasil diupdate!');
@@ -189,6 +210,8 @@ class RewardItemController extends Controller
             'action' => 'required|in:add,subtract',
         ]);
 
+        $oldStock = $rewardItem->stock;
+
         if ($validated['action'] === 'add') {
             $rewardItem->stock += $validated['quantity'];
         } else {
@@ -196,6 +219,14 @@ class RewardItemController extends Controller
         }
 
         $rewardItem->save();
+
+        // Send notification if stock becomes low (< 10 items) and was previously higher
+        if ($rewardItem->stock < 10 && $oldStock >= 10) {
+            $admin = User::where('role', 'admin')->first();
+            if ($admin) {
+                $admin->notify(new StokMenipis($rewardItem, $rewardItem->stock));
+            }
+        }
 
         return redirect()->route('admin.reward-items.index')
             ->with('success', 'Stok berhasil diupdate!');

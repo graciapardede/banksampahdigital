@@ -133,14 +133,6 @@
                 </div>
             </div>
         </div>
-                    </a>
-                    <a href="/riwayat" class="bg-white text-gray-700 px-2 lg:px-4 py-3 rounded-2xl text-xs lg:text-sm font-semibold hover:bg-green-50 transition-colors shadow-sm flex items-center justify-center gap-1 lg:gap-2 w-full cursor-pointer">
-                        <i class="bi bi-clock-history pointer-events-none text-sm lg:text-base"></i>
-                        <span class="pointer-events-none">Riwayat</span>
-                    </a>
-                </div>
-            </div>
-        </div>
     </header>
 
     <!-- Main Content -->

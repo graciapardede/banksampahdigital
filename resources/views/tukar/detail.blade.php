@@ -19,6 +19,20 @@
                 extend: {
                     fontFamily: {
                         'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    keyframes: {
+                        'spin-slow': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        'pulse-ring': {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(34, 197, 94, 0.7)' },
+                            '50%': { boxShadow: '0 0 0 15px rgba(34, 197, 94, 0)' }
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin-slow 1s linear infinite',
+                        'pulse-ring': 'pulse-ring 2s infinite'
                     }
                 }
             }
@@ -404,8 +418,26 @@
             // Close modal
             closeConfirmModal();
             
+            // Show loading state
+            const btnAddToCart = document.getElementById('btnAddToCart');
+            const btnInstantRedeem = document.getElementById('btnInstantRedeem');
+            const originalText = btnAddToCart.innerHTML;
+            
+            btnAddToCart.disabled = true;
+            btnInstantRedeem.disabled = true;
+            
+            // Update button with loading spinner
+            btnAddToCart.innerHTML = `
+                <span class="inline-flex items-center gap-2">
+                    <i class="bi bi-hourglass-split animate-spin-slow"></i>
+                    Memproses...
+                </span>
+            `;
+            
             // Submit form to add to cart (no additional confirmation)
-            document.getElementById('cartForm').submit();
+            setTimeout(() => {
+                document.getElementById('cartForm').submit();
+            }, 300);
         }
         
         /**
@@ -813,7 +845,7 @@
             
             // Disable button untuk prevent double click
             btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-hourglass-split mr-2 animate-spin"></i>Memproses...';
+            btn.innerHTML = '<i class="bi bi-hourglass-split mr-2 animate-spin-slow"></i>Memproses...';
 
             // Validasi saldo
             if (userBalance < totalPoints) {
@@ -856,6 +888,10 @@
                 btn.innerHTML = originalHTML;
                 return;
             }
+
+            // Show loading overlay
+            showInstantRedeemLoading();
+            btn.innerHTML = '<i class="bi bi-hourglass-split mr-2 animate-spin-slow"></i>Memproses...';
 
             try {
                 // Get CSRF token
@@ -901,6 +937,10 @@
             } catch (error) {
                 console.error('Instant redeem error:', error);
                 
+                // Remove loading overlay
+                const overlay = document.getElementById('instantRedeemLoadingOverlay');
+                if (overlay) overlay.remove();
+                
                 // TUGAS 1: ERROR ALERT DENGAN SWEETALERT2
                 Swal.fire({
                     icon: 'error',
@@ -913,6 +953,35 @@
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
             }
+        }
+
+        /**
+         * Show instant redeem loading overlay
+         */
+        function showInstantRedeemLoading() {
+            const overlay = document.createElement('div');
+            overlay.id = 'instantRedeemLoadingOverlay';
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-40 z-[100] flex items-center justify-center p-4';
+            overlay.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-sm mx-auto">
+                    <div class="mb-6 flex justify-center">
+                        <div class="relative w-24 h-24">
+                            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full opacity-20 animate-pulse-ring"></div>
+                            <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                <i class="bi bi-hourglass-split text-4xl text-green-600 animate-spin-slow"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Memproses Penukaran</h3>
+                    <p class="text-gray-600 text-sm mb-4">Mohon tunggu sebentar...</p>
+                    <div class="flex justify-center gap-1">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
         }
 
         /**

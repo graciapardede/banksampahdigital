@@ -7,9 +7,9 @@ use App\Models\Redemption;
 use App\Models\RedemptionItem;
 use App\Models\RewardItem;
 use App\Models\PointLedger;
-use App\Notifications\PenukaranBerhasil;
-use App\Notifications\PermintaanTukarPoin;
 use App\Models\User;
+use App\Notifications\PenukaranBerhasil;
+use App\Notifications\NewRedemptionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -136,10 +136,23 @@ class RedemptionController extends Controller
             // Kirim notifikasi ke user
             $user->notify(new PenukaranBerhasil($redemption));
 
-            // Kirim notifikasi ke admin
+            // Kirim notifikasi ke semua admin
             $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+            
+            // Debug: Log untuk memastikan admin ditemukan
+            \Log::info('Mengirim notifikasi penukaran ke admin', [
+                'redemption_id' => $redemption->id,
+                'admin_count' => $admins->count(),
+                'admin_emails' => $admins->pluck('email')->toArray()
+            ]);
+            
             foreach ($admins as $admin) {
-                $admin->notify(new PermintaanTukarPoin($redemption, $user));
+                try {
+                    $admin->notify(new NewRedemptionRequest($redemption));
+                    \Log::info('Notifikasi terkirim ke admin: ' . $admin->email);
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim notifikasi ke admin: ' . $admin->email . ' - ' . $e->getMessage());
+                }
             }
 
             DB::commit();

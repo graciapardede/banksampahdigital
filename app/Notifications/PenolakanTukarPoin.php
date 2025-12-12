@@ -41,7 +41,7 @@ class PenolakanTukarPoin extends Notification
         $reason = $this->redemption->rejection_reason ?? 'Stok tidak tersedia atau terjadi kesalahan sistem.';
         
         return [
-            'title' => '❌ Penolakan Tukar Poin',
+            'title' => 'Penolakan Tukar Poin',
             'message' => "Permintaan tukar poin Anda ({$itemsDescription}) ditolak. Poin {$this->redemption->total_points} telah dikembalikan. Alasan: {$reason}",
             'type' => 'warning',
             'icon' => 'exclamation-triangle-fill',

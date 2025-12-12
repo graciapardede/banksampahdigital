@@ -53,7 +53,7 @@ class NewRedemptionRequest extends Notification
         return [
             'title' => 'Permintaan Penukaran Baru',
             'message' => "{$this->redemption->user->name} mengajukan penukaran: {$itemsDescription}. Total {$this->redemption->total_points} poin.",
-            'type' => 'info',
+            'type' => 'redemption',
             'icon' => 'gift',
             'link' => url('/admin/penukaran/' . $this->redemption->id),
             'redemption_id' => $this->redemption->id,

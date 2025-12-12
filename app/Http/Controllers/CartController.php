@@ -46,7 +46,7 @@ class CartController extends Controller
 
         // Cek stok
         if ($rewardItem->stock < $quantity) {
-            return back()->with('error', "⚠️ Stok tidak cukup! Stok tersedia: {$rewardItem->stock}");
+            return back()->with('error', "Stok tidak cukup! Stok tersedia: {$rewardItem->stock}");
         }
 
         // Ambil cart dari session (array of items)
@@ -58,7 +58,7 @@ class CartController extends Controller
             
             // Cek total quantity vs stock
             if ($newQuantity > $rewardItem->stock) {
-                return back()->with('error', "⚠️ Total kuantitas ({$newQuantity}) melebihi stok ({$rewardItem->stock})");
+                return back()->with('error', "Total kuantitas ({$newQuantity}) melebihi stok ({$rewardItem->stock})");
             }
             
             $cart[$rewardItem->id]['quantity'] = $newQuantity;
@@ -79,7 +79,7 @@ class CartController extends Controller
         session()->put('cart', $cart);
 
         return redirect()->route('cart.index')
-            ->with('success', "✅ {$rewardItem->name} berhasil ditambahkan ke keranjang!");
+            ->with('success', "{$rewardItem->name} berhasil ditambahkan ke keranjang!");
     }
 
     /**
@@ -113,14 +113,14 @@ class CartController extends Controller
 
         // Cek stok
         if ($quantity > $rewardItem->stock) {
-            return back()->with('error', "⚠️ Stok tidak cukup! Stok tersedia: {$rewardItem->stock}");
+            return back()->with('error', "Stok tidak cukup! Stok tersedia: {$rewardItem->stock}");
         }
 
         if (isset($cart[$rewardItem->id])) {
             $cart[$rewardItem->id]['quantity'] = $quantity;
             session()->put('cart', $cart);
             
-            return back()->with('success', '✅ Kuantitas berhasil diupdate!');
+            return back()->with('success', 'Kuantitas berhasil diupdate!');
         }
 
         return back()->with('error', 'Item tidak ditemukan di keranjang');
@@ -137,7 +137,7 @@ class CartController extends Controller
             unset($cart[$rewardItem->id]);
             session()->put('cart', $cart);
             
-            return back()->with('success', '✅ Item berhasil dihapus dari keranjang!');
+            return back()->with('success', 'Item berhasil dihapus dari keranjang!');
         }
 
         return back()->with('error', 'Item tidak ditemukan di keranjang');
@@ -150,7 +150,7 @@ class CartController extends Controller
     {
         session()->forget('cart');
         
-        return back()->with('success', '✅ Keranjang berhasil dikosongkan!');
+        return back()->with('success', 'Keranjang berhasil dikosongkan!');
     }
 
     /**
@@ -173,7 +173,7 @@ class CartController extends Controller
 
         // Validasi cart tidak kosong
         if (empty($cart)) {
-            return back()->with('error', '⚠️ Keranjang kosong! Tambahkan item terlebih dahulu.');
+            return back()->with('error', 'Keranjang kosong! Tambahkan item terlebih dahulu.');
         }
 
         // Parse selected items dari hidden input (JSON array of item IDs)
@@ -182,7 +182,7 @@ class CartController extends Controller
 
         // Validasi ada item yang dipilih
         if (empty($selectedIds)) {
-            return back()->with('error', '⚠️ Tidak ada item yang dipilih! Pilih minimal satu item.');
+            return back()->with('error', 'Tidak ada item yang dipilih! Pilih minimal satu item.');
         }
 
         DB::beginTransaction();
@@ -318,7 +318,7 @@ class CartController extends Controller
             DB::commit();
 
             return redirect()->route('riwayat')
-                ->with('success', "✅ Permintaan penukaran berhasil dikirim! Total {$totalPoints} poin akan dikurangi setelah admin menyetujui.");
+                ->with('success', "Permintaan penukaran berhasil dikirim! Total {$totalPoints} poin akan dikurangi setelah admin menyetujui.");
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -330,7 +330,7 @@ class CartController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return back()->with('error', '❌ Checkout gagal: ' . $e->getMessage());
+            return back()->with('error', 'Checkout gagal: ' . $e->getMessage());
         }
     }
 
