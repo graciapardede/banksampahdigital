@@ -53,7 +53,7 @@ class BarangSiapDiambil extends Notification
         $branchName = $this->redemption->branch->name ?? 'Cabang';
 
         return [
-            'title' => '✅ Barang Siap Diambil!',
+            'title' => 'Barang Siap Diambil!',
             'message' => "Penukaran Anda ({$itemsDescription}) telah disetujui dan siap diambil di {$branchName}. Ambil dalam 24 jam! ⏰",
             'type' => 'success',
             'icon' => 'check-circle-fill',

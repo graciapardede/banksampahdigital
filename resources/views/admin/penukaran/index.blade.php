@@ -379,10 +379,10 @@
                                                         <i class="bi bi-check-all mr-1"></i>
                                                         Selesai
                                                     </span>
-                                                @elseif($redemption->status === 'rejected')
+                                                @elseif($redemption->status === 'cancelled')
                                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
                                                         <i class="bi bi-x-circle mr-1"></i>
-                                                        Ditolak
+                                                        Dibatalkan
                                                     </span>
                                                 @endif
                                             </td>

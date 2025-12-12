@@ -51,7 +51,7 @@ class PenukaranBerhasil extends Notification
         }
 
         return [
-            'title' => '✅ Penukaran Selesai!',
+            'title' => 'Penukaran Selesai!',
             'message' => "Barang Anda ({$itemsDescription}) telah diserahkan. Terima kasih telah menggunakan Green Saving!",
             'type' => 'success',
             'icon' => 'check-circle-fill',

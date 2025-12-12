@@ -46,7 +46,7 @@ class SetoranDiverifikasi extends Notification
         })->join(', ');
 
         return [
-            'title' => '✅ Setoran Sampah Diverifikasi',
+            'title' => 'Setoran Sampah Diverifikasi',
             'message' => "Setoran sampah Anda ({$itemsDescription}) berhasil diverifikasi. +{$this->setoran->total_points} poin ditambahkan ke saldo Anda.",
             'type' => 'success',
             'icon' => 'check-circle-fill',

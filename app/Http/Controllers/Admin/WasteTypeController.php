@@ -9,9 +9,21 @@ use Illuminate\Http\Request;
 class WasteTypeController extends Controller
 {
     // Tampilkan semua data
-    public function index()
+    public function index(Request $request)
     {
-        $wasteTypes = WasteType::latest()->paginate(20);
+        $query = WasteType::query();
+        
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $wasteTypes = $query->latest()->paginate(20)->appends($request->all());
         return view('admin.waste_types.index', compact('wasteTypes'));
     }
 

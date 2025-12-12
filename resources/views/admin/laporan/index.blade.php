@@ -22,7 +22,7 @@
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
     <!-- Header -->
-    <x-admin-header />
+    <x-admin-header :activePage="'laporan'" />
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">

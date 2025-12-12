@@ -8,8 +8,7 @@ use App\Models\RedemptionItem;
 use App\Models\RewardItem;
 use App\Models\PointLedger;
 use App\Models\User;
-use App
-Notifications\PenukaranBerhasil;
+use App\Notifications\PenukaranBerhasil;
 use App\Notifications\NewRedemptionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

@@ -72,11 +72,11 @@
                                     <div class="flex items-start gap-3">
                                         <!-- Icon -->
                                         <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-                                            {{ isset($notification->data['type']) && $notification->data['type'] == 'deposit' ? 'bg-blue-100' : 'bg-green-100' }}">
+                                            {{ isset($notification->data['type']) && $notification->data['type'] == 'deposit' ? 'bg-blue-100' : (isset($notification->data['type']) && $notification->data['type'] == 'redemption' ? 'bg-teal-100' : 'bg-green-100') }}">
                                             @if(isset($notification->data['type']) && $notification->data['type'] == 'deposit')
                                                 <i class="bi bi-box-seam text-blue-600"></i>
                                             @elseif(isset($notification->data['type']) && $notification->data['type'] == 'redemption')
-                                                <i class="bi bi-gift text-green-600"></i>
+                                                <i class="bi bi-gift text-teal-600"></i>
                                             @else
                                                 <i class="bi bi-bell text-gray-600"></i>
                                             @endif

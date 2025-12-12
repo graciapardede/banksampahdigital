@@ -4,11 +4,9 @@ namespace App\Notifications;
 
 use App\Models\Redemption;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PenolakanTukarPoin extends Notification
+class PenukananDikonfirmasi extends Notification
 {
     use Queueable;
 
@@ -38,17 +36,13 @@ class PenolakanTukarPoin extends Notification
             $itemsDescription .= ', ...';
         }
         
-        $reason = $this->redemption->rejection_reason ?? 'Stok tidak tersedia atau terjadi kesalahan sistem.';
-        
         return [
-            'title' => 'Penolakan Tukar Poin',
-            'message' => "Permintaan tukar poin Anda ({$itemsDescription}) ditolak. Poin {$this->redemption->total_points} telah dikembalikan. Alasan: {$reason}",
-            'type' => 'warning',
-            'icon' => 'exclamation-triangle-fill',
+            'title' => 'Penukaran Dikonfirmasi',
+            'message' => "Permintaan penukaran poin Anda ({$itemsDescription}) telah dikonfirmasi. Barang siap diambil.",
+            'type' => 'success',
+            'icon' => 'check-circle-fill',
             'redemption_id' => $this->redemption->id,
-            'total_points' => $this->redemption->total_points,
             'items' => $itemsDescription,
-            'rejection_reason' => $reason,
             'link' => route('riwayat'),
         ];
     }
