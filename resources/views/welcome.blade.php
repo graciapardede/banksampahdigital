@@ -229,7 +229,7 @@
                             <i class="bi bi-whatsapp text-[#2ECC71] text-xl mr-3"></i>
                             <div>
                                 <div class="text-sm text-gray-400">WhatsApp</div>
-                                <a href="https://wa.me/628123456789" class="text-white hover:text-[#2ECC71]">+62 812-3456-7890</a>
+                                <a href="https://wa.me/6281313000411" class="text-white hover:text-[#2ECC71]">+62 813 1300 0411</a>
                             </div>
                         </li>
                         <li class="flex items-start">
