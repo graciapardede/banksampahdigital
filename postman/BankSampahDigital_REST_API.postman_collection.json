@@ -1,0 +1,668 @@
+{
+	"info": {
+		"_postman_id": "rest-api-2024-12-12",
+		"name": "Bank Sampah Digital - REST API Testing",
+		"description": "Complete REST API Testing untuk Bank Sampah Digital\n\n**PENTING:** Collection ini menggunakan `/api/*` routes yang benar untuk REST API.\n\n**Developer:** Gracia Pardede",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Authentication (Public)",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.environment.set('api_token', response.data.token);",
+									"        console.log('Token saved:', response.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Budi Santoso\",\n    \"email\": \"budi@test.com\",\n    \"phone\": \"08123456789\",\n    \"address\": \"Jl. Merdeka No. 123\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						},
+						"description": "Register user baru (warga) via REST API.\n\n**NOTE:** Menggunakan `/api/register` bukan `/register`"
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.environment.set('api_token', response.data.token);",
+									"        pm.environment.set('user_id', response.data.user.id);",
+									"        console.log('Token saved:', response.data.token);",
+									"        console.log('User ID:', response.data.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"budi@test.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Login user dan dapatkan Bearer token.\n\n**Token akan otomatis tersimpan di environment variable.**"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Branches (Public)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/branches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"branches"
+							]
+						},
+						"description": "Get daftar cabang (tidak perlu token)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoint public yang tidak memerlukan authentication"
+		},
+		{
+			"name": "2. User Profile (Protected)",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"me"
+							]
+						},
+						"description": "Get profil user yang sedang login"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						},
+						"description": "Logout dan revoke token yang sedang digunakan"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoint untuk user profile (perlu authentication)"
+		},
+		{
+			"name": "3. Setor Sampah (Deposits)",
+			"item": [
+				{
+					"name": "Get My Deposits",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deposits",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deposits"
+							]
+						},
+						"description": "Get riwayat setoran sampah user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deposit Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deposits/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deposits",
+								"1"
+							]
+						},
+						"description": "Get detail setoran sampah by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Waste Types",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/waste-types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"waste-types"
+							]
+						},
+						"description": "Get daftar jenis sampah dan poin per kg"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoint untuk setor sampah (deposits)"
+		},
+		{
+			"name": "4. Tukar Poin (Redemptions)",
+			"item": [
+				{
+					"name": "Get Reward Items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reward-items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reward-items"
+							]
+						},
+						"description": "Get daftar barang reward yang bisa ditukar"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reward Item Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reward-items/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reward-items",
+								"1"
+							]
+						},
+						"description": "Get detail reward item by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Redemptions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/redemptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"redemptions"
+							]
+						},
+						"description": "Get riwayat penukaran poin user"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Redemption (Tukar Poin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"reward_item_id\": 1,\n            \"quantity\": 2\n        },\n        {\n            \"reward_item_id\": 2,\n            \"quantity\": 1\n        }\n    ],\n    \"delivery_option\": \"pickup\",\n    \"notes\": \"Mohon disiapkan sebelum Jumat\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/redemptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"redemptions"
+							]
+						},
+						"description": "Submit penukaran poin dengan barang reward.\n\n**delivery_option:** pickup | delivery"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Redemption Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/redemptions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"redemptions",
+								"1"
+							]
+						},
+						"description": "Get detail penukaran poin by ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoint untuk tukar poin (redemptions)"
+		},
+		{
+			"name": "99. Error Testing",
+			"item": [
+				{
+					"name": "401 - No Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"me"
+							]
+						},
+						"description": "Test endpoint tanpa token (harus dapat 401)"
+					},
+					"response": []
+				},
+				{
+					"name": "401 - Invalid Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "invalid_token_123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"me"
+							]
+						},
+						"description": "Test dengan token invalid (harus dapat 401)"
+					},
+					"response": []
+				},
+				{
+					"name": "422 - Validation Error",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"invalid-email\",\n    \"password\": \"123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						},
+						"description": "Test validation error (email format salah, password kurang panjang)"
+					},
+					"response": []
+				},
+				{
+					"name": "404 - Not Found",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{api_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deposits/999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deposits",
+								"999999"
+							]
+						},
+						"description": "Test resource not found (ID tidak ada)"
+					},
+					"response": []
+				}
+			],
+			"description": "Testing berbagai error responses"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		}
+	]
+}

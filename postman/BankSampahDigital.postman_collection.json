@@ -1,0 +1,1160 @@
+{
+	"info": {
+		"_postman_id": "bank-sampah-digital-complete",
+		"name": "Bank Sampah Digital API - Complete",
+		"description": "REST API Documentation untuk Bank Sampah Digital (Green Saving)\\n\\nFitur lengkap: Login, Register, Profile, Setor Sampah, Tukar Poin, Riwayat Transaksi, Notifikasi, Cart System, dan Admin Panel.\\n\\nDeveloper: Gracia Pardede\\nCreated: December 2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{api_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "1. Authentication & Registration",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"full_name\\": \\"Budi Santoso\\",\\n    \\"email\\": \\"budi@test.com\\",\\n    \\"phone\\": \\"081234567890\\",\\n    \\"address\\": \\"Jl. Merdeka No. 123, Jakarta\\",\\n    \\"password\\": \\"password123\\",\\n    \\"password_confirmation\\": \\"password123\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": ["{{base_url}}"],
+							"path": ["register"]
+						},
+						"description": "Mendaftarkan user baru dengan role 'warga'. Setelah berhasil register, user otomatis login."
+					}
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"email\\": \\"{{user_email}}\\",\\n    \\"password\\": \\"{{user_password}}\\",\\n    \\"remember\\": true\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": ["{{base_url}}"],
+							"path": ["login"]
+						},
+						"description": "Login dengan email dan password. Response akan berisi session cookie untuk web-based auth."
+					}
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": ["{{base_url}}"],
+							"path": ["logout"]
+						},
+						"description": "Logout user dan hapus session."
+					}
+				},
+				{
+					"name": "Generate API Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}",
+							"host": ["{{base_url}}"]
+						},
+						"description": "Untuk testing dengan Bearer Token, generate token via Tinker:\\n\\n```bash\\nphp artisan tinker\\n```\\n\\nJalankan:\\n```php\\n$user = App\\\\Models\\\\User::where('email', 'warga@test.com')->first();\\n$token = $user->createToken('postman-test')->plainTextToken;\\necho $token;\\n```\\n\\nCopy token dan simpan di environment variable `api_token`"
+					}
+				}
+			]
+		},
+		{
+			"name": "2. User Profile",
+			"item": [
+				{
+					"name": "Get User Profile (API)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "me"]
+						},
+						"description": "Get profil user yang sedang login menggunakan Laravel Sanctum token."
+					}
+				},
+				{
+					"name": "Get Profile (Session)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/profile",
+							"host": ["{{base_url}}"],
+							"path": ["profile"]
+						},
+						"description": "Get profile menggunakan session authentication."
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"name\\": \\"Budi Santoso Updated\\",\\n    \\"phone\\": \\"081234567999\\",\\n    \\"address\\": \\"Jl. Sudirman No. 456, Jakarta Pusat\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile"]
+						},
+						"description": "Update data profil user (nama, telepon, alamat)."
+					}
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"current_password\\": \\"password123\\",\\n    \\"password\\": \\"newpassword123\\",\\n    \\"password_confirmation\\": \\"newpassword123\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", "password"]
+						},
+						"description": "Ganti password user. Memerlukan password lama untuk validasi."
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard"]
+						},
+						"description": "Get data dashboard user: total poin, riwayat setoran, statistik, dll."
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Branches (Cabang)",
+			"item": [
+				{
+					"name": "Get All Branches (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/branches",
+							"host": ["{{base_url}}"],
+							"path": ["api", "branches"]
+						},
+						"description": "Get daftar semua cabang Bank Sampah. Endpoint ini public (tidak perlu auth)."
+					}
+				},
+				{
+					"name": "Get All Branches (Auth)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/branches",
+							"host": ["{{base_url}}"],
+							"path": ["api", "branches"]
+						},
+						"description": "Get daftar cabang dengan authentication."
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Waste Types (Jenis Sampah)",
+			"item": [
+				{
+					"name": "Get All Waste Types",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/waste-types",
+							"host": ["{{base_url}}"],
+							"path": ["api", "waste-types"]
+						},
+						"description": "Get daftar semua jenis sampah beserta harga per kg."
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Deposits (Setor Sampah)",
+			"item": [
+				{
+					"name": "Get All Deposits",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deposits",
+							"host": ["{{base_url}}"],
+							"path": ["api", "deposits"]
+						},
+						"description": "Get riwayat setoran sampah user yang sedang login."
+					}
+				},
+				{
+					"name": "Get Deposit Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deposits/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "deposits", "1"]
+						},
+						"description": "Get detail setoran sampah berdasarkan ID. User hanya bisa lihat data miliknya sendiri."
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Reward Items (Barang Reward)",
+			"item": [
+				{
+					"name": "Get All Reward Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reward-items",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reward-items"]
+						},
+						"description": "Get daftar semua barang reward yang tersedia untuk ditukar dengan poin."
+					}
+				},
+				{
+					"name": "Get Reward Item Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reward-items/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reward-items", "1"]
+						},
+						"description": "Get detail barang reward berdasarkan ID."
+					}
+				}
+			]
+		},
+		{
+			"name": "8. Redemptions (Tukar Poin)",
+			"item": [
+				{
+					"name": "Get All Redemptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/redemptions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "redemptions"]
+						},
+						"description": "Get riwayat penukaran poin user yang sedang login."
+					}
+				},
+				{
+					"name": "Get Redemption Detail",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/redemptions/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "redemptions", "1"]
+						},
+						"description": "Get detail penukaran poin berdasarkan ID."
+					}
+				},
+				{
+					"name": "Create Redemption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"items\\": [\\n        {\\n            \\"reward_item_id\\": 1,\\n            \\"quantity\\": 1\\n        },\\n        {\\n            \\"reward_item_id\\": 2,\\n            \\"quantity\\": 2\\n        }\\n    ],\\n    \\"notes\\": \\"Tolong kirim ke alamat rumah saya\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/redemptions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "redemptions"]
+						},
+						"description": "Membuat penukaran poin baru. User bisa menukar poin dengan satu atau lebih barang reward."
+					}
+				},
+				{
+					"name": "Cancel Redemption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/redemptions/1/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["api", "redemptions", "1", "cancel"]
+						},
+						"description": "Cancel penukaran poin yang masih berstatus 'pending' atau 'processing'. Poin akan dikembalikan."
+					}
+				}
+			]
+		},
+		{
+			"name": "9. Cart System (Keranjang Belanja)",
+			"item": [
+				{
+					"name": "Get Cart Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cart",
+							"host": ["{{base_url}}"],
+							"path": ["cart"]
+						},
+						"description": "Get semua item di keranjang belanja user."
+					}
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"quantity\\": 1\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/add/1",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "add", "1"]
+						},
+						"description": "Tambah reward item ke keranjang. Parameter di URL adalah reward_item_id."
+					}
+				},
+				{
+					"name": "Update Cart Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"quantity\\": 3\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/update/1",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "update", "1"]
+						},
+						"description": "Update jumlah quantity item di keranjang."
+					}
+				},
+				{
+					"name": "Remove from Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cart/remove/1",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "remove", "1"]
+						},
+						"description": "Hapus item dari keranjang."
+					}
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/cart/clear",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "clear"]
+						},
+						"description": "Kosongkan seluruh isi keranjang."
+					}
+				},
+				{
+					"name": "Checkout Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"notes\\": \\"Mohon kirim secepatnya, terima kasih!\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/cart/checkout",
+							"host": ["{{base_url}}"],
+							"path": ["cart", "checkout"]
+						},
+						"description": "Proses checkout keranjang menjadi redemption. Semua item di cart akan diproses."
+					}
+				},
+				{
+					"name": "Instant Redeem (Skip Cart)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"quantity\\": 1,\\n    \\"notes\\": \\"Langsung tukar tanpa keranjang\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tukar/1/instant",
+							"host": ["{{base_url}}"],
+							"path": ["tukar", "1", "instant"]
+						},
+						"description": "Tukar poin langsung tanpa melalui keranjang. Untuk pembelian cepat single item."
+					}
+				}
+			]
+		},
+		{
+			"name": "10. Notifications (Notifikasi)",
+			"item": [
+				{
+					"name": "Get All Notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifikasi",
+							"host": ["{{base_url}}"],
+							"path": ["notifikasi"]
+						},
+						"description": "Get semua notifikasi user."
+					}
+				},
+				{
+					"name": "Get Unread Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifikasi/unread-count",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifikasi", "unread-count"]
+						},
+						"description": "Get jumlah notifikasi yang belum dibaca."
+					}
+				},
+				{
+					"name": "Mark as Read",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifikasi/1/read",
+							"host": ["{{base_url}}"],
+							"path": ["notifikasi", "1", "read"]
+						},
+						"description": "Tandai notifikasi sebagai sudah dibaca."
+					}
+				},
+				{
+					"name": "Mark All as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifikasi/read-all",
+							"host": ["{{base_url}}"],
+							"path": ["notifikasi", "read-all"]
+						},
+						"description": "Tandai semua notifikasi sebagai sudah dibaca."
+					}
+				}
+			]
+		},
+		{
+			"name": "11. Admin - Deposits Management",
+			"item": [
+				{
+					"name": "Get All Deposits (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/setoran",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "setoran"]
+						},
+						"description": "Admin melihat semua setoran dari semua user."
+					}
+				},
+				{
+					"name": "Create Deposit (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"user_id\\": 2,\\n    \\"items\\": [\\n        {\\n            \\"waste_type_id\\": 1,\\n            \\"weight\\": 5.5\\n        },\\n        {\\n            \\"waste_type_id\\": 2,\\n            \\"weight\\": 3.2\\n        }\\n    ],\\n    \\"notes\\": \\"Setoran dari warga Jl. Merdeka\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/setoran",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "setoran"]
+						},
+						"description": "Admin membuat setoran baru untuk user tertentu. System otomatis menghitung poin."
+					}
+				},
+				{
+					"name": "Get Deposit Detail (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/setoran/1",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "setoran", "1"]
+						},
+						"description": "Get detail setoran berdasarkan ID."
+					}
+				},
+				{
+					"name": "Delete Deposit (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/setoran/1",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "setoran", "1"]
+						},
+						"description": "Hapus data setoran. Poin akan dikembalikan ke user."
+					}
+				}
+			]
+		},
+		{
+			"name": "12. Admin - Redemptions Management",
+			"item": [
+				{
+					"name": "Get All Redemptions (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/penukaran",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "penukaran"]
+						},
+						"description": "Admin melihat semua penukaran dari semua user."
+					}
+				},
+				{
+					"name": "Get Redemption Detail (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/penukaran/1",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "penukaran", "1"]
+						},
+						"description": "Get detail penukaran berdasarkan ID."
+					}
+				},
+				{
+					"name": "Approve Redemption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/penukaran/1/approve",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "penukaran", "1", "approve"]
+						},
+						"description": "Approve penukaran poin. Status berubah menjadi 'processing'."
+					}
+				},
+				{
+					"name": "Reject Redemption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"reason\\": \\"Stok barang habis\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/penukaran/1/reject",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "penukaran", "1", "reject"]
+						},
+						"description": "Reject penukaran. Poin dikembalikan ke user."
+					}
+				},
+				{
+					"name": "Complete Redemption",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/penukaran/1/complete",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "penukaran", "1", "complete"]
+						},
+						"description": "Tandai penukaran sebagai selesai. Barang sudah dikirim/diterima user."
+					}
+				},
+				{
+					"name": "Cancel Redemption (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"reason\\": \\"Dibatalkan oleh admin\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/penukaran/1/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "penukaran", "1", "cancel"]
+						},
+						"description": "Cancel penukaran dari sisi admin. Poin dikembalikan."
+					}
+				}
+			]
+		},
+		{
+			"name": "13. Admin - Reward Items Management",
+			"item": [
+				{
+					"name": "Get All Reward Items (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/reward-items",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "reward-items"]
+						},
+						"description": "Admin melihat semua reward items termasuk yang tidak aktif."
+					}
+				},
+				{
+					"name": "Create Reward Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"name\\": \\"Voucher Belanja 100K\\",\\n    \\"description\\": \\"Voucher belanja Indomaret senilai Rp 100.000\\",\\n    \\"points_required\\": 100000,\\n    \\"stock\\": 50,\\n    \\"is_active\\": true\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/reward-items",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "reward-items"]
+						},
+						"description": "Create reward item baru."
+					}
+				},
+				{
+					"name": "Update Reward Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"name\\": \\"Voucher Belanja 100K Updated\\",\\n    \\"description\\": \\"Voucher belanja Alfamart/Indomaret senilai Rp 100.000\\",\\n    \\"points_required\\": 95000,\\n    \\"stock\\": 75,\\n    \\"is_active\\": true\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/reward-items/1",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "reward-items", "1"]
+						},
+						"description": "Update data reward item."
+					}
+				},
+				{
+					"name": "Update Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"adjustment\\": 10,\\n    \\"note\\": \\"Restock bulanan\\"\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/reward-items/1/update-stock",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "reward-items", "1", "update-stock"]
+						},
+						"description": "Update stok reward item. Gunakan nilai positif untuk tambah, negatif untuk kurangi."
+					}
+				},
+				{
+					"name": "Delete Reward Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/reward-items/1",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "reward-items", "1"]
+						},
+						"description": "Hapus reward item (soft delete)."
+					}
+				}
+			]
+		},
+		{
+			"name": "99. Error Testing",
+			"item": [
+				{
+					"name": "Test Unauthorized (401)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "me"]
+						},
+						"description": "Test endpoint tanpa auth. Expected: 401 Unauthenticated"
+					}
+				},
+				{
+					"name": "Test Invalid Token (401)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "invalid_token_12345",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "me"]
+						},
+						"description": "Test dengan token invalid. Expected: 401"
+					}
+				},
+				{
+					"name": "Test Not Found (404)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deposits/99999",
+							"host": ["{{base_url}}"],
+							"path": ["api", "deposits", "99999"]
+						},
+						"description": "Test dengan ID yang tidak ada. Expected: 404"
+					}
+				},
+				{
+					"name": "Test Validation Error (422)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/redemptions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "redemptions"]
+						},
+						"description": "Test dengan data kosong. Expected: 422 Validation Error"
+					}
+				},
+				{
+					"name": "Test Insufficient Points",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\\n    \\"items\\": [\\n        {\\n            \\"reward_item_id\\": 1,\\n            \\"quantity\\": 999\\n        }\\n    ]\\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/redemptions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "redemptions"]
+						},
+						"description": "Test tukar poin dengan jumlah yang melebihi saldo. Expected: 400 atau 422"
+					}
+				}
+			]
+		}
+	]
+}

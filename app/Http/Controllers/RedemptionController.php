@@ -138,8 +138,21 @@ class RedemptionController extends Controller
 
             // Kirim notifikasi ke semua admin
             $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+            
+            // Debug: Log untuk memastikan admin ditemukan
+            \Log::info('Mengirim notifikasi penukaran ke admin', [
+                'redemption_id' => $redemption->id,
+                'admin_count' => $admins->count(),
+                'admin_emails' => $admins->pluck('email')->toArray()
+            ]);
+            
             foreach ($admins as $admin) {
-                $admin->notify(new NewRedemptionRequest($redemption));
+                try {
+                    $admin->notify(new NewRedemptionRequest($redemption));
+                    \Log::info('Notifikasi terkirim ke admin: ' . $admin->email);
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim notifikasi ke admin: ' . $admin->email . ' - ' . $e->getMessage());
+                }
             }
 
             DB::commit();
