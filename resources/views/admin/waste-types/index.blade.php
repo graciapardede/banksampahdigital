@@ -101,7 +101,7 @@
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-12 h-12 bg-white bg-opacity-20 backdrop-blur-sm rounded-xl flex items-center justify-center">
                             <i class="bi bi-check-circle text-2xl"></i>
-                        </div>
+                        </div> 
                     </div>
                     <div class="text-sm font-medium opacity-90">Status Aktif</div>
                     <div class="text-3xl font-bold mt-1">{{ $wasteTypes->where('is_active', true)->count() }}</div>

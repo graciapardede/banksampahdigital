@@ -30,10 +30,10 @@ Route::middleware('guest')->group(function () {
     Route::post('forgot-password/send', [ForgotPasswordController::class, 'sendReset'])
         ->name('password.send-reset');
 
-    Route::get('verify-reset-code', [ForgotPasswordController::class, 'showVerifyCode'])
-        ->name('password.verify-code');
+    Route::get('/verify-reset-code', [ForgotPasswordController::class, 'showVerifyCode'])
+        ->name('password.verify-code.form');
 
-    Route::post('verify-reset-code', [ForgotPasswordController::class, 'verifyCode'])
+    Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyCode'])
         ->name('password.verify-code');
 
     Route::get('reset-password-form', [ForgotPasswordController::class, 'showResetForm'])
