@@ -15,7 +15,7 @@ class NewsController extends Controller
 
     public function index()
     {
-        $news = $this->ecoProvider->getEcoNews();
+        $news = $this->ecoProvider->getNews();
         return view('eco-news.index', compact('news'));
     }
 }
