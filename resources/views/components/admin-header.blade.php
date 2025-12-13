@@ -27,7 +27,7 @@
 
                 <!-- Notification Bell with Dropdown -->
                 <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                    <button @click="open = !open" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
+                    <button @click="open = !open; console.log('Bell clicked, open:', open)" class="relative w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all">
                         <i class="bi bi-bell text-gray-700 text-xl"></i>
                         
                         @php
@@ -41,7 +41,7 @@
                         @endif
                     </button>
 
-                    <!-- Dropdown Notifikasi -->
+                    <!-- Dropdown Notifikasi - Fixed z-index -->
                     <div x-show="open" 
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95"
@@ -49,7 +49,7 @@
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 transform scale-100"
                          x-transition:leave-end="opacity-0 transform scale-95"
-                         class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border-2 border-gray-100 overflow-hidden z-50"
+                         class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border-2 border-gray-100 overflow-hidden z-[9999]"
                          style="display: none;">
                         
                         <!-- Header Dropdown -->
@@ -67,8 +67,8 @@
                             @endphp
 
                             @forelse($notifications as $notification)
-                                <a href="{{ route('notifikasi.read', $notification->id) }}" 
-                                   class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 {{ $notification->read_at ? 'bg-white' : 'bg-blue-50' }}">
+                                <div @click="$dispatch('notification-read', '{{ $notification->id }}')" 
+                                   class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 cursor-pointer {{ $notification->read_at ? 'bg-white' : 'bg-blue-50' }}">
                                     <div class="flex items-start gap-3">
                                         <!-- Icon -->
                                         <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
@@ -103,7 +103,7 @@
                                             <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full"></div>
                                         @endif
                                     </div>
-                                </a>
+                                </div>
                             @empty
                                 <div class="px-4 py-8 text-center">
                                     <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
