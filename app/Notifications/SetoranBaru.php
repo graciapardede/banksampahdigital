@@ -43,7 +43,7 @@ class SetoranBaru extends Notification
         $branchName = $this->deposit->branch?->name ?? 'Cabang';
         
         return [
-            'title' => '📦 Setoran Sampah Baru',
+            'title' => 'Setoran Sampah Baru',
             'message' => "{$this->warga->name} telah melakukan setoran sampah ({$itemsDescription}). Total: {$this->deposit->total_points} poin.",
             'type' => 'info',
             'icon' => 'inbox-fill',

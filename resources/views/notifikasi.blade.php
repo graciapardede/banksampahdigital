@@ -20,7 +20,7 @@
         }
     </script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
+<body class="min-h-screen bg-green-50 font-poppins">
 
     <!-- Header -->
     <header class="bg-white shadow-sm">
@@ -149,23 +149,14 @@
             <!-- Notification List -->
             <div class="space-y-4">
                 @foreach($notifications as $notif)
-                <div class="bg-gradient-to-r from-white to-green-50 rounded-xl p-5 shadow-md border-l-4 
-                    @if($notif->data['type'] == 'success') border-green-500 hover:from-green-50 hover:to-green-100
-                    @elseif($notif->data['type'] == 'info') border-blue-500 hover:from-blue-50 hover:to-blue-100
-                    @elseif($notif->data['type'] == 'warning') border-yellow-500 hover:from-yellow-50 hover:to-yellow-100
-                    @else border-gray-400 hover:from-gray-50 hover:to-gray-100
+                <div class="bg-white rounded-xl p-4 shadow-md border-l-4 
+                    @if($notif->data['type'] == 'success') border-green-500
+                    @elseif($notif->data['type'] == 'info') border-blue-500
+                    @elseif($notif->data['type'] == 'warning') border-yellow-500
+                    @else border-gray-400
                     @endif
-                    transition-all hover:shadow-lg">
+                    hover:shadow-lg transition-all">
                     <div class="flex items-start space-x-4">
-                        <!-- Dot Indicator -->
-                        <div class="w-4 h-4 rounded-full mt-1 flex-shrink-0 shadow-sm
-                            @if($notif->data['type'] == 'success') bg-green-500
-                            @elseif($notif->data['type'] == 'info') bg-blue-500
-                            @elseif($notif->data['type'] == 'warning') bg-yellow-500
-                            @else bg-gray-400
-                            @endif">
-                        </div>
-                        
                         <!-- Content -->
                         <div class="flex-1">
                             <div class="flex items-start justify-between mb-2">

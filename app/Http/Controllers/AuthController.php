@@ -46,6 +46,14 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        // Check if user exists
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            // Email tidak terdaftar
+            return back()->withErrors(['email' => 'Akun belum terdaftar']);
+        }
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             $user = Auth::user();
@@ -57,7 +65,8 @@ class AuthController extends Controller
             return redirect()->intended('/admin/dashboard');
         }
 
-        return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+        // Password salah
+        return back()->withErrors(['password' => 'Email atau password salah']);
     }
 
     /**

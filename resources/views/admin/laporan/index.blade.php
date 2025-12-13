@@ -3,10 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Laporan Cabang - Green Saving Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- CSS untuk line-clamp -->
+    <!-- CSS untuk line-clamp dan dropdown -->
+    <style>
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-cloak: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Ensure notification dropdown appears on top */
+        .notification-dropdown {
+            position: fixed !important;
+            z-index: 9999 !important;
+        }
+        
+        /* Alpine.js transitions */
+        [x-cloak] { display: none !important; }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -17,12 +44,17 @@
                 }
             }
         }
+        
+        // Alpine.js notification functionality
+        document.addEventListener('alpine:init', () => {
+            console.log('Alpine.js initialized for notifications - Laporan page');
+        });
     </script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-poppins">
 
     <!-- Header -->
-    <x-admin-header />
+    <x-admin-header :activePage="'laporan'" />
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
@@ -212,6 +244,43 @@
             customRange.classList.add('hidden');
             customRange2.classList.add('hidden');
         }
+    });
+    
+    // Additional debug for notification bell
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded - checking for notification bell in laporan...');
+        setTimeout(() => {
+            const bellButton = document.querySelector('[x-data*="open"]');
+            if (bellButton) {
+                console.log('✅ Notification bell found!');
+            } else {
+                console.log('❌ Notification bell not found!');
+            }
+        }, 1000);
+        
+        // Handle notification read events
+        document.addEventListener('notification-read', function(event) {
+            const notificationId = event.detail;
+            console.log('Notification clicked:', notificationId);
+            
+            // Mark as read via AJAX (optional)
+            fetch(`/admin/notifikasi/${notificationId}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Notification marked as read');
+                }
+            }).catch(error => {
+                console.log('Error marking notification as read:', error);
+            });
+            
+            // Don't close popup immediately, let user see the content
+        });
     });
 </script>
 

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\EcoNewsService;
+use App\Services\EcoProviderService;
 use Illuminate\Http\Request;
 
 class EcoNewsController extends Controller
 {
-    protected $ecoNewsService;
+    protected $ecoProviderService;
 
-    public function __construct(EcoNewsService $ecoNewsService)
+    public function __construct(EcoProviderService $ecoProviderService)
     {
-        $this->ecoNewsService = $ecoNewsService;
+        $this->ecoProviderService = $ecoProviderService;
     }
 
     /**
@@ -19,51 +19,41 @@ class EcoNewsController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            $keyword = $request->input('q', '');
-            $category = $request->input('category', '');
-            
-            // Get news and categories from EcoProvider combined endpoint
-            $data = $this->ecoNewsService->getNewsWithCategories();
-            $allNews = $data['news'];
-            $categories = $data['categories'];
-            
-            // Apply filters
-            $news = $allNews;
-            
-            // Filter by keyword if provided
-            if (!empty($keyword)) {
-                $news = $this->ecoNewsService->searchNews($keyword);
-            }
-            
-            // Filter by category if provided
-            if (!empty($category)) {
-                $news = array_filter($news, function($item) use ($category) {
-                    return isset($item['category']) && $item['category'] === $category;
-                });
-                // Re-index array after filter
-                $news = array_values($news);
-            }
-            
-            $isAvailable = !empty($allNews);
-            $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
-
-            return view('eco-news.index', [
-                'news' => $news,
-                'categories' => $categories,
-                'isAvailable' => $isAvailable,
-                'saldoPoin' => $saldoPoin
-            ]);
-        } catch (\Exception $e) {
-            $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
-            return view('eco-news.index', [
-                'news' => [],
-                'categories' => [],
-                'isAvailable' => false,
-                'error' => 'Tidak dapat terhubung ke EcoProvider. Silakan coba lagi nanti.',
-                'saldoPoin' => $saldoPoin
-            ]);
+        $keyword = $request->input('q', '');
+        $category = $request->input('category', '');
+        
+        // Get news from EcoProvider
+        $allNews = $this->ecoProviderService->getNews();
+        
+        // Apply filters
+        $news = $allNews;
+        
+        // Filter by keyword if provided
+        if (!empty($keyword)) {
+            $news = array_filter($news, function($item) use ($keyword) {
+                $title = $item['title'] ?? '';
+                $content = $item['content'] ?? '';
+                return stripos($title, $keyword) !== false || stripos($content, $keyword) !== false;
+            });
+            $news = array_values($news);
         }
+        
+        // Filter by category if provided
+        if (!empty($category)) {
+            $news = array_filter($news, function($item) use ($category) {
+                return isset($item['category']) && $item['category'] === $category;
+            });
+            $news = array_values($news);
+        }
+        
+        $isAvailable = !empty($allNews);
+        $saldoPoin = \Auth::check() ? \App\Models\PointsLedger::where('user_id', \Auth::id())->sum('points') : 0;
+
+        return view('eco-news.index', [
+            'news' => $news,
+            'isAvailable' => $isAvailable,
+            'saldoPoin' => $saldoPoin
+        ]);
     }
 
     /**
@@ -71,21 +61,9 @@ class EcoNewsController extends Controller
      */
     public function show($id)
     {
-        try {
-            $news = $this->ecoNewsService->getNews($id);
-
-            if (!$news) {
-                return redirect()->route('eco.news.index')
-                    ->with('error', 'Berita tidak ditemukan.');
-            }
-
-            return view('eco-news.show', [
-                'news' => $news
-            ]);
-        } catch (\Exception $e) {
-            return redirect()->route('eco.news.index')
-                ->with('error', 'Tidak dapat memuat detail berita.');
-        }
+        // For now, since EcoProvider doesn't have individual ID endpoint,
+        // we'll redirect to index
+        return redirect()->route('eco.news.index');
     }
 
     /**

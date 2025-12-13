@@ -43,10 +43,10 @@ class PermintaanTukarPoin extends Notification
         $branchName = $this->redemption->branch?->name ?? 'Cabang';
         
         return [
-            'title' => '📋 Permintaan Tukar Poin',
+            'title' => 'Permintaan Tukar Poin',
             'message' => "{$this->warga->name} meminta tukar poin ({$itemsDescription}). Total: {$this->redemption->total_points} poin.",
-            'type' => 'info',
-            'icon' => 'info-circle-fill',
+            'type' => 'redemption',
+            'icon' => 'gift-fill',
             'redemption_id' => $this->redemption->id,
             'user_name' => $this->warga->name,
             'total_points' => $this->redemption->total_points,
