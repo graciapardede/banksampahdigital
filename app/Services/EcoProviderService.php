@@ -16,7 +16,7 @@ class EcoProviderService
     {
         $this->timeout = (int) env('ECO_API_TIMEOUT', 10);
         $this->maxRetries = 3;
-        $this->cacheExpire = (int) env('ECO_API_CACHE', 30);
+        $this->cacheExpire = (int) env('ECO_API_CACHE', 30); 
     }
 
     /**
