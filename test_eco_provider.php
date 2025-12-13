@@ -16,7 +16,7 @@ if (count($news) > 0) {
     echo "\n=== First News Item ===\n";
     echo json_encode($news[0], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
 } else {
-    echo "\n⚠️ No news returned! Check:\n";
+    echo "\nNo news returned! Check:\n";
     echo "- .env ECO_NEWS_API value\n";
     echo "- API endpoint availability\n";
     echo "- Check laravel.log for errors\n";

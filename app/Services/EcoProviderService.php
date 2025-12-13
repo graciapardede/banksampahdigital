@@ -11,12 +11,16 @@ class EcoProviderService
     protected $timeout;
     protected $maxRetries;
     protected $cacheExpire;
+    protected $apiKey;
+    protected $apiSecret;
 
     public function __construct()
     {
         $this->timeout = (int) env('ECO_API_TIMEOUT', 10);
         $this->maxRetries = 3;
-        $this->cacheExpire = (int) env('ECO_API_CACHE', 30); 
+        $this->cacheExpire = (int) env('ECO_API_CACHE', 30);
+        $this->apiKey = env('ECO_API_KEY', '');
+        $this->apiSecret = env('ECO_API_SECRET', '');
     }
 
     /**
@@ -85,24 +89,42 @@ class EcoProviderService
     public function checkStatus()
     {
         try {
+            $headers = [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            if (!empty($this->apiKey)) {
+                $headers['X-API-Key'] = $this->apiKey;
+            }
+
             $response = Http::timeout($this->timeout)
-                ->get(env('ECO_STATUS_API', 'http://localhost:8001/api/status'));
+                ->withHeaders($headers)
+                ->withOptions(['verify' => app()->environment('production')])
+                ->get(env('ECO_STATUS_API', 'http://127.0.0.1:8001/api/status'));
 
             if ($response->successful()) {
                 return [
                     'status' => 'ok',
                     'code' => $response->status(),
+                    'timestamp' => now(),
                 ];
             }
 
             return [
                 'status' => 'error',
                 'code' => $response->status(),
+                'timestamp' => now(),
             ];
         } catch (\Exception $e) {
+            Log::error('EcoProvider Status Check Error', [
+                'error' => $e->getMessage(),
+            ]);
+            
             return [
                 'status' => 'unreachable',
                 'error' => $e->getMessage(),
+                'timestamp' => now(),
             ];
         }
     }
@@ -118,7 +140,22 @@ class EcoProviderService
                 return [];
             }
 
+            // Build headers with authentication if available
+            $headers = [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ];
+
+            if (!empty($this->apiKey)) {
+                $headers['X-API-Key'] = $this->apiKey;
+            }
+
+            if (!empty($this->apiSecret)) {
+                $headers['X-API-Secret'] = $this->apiSecret;
+            }
+
             $response = Http::timeout($this->timeout)
+                ->withHeaders($headers)
                 ->withOptions(['verify' => app()->environment('production')])
                 ->get($url);
 
@@ -126,19 +163,23 @@ class EcoProviderService
                 $result = $response->json();
                 $data = $result['data'] ?? $result ?? [];
                 
-                Log::info("EcoProvider API Success: {$type} retrieved successfully");
+                Log::info("EcoProvider API Success: {$type} retrieved successfully", [
+                    'url' => $url,
+                    'items_count' => count($data),
+                ]);
                 return $data;
             }
 
             Log::error("EcoProvider API Error for {$type}", [
                 'url' => $url,
                 'status' => $response->status(),
+                'body' => $response->body(),
                 'attempt' => $attempt,
             ]);
 
             if ($attempt < $this->maxRetries) {
                 Log::info("EcoProvider API Retry: {$type} (attempt {$attempt}/{$this->maxRetries})");
-                sleep(1);
+                sleep(2);
                 return $this->fetchWithRetry($url, $type, $attempt + 1);
             }
 
@@ -152,7 +193,7 @@ class EcoProviderService
 
             if ($attempt < $this->maxRetries) {
                 Log::info("EcoProvider API Retry: {$type} (attempt {$attempt}/{$this->maxRetries})");
-                sleep(1);
+                sleep(2);
                 return $this->fetchWithRetry($url, $type, $attempt + 1);
             }
 
