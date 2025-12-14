@@ -14,5 +14,5 @@ $users = User::limit(5)->get(['id','full_name','email']);
 foreach ($users as $u) {
     echo "#{$u->id}: {$u->full_name} <{$u->email}>\n";
 }
-
+ 
 ?>
