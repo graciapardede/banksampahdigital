@@ -34,7 +34,7 @@ class EcoProviderService
             return Cache::get($cacheKey);
         }
 
-        $data = $this->fetchWithRetry(env('ECO_NEWS_API', 'http://localhost:8001/api/news'), 'news');
+        $data = $this->fetchWithRetry(env('ECO_NEWS_API', 'http://services.bsdgs.fun/api/news'), 'news');
 
         if (!empty($data) && $this->cacheExpire > 0) {
             Cache::put($cacheKey, $data, now()->addMinutes($this->cacheExpire));
@@ -54,7 +54,7 @@ class EcoProviderService
             return Cache::get($cacheKey);
         }
 
-        $data = $this->fetchWithRetry(env('ECO_EVENTS_API', 'http://localhost:8001/api/events'), 'events');
+        $data = $this->fetchWithRetry(env('ECO_EVENTS_API', 'http://services.bsdgs.fun/api/events'), 'events');
 
         if (!empty($data) && $this->cacheExpire > 0) {
             Cache::put($cacheKey, $data, now()->addMinutes($this->cacheExpire));
@@ -74,7 +74,7 @@ class EcoProviderService
             return Cache::get($cacheKey);
         }
 
-        $data = $this->fetchWithRetry(env('ECO_TIPS_API', 'http://localhost:8001/api/tips'), 'tips');
+        $data = $this->fetchWithRetry(env('ECO_TIPS_API', 'http://services.bsdgs.fun/api/tips'), 'tips');
 
         if (!empty($data) && $this->cacheExpire > 0) {
             Cache::put($cacheKey, $data, now()->addMinutes($this->cacheExpire));
