@@ -41,5 +41,5 @@ echo "Warga tanpa branch_id (bebas): {$withoutBranch}\n";
 if ($withoutBranch === $totalWarga) {
     echo "\n✓ Semua warga sekarang bebas (tidak terikat cabang)!\n";
 } else {
-    echo "\n⚠️  Ada yang salah, cek lagi.\n";
+    echo "\nAda yang salah, cek lagi.\n";
 }

@@ -14,7 +14,7 @@ $totalUsers = User::count();
 echo "Total users in database: {$totalUsers}\n\n";
 
 if ($totalUsers === 0) {
-    echo "❌ NO USERS FOUND! Database kosong.\n";
+    echo "NO USERS FOUND! Database kosong.\n";
     echo "Silakan jalankan seeder atau buat user manual.\n";
     exit;
 }
@@ -40,13 +40,13 @@ echo "\n=== TEST LOGIN FOR: {$testEmail} ===\n";
 $user = User::where('email', $testEmail)->first();
 
 if (!$user) {
-    echo "❌ User dengan email '{$testEmail}' TIDAK DITEMUKAN!\n";
+    echo "User dengan email '{$testEmail}' TIDAK DITEMUKAN!\n";
     echo "Email yang tersedia:\n";
     User::all()->pluck('email')->each(function($email) {
         echo "  - {$email}\n";
     });
 } else {
-    echo "✅ User ditemukan!\n";
+    echo "User ditemukan!\n";
     echo "Name: {$user->name}\n";
     echo "Email: {$user->email}\n";
     echo "Role: {$user->role}\n\n";
@@ -55,16 +55,16 @@ if (!$user) {
     echo "Testing password: '{$testPassword}'\n";
     
     if (Hash::check($testPassword, $user->password)) {
-        echo "✅ PASSWORD MATCH! Login seharusnya berhasil.\n";
+        echo "PASSWORD MATCH! Login seharusnya berhasil.\n";
     } else {
-        echo "❌ PASSWORD TIDAK MATCH!\n";
+        echo "PASSWORD TIDAK MATCH!\n";
         echo "Password hash di database: {$user->password}\n";
         echo "\nCoba password lain:\n";
         
         $commonPasswords = ['password', '12345678', 'admin123', 'password123'];
         foreach ($commonPasswords as $pw) {
             if (Hash::check($pw, $user->password)) {
-                echo "✅ PASSWORD YANG BENAR: '{$pw}'\n";
+                echo "PASSWORD YANG BENAR: '{$pw}'\n";
                 break;
             }
         }

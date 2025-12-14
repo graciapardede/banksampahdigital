@@ -12,7 +12,7 @@ echo "=== ASSIGN WARGA KE CABANG ===\n\n";
 // Get all branches
 $branches = Branch::all();
 if ($branches->isEmpty()) {
-    echo "❌ Tidak ada cabang di database. Silakan buat cabang terlebih dahulu.\n";
+    echo "Tidak ada cabang di database. Silakan buat cabang terlebih dahulu.\n";
     exit;
 }
 

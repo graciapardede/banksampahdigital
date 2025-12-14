@@ -11,9 +11,9 @@ echo "=== Checking Reward Items in Database ===\n\n";
 $items = RewardItem::orderBy('id', 'desc')->take(5)->get();
 
 if ($items->isEmpty()) {
-    echo "❌ No items found in database!\n";
+    echo "No items found in database!\n";
 } else {
-    echo "✅ Found " . $items->count() . " items:\n\n";
+    echo "Found " . $items->count() . " items:\n\n";
     foreach ($items as $item) {
         echo "ID: {$item->id}\n";
         echo "Name: {$item->name}\n";
