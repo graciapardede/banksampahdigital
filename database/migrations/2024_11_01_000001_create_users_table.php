@@ -18,6 +18,7 @@ return new class extends Migration
             // Tambahkan kolom ini
             $table->string('role')->default('user');
             $table->string('phone')->nullable();
+            $table->string('profile_photo')->nullable();
             $table->string('branch')->nullable();
             
             $table->rememberToken();
