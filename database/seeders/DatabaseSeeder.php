@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->command->info('Starting Master Seeder...');
-        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('redemption_items')->truncate();
         DB::table('redemptions')->truncate();
         DB::table('deposit_items')->truncate();
@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         DB::table('waste_types')->truncate();
         DB::table('users')->truncate();
         DB::table('branches')->truncate();
-        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $sitoluama = Branch::create(['name' => 'Cabang Sitoluama', 'address' => 'Jl. Raya Sitoluama No. 123', 'phone' => '0812-3456-7890']);
         $balige = Branch::create(['name' => 'Cabang Balige', 'address' => 'Jl. Balige Pusat No. 456', 'phone' => '0813-9876-5432']);
