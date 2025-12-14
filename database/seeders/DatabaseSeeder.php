@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->command->info('Starting Master Seeder...');
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('redemption_items')->truncate();
         DB::table('redemptions')->truncate();
         DB::table('deposit_items')->truncate();
