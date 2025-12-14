@@ -90,52 +90,14 @@ class DashboardController extends Controller
     private function getDepositsByMonth()
     {
         $branchId = auth()->user()->branch_id;
-        $dbDriver = DB::connection()->getDriverName();
         
-        if ($dbDriver === 'sqlite') {
-            $deposits = Deposit::select(
-                    DB::raw("CAST(strftime('%m', created_at) as INTEGER) as month"),
-                    DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year"),
-                    DB::raw('COUNT(*) as total')
-                )
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->where('created_at', '>=', Carbon::now()->subMonths(12))
-                ->groupBy('year', 'month')
-                ->orderBy('year', 'asc')
-                ->orderBy('month', 'asc')
-                ->get();
-        } else {
-            $deposits = Deposit::select(
-                    DB::raw('MONTH(created_at) as month'),
-                    DB::raw('YEAR(created_at) as year'),
-                    DB::raw('COUNT(*) as total')
-                )
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->where('created_at', '>=', Carbon::now()->subMonths(12))
-                ->groupBy('year', 'month')
-                ->orderBy('year', 'asc')
-                ->orderBy('month', 'asc')
-                ->get();
-        }
+        $deposits = $this->getDataByMonth(
+            Deposit::class,
+            ['status' => null], // null means no status filter
+            $branchId
+        );
 
-        // Format untuk chart
-        $result = [];
-        for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
-            $month = $date->month;
-            $year = $date->year;
-            
-            $found = $deposits->first(function($item) use ($month, $year) {
-                return $item->month == $month && $item->year == $year;
-            });
-
-            $result[] = [
-                'label' => $date->format('M Y'),
-                'value' => $found ? $found->total : 0,
-            ];
-        }
-
-        return $result;
+        return $this->formatDataByMonth($deposits);
     }
 
     /**
@@ -145,44 +107,77 @@ class DashboardController extends Controller
     private function getRedemptionsByMonth()
     {
         $branchId = auth()->user()->branch_id;
+        
+        $redemptions = $this->getDataByMonth(
+            Redemption::class,
+            ['status' => 'completed'],
+            $branchId
+        );
+
+        return $this->formatDataByMonth($redemptions);
+    }
+
+    /**
+     * Helper method to get data grouped by month
+     * Works with both SQLite and MySQL
+     * 
+     * @param string $modelClass Model class name (e.g., Deposit::class)
+     * @param array $filters Additional filters (e.g., ['status' => 'completed'])
+     * @param int|null $branchId Branch ID to filter by
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getDataByMonth(string $modelClass, array $filters = [], ?int $branchId = null)
+    {
         $dbDriver = DB::connection()->getDriverName();
         
-        if ($dbDriver === 'sqlite') {
-            $redemptions = Redemption::select(
-                    DB::raw("CAST(strftime('%m', created_at) as INTEGER) as month"),
-                    DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year"),
-                    DB::raw('COUNT(*) as total')
-                )
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->where('status', 'completed')
-                ->where('created_at', '>=', Carbon::now()->subMonths(12))
-                ->groupBy('year', 'month')
-                ->orderBy('year', 'asc')
-                ->orderBy('month', 'asc')
-                ->get();
-        } else {
-            $redemptions = Redemption::select(
-                    DB::raw('MONTH(created_at) as month'),
-                    DB::raw('YEAR(created_at) as year'),
-                    DB::raw('COUNT(*) as total')
-                )
-                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->where('status', 'completed')
-                ->where('created_at', '>=', Carbon::now()->subMonths(12))
-                ->groupBy('year', 'month')
-                ->orderBy('year', 'asc')
-                ->orderBy('month', 'asc')
-                ->get();
+        // Build query based on database driver
+        $query = $modelClass::select(
+            $dbDriver === 'sqlite'
+                ? DB::raw("CAST(strftime('%m', created_at) as INTEGER) as month")
+                : DB::raw('MONTH(created_at) as month'),
+            $dbDriver === 'sqlite'
+                ? DB::raw("CAST(strftime('%Y', created_at) as INTEGER) as year")
+                : DB::raw('YEAR(created_at) as year'),
+            DB::raw('COUNT(*) as total')
+        );
+
+        // Apply branch filter if provided
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
         }
 
-        // Format untuk chart
+        // Apply additional filters
+        foreach ($filters as $column => $value) {
+            if ($value !== null) {
+                $query->where($column, $value);
+            }
+        }
+
+        // Date range and grouping
+        $query->where('created_at', '>=', Carbon::now()->subMonths(12))
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc');
+
+        return $query->get();
+    }
+
+    /**
+     * Helper method to format monthly data for chart display
+     * 
+     * @param \Illuminate\Database\Eloquent\Collection $data Data grouped by month
+     * @return array Formatted data for chart
+     */
+    private function formatDataByMonth($data)
+    {
         $result = [];
+        
         for ($i = 11; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
             $month = $date->month;
             $year = $date->year;
             
-            $found = $redemptions->first(function($item) use ($month, $year) {
+            $found = $data->first(function($item) use ($month, $year) {
                 return $item->month == $month && $item->year == $year;
             });
 
